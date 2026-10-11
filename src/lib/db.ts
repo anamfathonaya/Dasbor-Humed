@@ -1608,3 +1608,121 @@ export function initDatabase() {
     insertAudit.run(null, 'Percobaan Masuk Tamu', 'anonymous', 'Gagal Autentikasi Pengguna', 'admin.backup@pedulinegeri.org (Salah Sandi)', '114.124.201.33', 'failed', '3x percobaan salah sandi berurutan');
   }
 }
+
+/* ==========================================================================
+   HELPER QUERY SQLITE PER ENTITAS
+   ========================================================================== */
+
+export const dbQueries = {
+  // 1. Roles & Users
+  users: {
+    getAll: () => db.prepare('SELECT id, name, email, role_id, created_at FROM users ORDER BY id ASC').all(),
+    getById: (id: number) => db.prepare('SELECT id, name, email, role_id, created_at FROM users WHERE id = ?').get(id),
+    getByEmail: (email: string) => db.prepare('SELECT * FROM users WHERE email = ?').get(email),
+  },
+
+  // 2. Content Calendar & Pillars
+  content: {
+    getAll: (params?: { channel?: string; pillarId?: number; assigneeId?: number }) => {
+      let query = `
+        SELECT c.*, p.name as pillar_name, p.color as pillar_color, u.name as assignee_name
+        FROM content_calendar c
+        LEFT JOIN content_pillars p ON c.pillar_id = p.id
+        LEFT JOIN users u ON c.assignee_id = u.id
+        WHERE 1=1
+      `;
+      const queryParams: any[] = [];
+      if (params?.channel) {
+        query += ` AND c.channel = ?`;
+        queryParams.push(params.channel);
+      }
+      if (params?.pillarId) {
+        query += ` AND c.pillar_id = ?`;
+        queryParams.push(params.pillarId);
+      }
+      if (params?.assigneeId) {
+        query += ` AND c.assignee_id = ?`;
+        queryParams.push(params.assigneeId);
+      }
+      query += ` ORDER BY c.scheduled_at ASC`;
+      return db.prepare(query).all(...queryParams);
+    },
+    getPillars: () => db.prepare('SELECT * FROM content_pillars ORDER BY id ASC').all(),
+    getThemes: (pillarId?: number) => {
+      return pillarId
+        ? db.prepare('SELECT * FROM content_themes WHERE pillar_id = ? ORDER BY id ASC').all(pillarId)
+        : db.prepare('SELECT * FROM content_themes ORDER BY id ASC').all();
+    },
+  },
+
+  // 3. Metrics, Donations, Ad Campaigns, Top Pages
+  metrics: {
+    getSnapshots: (source?: string, period = '30d') => {
+      return source
+        ? db.prepare('SELECT * FROM metric_snapshots WHERE source = ? AND period = ?').all(source, period)
+        : db.prepare('SELECT * FROM metric_snapshots WHERE period = ?').all(period);
+    },
+    getDonations: () => db.prepare('SELECT * FROM donations ORDER BY amount DESC').all(),
+    getAdCampaigns: () => db.prepare('SELECT * FROM ad_campaigns ORDER BY spend DESC').all(),
+    getTopPages: () => db.prepare('SELECT * FROM top_pages ORDER BY views DESC').all(),
+  },
+
+  // 4. Projects & Tasks
+  projects: {
+    getAll: () => {
+      const projs = db.prepare('SELECT * FROM projects ORDER BY id ASC').all() as any[];
+      return projs.map((p) => ({
+        ...p,
+        tasks: db.prepare('SELECT * FROM project_tasks WHERE project_id = ? ORDER BY id ASC').all(p.id),
+      }));
+    },
+    getTasks: (projectId?: number) => {
+      return projectId
+        ? db.prepare('SELECT * FROM project_tasks WHERE project_id = ? ORDER BY id ASC').all(projectId)
+        : db.prepare('SELECT * FROM project_tasks ORDER BY id ASC').all();
+    },
+  },
+
+  // 5. News Sources & News Items
+  news: {
+    getSources: (activeOnly = false) => {
+      return activeOnly
+        ? db.prepare('SELECT * FROM news_sources WHERE is_active = 1 ORDER BY id ASC').all()
+        : db.prepare('SELECT * FROM news_sources ORDER BY id ASC').all();
+    },
+    getStream: (limit = 50) => {
+      return db.prepare('SELECT * FROM news_items ORDER BY published_at DESC LIMIT ?').all(limit);
+    },
+  },
+
+  // 6. Insights
+  insights: {
+    getTrending: () => db.prepare('SELECT * FROM trending_topics ORDER BY rank ASC').all(),
+    getGaps: () => db.prepare('SELECT * FROM content_gaps ORDER BY id ASC').all(),
+    getRecommendations: () => db.prepare('SELECT * FROM idea_recommendations WHERE is_skipped = 0 ORDER BY id ASC').all(),
+    getSaved: () => db.prepare('SELECT * FROM saved_ideas ORDER BY id DESC').all(),
+  },
+
+  // 7. Knowledge & SOP
+  knowledge: {
+    getCategories: () => db.prepare('SELECT * FROM knowledge_categories ORDER BY id ASC').all(),
+    getDocs: (search?: string) => {
+      return search
+        ? db.prepare('SELECT * FROM knowledge_docs WHERE title LIKE ? OR description LIKE ?').all(`%${search}%`, `%${search}%`)
+        : db.prepare('SELECT * FROM knowledge_docs ORDER BY id ASC').all();
+    },
+    getProposals: () => db.prepare('SELECT * FROM doc_proposals ORDER BY id DESC').all(),
+  },
+
+  // 8. Budget & Annual Reports
+  budget: {
+    getLines: (year = 2026) => db.prepare('SELECT * FROM budget_lines WHERE year = ? ORDER BY id ASC').all(year),
+    getAnnualReports: () => db.prepare('SELECT * FROM annual_reports ORDER BY year DESC').all(),
+  },
+
+  // 9. Audit Logs
+  audit: {
+    getRecent: (limit = 100) => db.prepare('SELECT * FROM audit_logs ORDER BY id DESC LIMIT ?').all(limit),
+  },
+};
+
