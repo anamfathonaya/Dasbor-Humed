@@ -62,8 +62,42 @@ import {
   budgetQuarters,
   budgetYears,
   mockAnnualReportsByYear,
+  mockAnnualPlan,
   type BudgetLine,
 } from '../data/mockBudget';
+
+import {
+  mockPerformance,
+  reportChannels,
+  reportPeriods,
+  type PerfRow,
+} from '../data/mockReport';
+
+import {
+  mockOrgProfile,
+  mockUsers,
+  mockPermissions,
+  mockIntegrations,
+  mockAuditLogs,
+  type OrganizationProfile,
+  type UserAccount,
+  type RolePermission,
+  type IntegrationService,
+  type AuditLogItem,
+} from '../data/mockSettings';
+
+import {
+  mockPillarPerformance,
+  mockBestTimings,
+  mockTrendingTopics,
+  mockContentGaps,
+  mockIdeaRecommendations,
+  type BestTimingRecommendation,
+  type PillarPerformanceSummary,
+  type TrendingTopicItem,
+  type ContentGapItem,
+  type IdeaRecommendationItem,
+} from '../data/mockInsights';
 
 export interface FetchOptions extends RequestInit {
   timeoutMs?: number;
@@ -251,6 +285,11 @@ export {
   mockNewsItems,
   mockCuratedSources,
   mockContentInsights,
+  mockPillarPerformance,
+  mockBestTimings,
+  mockTrendingTopics,
+  mockContentGaps,
+  mockIdeaRecommendations,
   mockKnowledgeDocs,
   mockProposals,
   knowledgeCategories,
@@ -260,6 +299,27 @@ export {
   budgetQuarters,
   budgetYears,
   mockAnnualReportsByYear,
+  mockAnnualPlan,
+  mockPerformance,
+  reportChannels,
+  reportPeriods,
+  mockOrgProfile,
+  mockUsers,
+  mockPermissions,
+  mockIntegrations,
+  mockAuditLogs,
   type KnowledgeDoc,
   type DocumentProposal,
+  type OrganizationProfile,
+  type UserAccount,
+  type RolePermission,
+  type IntegrationService,
+  type AuditLogItem,
+  type PerfRow,
+  type BestTimingRecommendation,
+  type PillarPerformanceSummary,
+  type TrendingTopicItem,
+  type ContentGapItem,
+  type IdeaRecommendationItem,
+  type NewsItem,
 };

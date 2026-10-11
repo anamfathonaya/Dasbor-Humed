@@ -1,5 +1,8 @@
 ---
-import { mockAnnualReportsByYear, mockBudgetLines } from '../data/mockBudget';
+import {
+  mockAnnualReportsByYear,
+  mockBudgetLines,
+} from '../lib/clientDataFetcher';
 import { formatRupiah, formatNumber } from '../lib/format';
 
 const availableYears = Object.keys(mockAnnualReportsByYear).sort((a, b) => Number(b) - Number(a));

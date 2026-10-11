@@ -1,5 +1,8 @@
 ---
-import { mockBudgetLines, mockAnnualPlan } from '../data/mockBudget';
+import {
+  mockBudgetLines,
+  mockAnnualPlan,
+} from '../lib/clientDataFetcher';
 import PeriodComparison from '../components/PeriodComparison.astro';
 
 const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID');
