@@ -50,8 +50,9 @@ import {
 import {
   mockKnowledgeDocs,
   mockProposals,
+  knowledgeCategories,
   type KnowledgeDoc,
-  type KnowledgeProposal,
+  type DocumentProposal,
 } from '../data/mockKnowledge';
 
 import {
@@ -218,7 +219,7 @@ export async function fetchKnowledgeDocs(query?: string, options?: FetchOptions)
 }
 
 export async function fetchKnowledgeProposals(options?: FetchOptions) {
-  return fetchWithFallback<KnowledgeProposal[]>('/api/knowledge/proposals', mockProposals, options);
+  return fetchWithFallback<DocumentProposal[]>('/api/knowledge/proposals', mockProposals, options);
 }
 
 /* ==========================================================================
@@ -252,10 +253,13 @@ export {
   mockContentInsights,
   mockKnowledgeDocs,
   mockProposals,
+  knowledgeCategories,
   mockBudgetLines,
   budgetCategories,
   budgetOwners,
   budgetQuarters,
   budgetYears,
   mockAnnualReportsByYear,
+  type KnowledgeDoc,
+  type DocumentProposal,
 };

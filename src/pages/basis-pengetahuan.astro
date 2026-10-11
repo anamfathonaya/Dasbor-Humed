@@ -1,5 +1,8 @@
 ---
-import { mockKnowledgeDocs, knowledgeCategories } from '../data/mockKnowledge';
+import {
+  mockKnowledgeDocs,
+  knowledgeCategories,
+} from '../lib/clientDataFetcher';
 
 const totalDocs = mockKnowledgeDocs.length;
 const sopCount = mockKnowledgeDocs.filter(d => d.category === 'SOP').length;
