@@ -51,7 +51,7 @@ export const GET: APIRoute = async ({ url }) => {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { title, scheduled_at, channel, pillar_id, assignee_id, status, remind_before } = body;
+    const { title, scheduled_at, channel, content_type, sub_type, request_bidang, pillar_id, assignee_id, status, remind_before } = body;
 
     if (!title || !scheduled_at || !channel) {
       return new Response(
@@ -61,14 +61,17 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const stmt = db.prepare(`
-      INSERT INTO content_calendar (title, scheduled_at, channel, pillar_id, assignee_id, status, remind_before)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO content_calendar (title, scheduled_at, channel, content_type, sub_type, request_bidang, pillar_id, assignee_id, status, remind_before)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const result = stmt.run(
       title,
       scheduled_at,
       channel,
+      content_type || null,
+      sub_type || null,
+      request_bidang || null,
       pillar_id ? Number(pillar_id) : null,
       assignee_id ? Number(assignee_id) : null,
       status || 'draft',

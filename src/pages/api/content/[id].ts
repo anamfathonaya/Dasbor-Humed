@@ -51,6 +51,9 @@ export const PUT: APIRoute = async ({ params, request }) => {
     const title = body.title !== undefined ? body.title : existing.title;
     const scheduled_at = body.scheduled_at !== undefined ? body.scheduled_at : existing.scheduled_at;
     const channel = body.channel !== undefined ? body.channel : existing.channel;
+    const content_type = body.content_type !== undefined ? body.content_type : existing.content_type;
+    const sub_type = body.sub_type !== undefined ? body.sub_type : existing.sub_type;
+    const request_bidang = body.request_bidang !== undefined ? body.request_bidang : existing.request_bidang;
     const pillar_id = body.pillar_id !== undefined ? (body.pillar_id ? Number(body.pillar_id) : null) : existing.pillar_id;
     const assignee_id = body.assignee_id !== undefined ? (body.assignee_id ? Number(body.assignee_id) : null) : existing.assignee_id;
     const status = body.status !== undefined ? body.status : existing.status;
@@ -58,9 +61,9 @@ export const PUT: APIRoute = async ({ params, request }) => {
 
     db.prepare(`
       UPDATE content_calendar
-      SET title = ?, scheduled_at = ?, channel = ?, pillar_id = ?, assignee_id = ?, status = ?, remind_before = ?
+      SET title = ?, scheduled_at = ?, channel = ?, content_type = ?, sub_type = ?, request_bidang = ?, pillar_id = ?, assignee_id = ?, status = ?, remind_before = ?
       WHERE id = ?
-    `).run(title, scheduled_at, channel, pillar_id, assignee_id, status, remind_before, id);
+    `).run(title, scheduled_at, channel, content_type, sub_type, request_bidang, pillar_id, assignee_id, status, remind_before, id);
 
     const updated = db.prepare(`
       SELECT c.*, p.name as pillar_name, p.color as pillar_color, u.name as assignee_name

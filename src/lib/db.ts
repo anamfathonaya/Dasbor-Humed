@@ -51,6 +51,9 @@ export function initDatabase() {
       title TEXT NOT NULL,
       scheduled_at DATETIME NOT NULL,
       channel TEXT NOT NULL,
+      content_type TEXT,
+      sub_type TEXT,
+      request_bidang TEXT,
       pillar_id INTEGER,
       assignee_id INTEGER,
       status TEXT NOT NULL DEFAULT 'draft',
@@ -538,6 +541,11 @@ export function initDatabase() {
     );
   `);
 
+  // Safe migrations for content_calendar columns
+  try { db.exec("ALTER TABLE content_calendar ADD COLUMN content_type TEXT"); } catch {}
+  try { db.exec("ALTER TABLE content_calendar ADD COLUMN sub_type TEXT"); } catch {}
+  try { db.exec("ALTER TABLE content_calendar ADD COLUMN request_bidang TEXT"); } catch {}
+
   // Safe migrations for reminders columns
   try { db.exec("ALTER TABLE reminders ADD COLUMN title TEXT DEFAULT ''"); } catch {}
   try { db.exec("ALTER TABLE reminders ADD COLUMN message TEXT"); } catch {}
@@ -602,21 +610,21 @@ export function initDatabase() {
   const contentCount = (db.prepare('SELECT COUNT(*) as count FROM content_calendar').get() as { count: number }).count;
   if (contentCount === 0) {
     const insertContent = db.prepare(`
-      INSERT INTO content_calendar (title, scheduled_at, channel, pillar_id, assignee_id, status, remind_before)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO content_calendar (title, scheduled_at, channel, content_type, sub_type, request_bidang, pillar_id, assignee_id, status, remind_before)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    insertContent.run('Penyaluran paket sembako Cianjur', '2026-10-02 09:00:00', 'Instagram', 1, 4, 'terbit', 0);
-    insertContent.run('Infografis: cara donasi aman', '2026-10-05 12:00:00', 'Instagram', 2, 2, 'terbit', 0);
-    insertContent.run('Video testimoni penerima manfaat', '2026-10-08 18:00:00', 'YouTube', 1, 3, 'terbit', 0);
-    insertContent.run('Kampanye Bantu Pendidikan Anak', '2026-10-10 10:00:00', 'Website', 3, 4, 'terjadwal', 60);
-    insertContent.run('Reels relawan di lapangan', '2026-10-12 19:00:00', 'TikTok', 1, 3, 'terjadwal', 0);
-    insertContent.run('Update donasi pekan ke-2', '2026-10-14 08:00:00', 'Facebook', 3, 2, 'draft', 1440);
-    insertContent.run('Tips tanggap bencana banjir', '2026-10-16 11:00:00', 'Instagram', 2, 1, 'draft', 60);
-    insertContent.run('Laporan penyaluran September', '2026-10-20 09:00:00', 'Website', 4, 1, 'draft', 0);
-    insertContent.run('Siaran kabar terbaru ke channel', '2026-10-20 15:00:00', 'Telegram', 4, null, 'ide', 0);
-    insertContent.run('Live Q&A bersama ketua bidang', '2026-10-24 20:00:00', 'YouTube', 2, 3, 'ide', 0);
-    insertContent.run('Kisah relawan pekan ini', '2026-10-28 17:00:00', 'Instagram', 1, 4, 'ide', 0);
+    insertContent.run('Penyaluran paket sembako Cianjur', '2026-10-02 09:00:00', 'Instagram', 'carousel (image)', null, null, 1, 4, 'terbit', 0);
+    insertContent.run('Infografis: cara donasi aman', '2026-10-05 12:00:00', 'Instagram', 'single image post', null, null, 2, 2, 'terbit', 0);
+    insertContent.run('Dokumenter: Perjuangan Relawan Air Bersih', '2026-10-08 18:00:00', 'YouTube', 'Video panjang', 'dokumenter', null, 1, 3, 'terbit', 0);
+    insertContent.run('Broadcast update penyaluran darurat', '2026-10-10 10:00:00', 'WhatsApp', 'channel post', null, null, 3, 4, 'terjadwal', 60);
+    insertContent.run('Reels relawan di lapangan', '2026-10-12 19:00:00', 'Instagram', 'reels', null, null, 1, 3, 'terjadwal', 0);
+    insertContent.run('Update donasi pekan ke-2', '2026-10-14 08:00:00', 'Facebook', 'single image post', null, null, 3, 2, 'draft', 1440);
+    insertContent.run('Tips tanggap bencana banjir', '2026-10-16 11:00:00', 'Threads & X', 'artikel panjang', null, null, 2, 1, 'draft', 60);
+    insertContent.run('Desain Laporan Penyaluran Q3', '2026-10-20 09:00:00', 'Kebutuhan Internal', 'desain request bidang', null, 'penyaluran-edukasi', 4, 1, 'draft', 0);
+    insertContent.run('Shorts: Rekap aksi cepat 60 detik', '2026-10-20 15:00:00', 'YouTube', 'youtube shorts', null, null, 4, null, 'ide', 0);
+    insertContent.run('Podcast Kemanusiaan: Dialog Ketahanan Pangan', '2026-10-24 20:00:00', 'YouTube', 'Video panjang', 'podcast', null, 2, 3, 'ide', 0);
+    insertContent.run('Set Desain Program Safari Dakwah & Bantuan', '2026-10-28 17:00:00', 'Kebutuhan Internal', 'set desain program', null, 'fundraising', 1, 4, 'ide', 0);
   }
 
   // Seeding default reminders jika kosong

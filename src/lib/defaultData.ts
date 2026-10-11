@@ -129,7 +129,10 @@ export interface ContentItem {
   title: string;
   date: string; // YYYY-MM-DD
   time: string; // HH:mm
-  channel: 'Instagram' | 'Facebook' | 'TikTok' | 'YouTube' | 'Website' | 'Telegram';
+  channel: string;
+  contentType?: string;
+  subType?: string;
+  requestBidang?: string;
   pillarId: number;
   assignee: string;
   status: ContentStatus;
@@ -138,6 +141,81 @@ export interface ContentItem {
   /** Pengingat sudah ditandai selesai */
   reminderDone?: boolean;
 }
+
+export const channelPlatforms = [
+  'Instagram',
+  'WhatsApp',
+  'Facebook',
+  'Threads & X',
+  'YouTube',
+  'Kebutuhan Internal',
+] as const;
+
+export const channelContentTypes: Record<string, string[]> = {
+  'Instagram': [
+    'reels',
+    'carousel (image)',
+    'single image post',
+    'story',
+    'carousel (short video)',
+  ],
+  'WhatsApp': [
+    'video',
+    'foto',
+    'status',
+    'channel post',
+    'community post',
+    'CRM marketing message blast',
+    'whatsapp ads',
+  ],
+  'Facebook': [
+    'reels',
+    'carousel (image)',
+    'single image post',
+    'story',
+    'carousel (short video)',
+    'long video',
+  ],
+  'Threads & X': [
+    'artikel panjang',
+    'short video',
+    'carousel (image)',
+    'single image post',
+    'story',
+    'carousel (short video)',
+    'video panjang',
+  ],
+  'YouTube': [
+    'Video panjang',
+    'video pendek',
+    'youtube shorts',
+  ],
+  'Kebutuhan Internal': [
+    'set desain program',
+    'brand identity',
+    'video eksklusif',
+    'video kegiatan internal',
+    'video kompilasi penyaluran',
+    'desain proposal',
+    'desain laporan penyaluran',
+    'desain request bidang',
+  ],
+};
+
+export const youtubeSubTypes: Record<string, string[]> = {
+  'Video panjang': ['podcast', 'video esai', 'video wawancara', 'dokumenter'],
+  'video pendek': ['video marketing program', 'video after movie kegiatan', 'video penyaluran'],
+};
+
+export const internalBidangOptions = [
+  'operasional',
+  'keuangan',
+  'fundraising',
+  'penyaluran-edukasi',
+  'BPH',
+  'donatur',
+  'wilayah',
+] as const;
 
 export const reminderOptions: { value: number; label: string }[] = [
   { value: 0, label: 'Tanpa pengingat' },
@@ -163,17 +241,17 @@ export const statusLabels: Record<ContentStatus, string> = {
 };
 
 export const contentItems: ContentItem[] = [
-  { id: 1, title: 'Penyaluran paket sembako Cianjur', date: '2026-10-02', time: '09:00', channel: 'Instagram', pillarId: 1, assignee: 'Sari', status: 'terbit' },
-  { id: 2, title: 'Infografis: cara donasi aman', date: '2026-10-05', time: '12:00', channel: 'Instagram', pillarId: 2, assignee: 'Budi', status: 'terbit' },
-  { id: 3, title: 'Video testimoni penerima manfaat', date: '2026-10-08', time: '18:00', channel: 'YouTube', pillarId: 1, assignee: 'Dewi', status: 'terbit' },
-  { id: 4, title: 'Kampanye Bantu Pendidikan Anak', date: '2026-10-10', time: '10:00', channel: 'Website', pillarId: 3, assignee: 'Sari', status: 'terjadwal', remindBefore: 60 },
-  { id: 5, title: 'Reels relawan di lapangan', date: '2026-10-12', time: '19:00', channel: 'TikTok', pillarId: 1, assignee: 'Dewi', status: 'terjadwal' },
-  { id: 6, title: 'Update donasi pekan ke-2', date: '2026-10-14', time: '08:00', channel: 'Facebook', pillarId: 3, assignee: 'Budi', status: 'draft', remindBefore: 1440 },
-  { id: 7, title: 'Tips tanggap bencana banjir', date: '2026-10-16', time: '11:00', channel: 'Instagram', pillarId: 2, assignee: 'Rani', status: 'draft', remindBefore: 60 },
-  { id: 8, title: 'Laporan penyaluran September', date: '2026-10-20', time: '09:00', channel: 'Website', pillarId: 4, assignee: 'Rani', status: 'draft' },
-  { id: 9, title: 'Siaran kabar terbaru ke channel', date: '2026-10-20', time: '15:00', channel: 'Telegram', pillarId: 4, assignee: '', status: 'ide' },
-  { id: 10, title: 'Live Q&A bersama ketua bidang', date: '2026-10-24', time: '20:00', channel: 'YouTube', pillarId: 2, assignee: 'Dewi', status: 'ide' },
-  { id: 11, title: 'Kisah relawan pekan ini', date: '2026-10-28', time: '17:00', channel: 'Instagram', pillarId: 1, assignee: 'Sari', status: 'ide' },
+  { id: 1, title: 'Penyaluran paket sembako Cianjur', date: '2026-10-02', time: '09:00', channel: 'Instagram', contentType: 'carousel (image)', pillarId: 1, assignee: 'Sari', status: 'terbit' },
+  { id: 2, title: 'Infografis: cara donasi aman', date: '2026-10-05', time: '12:00', channel: 'Instagram', contentType: 'single image post', pillarId: 2, assignee: 'Budi', status: 'terbit' },
+  { id: 3, title: 'Dokumenter: Perjuangan Relawan Air Bersih', date: '2026-10-08', time: '18:00', channel: 'YouTube', contentType: 'Video panjang', subType: 'dokumenter', pillarId: 1, assignee: 'Dewi', status: 'terbit' },
+  { id: 4, title: 'Broadcast update penyaluran darurat', date: '2026-10-10', time: '10:00', channel: 'WhatsApp', contentType: 'channel post', pillarId: 3, assignee: 'Sari', status: 'terjadwal', remindBefore: 60 },
+  { id: 5, title: 'Reels relawan di lapangan', date: '2026-10-12', time: '19:00', channel: 'Instagram', contentType: 'reels', pillarId: 1, assignee: 'Dewi', status: 'terjadwal' },
+  { id: 6, title: 'Update donasi pekan ke-2', date: '2026-10-14', time: '08:00', channel: 'Facebook', contentType: 'single image post', pillarId: 3, assignee: 'Budi', status: 'draft', remindBefore: 1440 },
+  { id: 7, title: 'Tips tanggap bencana banjir', date: '2026-10-16', time: '11:00', channel: 'Threads & X', contentType: 'artikel panjang', pillarId: 2, assignee: 'Rani', status: 'draft', remindBefore: 60 },
+  { id: 8, title: 'Desain Laporan Penyaluran Q3', date: '2026-10-20', time: '09:00', channel: 'Kebutuhan Internal', contentType: 'desain request bidang', requestBidang: 'penyaluran-edukasi', pillarId: 4, assignee: 'Rani', status: 'draft' },
+  { id: 9, title: 'Shorts: Rekap aksi cepat 60 detik', date: '2026-10-20', time: '15:00', channel: 'YouTube', contentType: 'youtube shorts', pillarId: 4, assignee: '', status: 'ide' },
+  { id: 10, title: 'Podcast Kemanusiaan: Dialog Ketahanan Pangan', date: '2026-10-24', time: '20:00', channel: 'YouTube', contentType: 'Video panjang', subType: 'podcast', pillarId: 2, assignee: 'Dewi', status: 'ide' },
+  { id: 11, title: 'Set Desain Program Safari Dakwah & Bantuan', date: '2026-10-28', time: '17:00', channel: 'Kebutuhan Internal', contentType: 'set desain program', requestBidang: 'fundraising', pillarId: 1, assignee: 'Sari', status: 'ide' },
 ];
 
 
