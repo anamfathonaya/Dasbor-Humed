@@ -1,5 +1,8 @@
 ---
-import { mockNewsItems, curatedSources } from '../data/mockNews';
+import {
+  mockNewsItems,
+  mockCuratedSources as curatedSources,
+} from '../lib/clientDataFetcher';
 import NewsStream from '../components/NewsStream.astro';
 
 const categories = ['Semua', 'Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Kesehatan', 'Regulasi'];
@@ -442,14 +445,61 @@ const categories = ['Semua', 'Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Keseha
         renderNews();
       });
 
-      refreshBtn.addEventListener('click', () => {
+      refreshBtn.addEventListener('click', async () => {
         refreshBtn.classList.add('rotating');
+        try {
+          const res = await fetch('/api/news/stream');
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+              const mapped = json.data.map(n => ({
+                id: n.id,
+                title: n.title,
+                sourceType: n.source_type || n.sourceType || 'rss',
+                sourceName: n.source_name || n.sourceName || 'Media Rujukan',
+                url: n.url || '#',
+                publishedAt: n.published_at || n.publishedAt || 'Baru saja',
+                summary: n.summary || '',
+                category: n.category || 'Bencana',
+                isCurated: true,
+                isImportant: !!n.is_important,
+              }));
+              allNews = mapped;
+            }
+          }
+        } catch (_) {}
         setTimeout(() => {
           refreshBtn.classList.remove('rotating');
           showToast('Pantauan berita berhasil diperbarui!');
           renderNews();
-        }, 600);
+        }, 400);
       });
+
+      // Pemuatan awal dari API berita jika tersedia
+      async function initLiveNews() {
+        try {
+          const res = await fetch('/api/news/stream');
+          if (res.ok) {
+            const json = await res.json();
+            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+              allNews = json.data.map(n => ({
+                id: n.id,
+                title: n.title,
+                sourceType: n.source_type || n.sourceType || 'rss',
+                sourceName: n.source_name || n.sourceName || 'Media Rujukan',
+                url: n.url || '#',
+                publishedAt: n.published_at || n.publishedAt || 'Baru saja',
+                summary: n.summary || '',
+                category: n.category || 'Bencana',
+                isCurated: true,
+                isImportant: !!n.is_important,
+              }));
+              renderNews();
+            }
+          }
+        } catch (_) {}
+      }
+      initLiveNews();
 
       renderNews();
     </script>

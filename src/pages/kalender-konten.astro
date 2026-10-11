@@ -1,5 +1,10 @@
 ---
-import { contentItems, pillars, statusLabels, reminderOptions } from '../data/mockContent';
+import {
+  mockContentItems as contentItems,
+  mockPillars as pillars,
+  mockStatusLabels as statusLabels,
+  mockReminderOptions as reminderOptions,
+} from '../lib/clientDataFetcher';
 ---
 
 <!doctype html>
@@ -347,6 +352,35 @@ import { contentItems, pillars, statusLabels, reminderOptions } from '../data/mo
         };
       });
       render();
+
+      // Sinkronisasi dinamis dari API /api/content dengan fallback data lokal
+      async function syncContentFromApi() {
+        try {
+          const res = await fetch('/api/content');
+          if (!res.ok) return;
+          const json = await res.json();
+          if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+            // Mapping kolom DB (scheduled_at, pillar_id, assignee_name) ke struktur ContentItem
+            const mapped = json.data.map((row) => ({
+              id: row.id,
+              title: row.title,
+              date: (row.scheduled_at || '').slice(0, 10),
+              time: (row.scheduled_at || '').slice(11, 16) || '09:00',
+              channel: row.channel,
+              pillarId: row.pillar_id,
+              assignee: row.assignee_name || '',
+              status: row.status || 'draft',
+              remindBefore: row.remind_before || 0,
+            }));
+            items.length = 0;
+            items.push(...mapped);
+            render();
+          }
+        } catch (_) {
+          // Tetap gunakan fallback data lokal yang sudah ada
+        }
+      }
+      syncContentFromApi();
     </script>
   </body>
 </html>
