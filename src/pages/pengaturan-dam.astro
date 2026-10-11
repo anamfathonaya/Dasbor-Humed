@@ -1,0 +1,568 @@
+---
+// Halaman Pengaturan Tautan Aset Digital Asset Management (DAM) & NAS Server Lokal
+interface DamFolderShare {
+  id: string;
+  name: string;
+  smbPath: string;
+  description: string;
+  totalAssets: number;
+  totalSize: string;
+  allowedRoles: string[];
+  lastIndexed: string;
+}
+
+const damShares: DamFolderShare[] = [
+  {
+    id: 'share-1',
+    name: 'Dokumentasi Foto Resolusi Tinggi',
+    smbPath: 'smb://192.168.1.200/dam-humas/foto-hi-res',
+    description: 'Arsip berkas foto mentah (RAW/JPG) kegiatan penyaluran bantuan pangan, kesehatan, dan bencana.',
+    totalAssets: 9420,
+    totalSize: '482.5 GB',
+    allowedRoles: ['head', 'admin', 'staff'],
+    lastIndexed: 'Hari ini, 20:30 WIB'
+  },
+  {
+    id: 'share-2',
+    name: 'Video Mentah B-Roll & Footage 4K',
+    smbPath: 'smb://192.168.1.200/dam-humas/video-footage',
+    description: 'Koleksi klip video drone, wawancara penyintas, dan cuplikan b-roll untuk kebutuhan reel serta teaser.',
+    totalAssets: 1240,
+    totalSize: '1.42 TB',
+    allowedRoles: ['head', 'admin', 'staff'],
+    lastIndexed: 'Kemarin, 18:15 WIB'
+  },
+  {
+    id: 'share-3',
+    name: 'Aset Desain & Grafis Master (PSD/AI/SVG)',
+    smbPath: 'smb://192.168.1.200/dam-humas/master-grafis',
+    description: 'Master template grafis, logo lembaga, elemen infografis, dan aset kit kampanye kemanusiaan.',
+    totalAssets: 3450,
+    totalSize: '95.8 GB',
+    allowedRoles: ['head', 'admin', 'staff'],
+    lastIndexed: 'Hari ini, 14:00 WIB'
+  },
+  {
+    id: 'share-4',
+    name: 'Arsip Rekaman Konferensi Pers & Siaran Radio',
+    smbPath: 'smb://192.168.1.200/dam-humas/audio-arsip',
+    description: 'Rekaman audio wawancara radio, audio siaran darurat bencana, dan podcast lembaga.',
+    totalAssets: 480,
+    totalSize: '24.1 GB',
+    allowedRoles: ['head', 'admin'],
+    lastIndexed: '3 hari yang lalu'
+  }
+];
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pengaturan Tautan Aset DAM NAS Lokal - Dasbor Humas Media</title>
+  </head>
+  <body>
+    <!-- HEADER NAVIGASI DASBOR -->
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran">Laporan & Anggaran</a>
+        <a href="/basis-pengetahuan">Basis Pengetahuan & SOP</a>
+        <a href="/pengaturan" class="active">Pengaturan & Integrasi</a>
+      </nav>
+      <div class="role">
+        <span>Peran Aktif:</span>
+        <select id="user-role">
+          <option value="head">Ketua Bidang</option>
+          <option value="admin">Admin Teknis</option>
+          <option value="staff">Staf Konten</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <!-- HEADER HALAMAN -->
+      <div class="head">
+        <div>
+          <div class="breadcrumb">
+            <a href="/pengaturan">Pengaturan</a>
+            <span>/</span>
+            <span>Penyimpanan Aset</span>
+          </div>
+          <h2>Pengaturan Tautan Aset DAM (Server NAS Lokal)</h2>
+          <p class="muted">
+            Konfigurasi alamat server jaringan lokal (SMB/NFS), pemetaan direktori arsip media foto dan video, serta kredensial akun agen perayap metadata.
+          </p>
+        </div>
+        <div class="actions">
+          <a href="/pengaturan" class="btn btn-secondary">
+            ← Kembali ke Pengaturan
+          </a>
+          <button class="btn" id="btn-rescan-nas">
+            ⚡ Pindai Ulang Seluruh Share NAS
+          </button>
+        </div>
+      </div>
+
+      <!-- NOTIFIKASI -->
+      <div id="dam-alert" class="alert-box" hidden>
+        <span id="dam-alert-text">Pengaturan koneksi DAM NAS berhasil diperbarui.</span>
+        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
+      </div>
+
+      <!-- KARTU STATUS KONEKSI SERVER NAS -->
+      <div class="card nas-overview-card">
+        <div class="nas-header">
+          <div class="nas-logo-box">
+            <span class="nas-icon">🖧</span>
+            <div>
+              <h3>Server Synology NAS Tim Humas (RackStation 2419+)</h3>
+              <span class="muted-sm">Penyimpanan Utama Berkas Media Lembaga di Jaringan Kantor Pusat</span>
+            </div>
+          </div>
+          <div class="connection-pill connected">
+            <span class="pill-dot"></span>
+            <span>Online (Latency: 2ms)</span>
+          </div>
+        </div>
+
+        <form id="form-nas-config" class="nas-form-grid">
+          <div class="form-group">
+            <label for="nas-host">Host / Alamat IP NAS Lokal</label>
+            <input type="text" id="nas-host" value="192.168.1.200" required />
+          </div>
+
+          <div class="form-group">
+            <label for="nas-protocol">Protokol Jaringan Berkas</label>
+            <select id="nas-protocol">
+              <option value="smb3" selected>SMB v3 (Windows File Sharing - Disarankan)</option>
+              <option value="nfs">NFS v4.1 (Linux High Performance)</option>
+              <option value="webdav">WebDAV over HTTPS (Port 5006)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="nas-user">Akun Layanan (Service Account)</label>
+            <input type="text" id="nas-user" value="dam-agent-srv" required />
+          </div>
+
+          <div class="form-group">
+            <label for="nas-password">Kata Sandi Akun Layanan</label>
+            <input type="password" id="nas-password" value="••••••••••••••••" required />
+          </div>
+
+          <div class="form-group full">
+            <label for="nas-root-path">Direktori Induk Berbagi (Root Share Path)</label>
+            <input type="text" id="nas-root-path" value="smb://192.168.1.200/dam-humas" required class="mono" />
+          </div>
+
+          <div class="form-actions full">
+            <button type="button" class="btn btn-secondary" id="btn-ping-nas">
+              🔌 Uji Ping & Jabat Tangan SMB
+            </button>
+            <button type="submit" class="btn">
+              Simpan Konfigurasi Server
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- KARTU DIREKTORI FOLDER BERBAGI (SHARE FOLDERS) -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header flex-between">
+          <div>
+            <h3>Pemetaan Folder & Direktori Aset Media</h3>
+            <p class="muted">Folder khusus yang dipindai otomatis oleh dasbor untuk pratinjau thumbnail dan metadata EXIF.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-add-share">
+            ➕ Tambah Pemetaan Folder Baru
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Nama Bagian Aset</th>
+                <th>Jalur Direktori SMB Jaringan</th>
+                <th>Kapasitas & Jumlah Berkas</th>
+                <th>Indeks Terakhir</th>
+                <th>Akses Peran</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {damShares.map((share) => (
+                <tr>
+                  <td>
+                    <strong>{share.name}</strong>
+                    <span class="muted-sm">{share.description}</span>
+                  </td>
+                  <td>
+                    <span class="mono code-pill" title={share.smbPath}>{share.smbPath}</span>
+                  </td>
+                  <td>
+                    <strong>{share.totalAssets.toLocaleString('id-ID')} berkas</strong>
+                    <span class="muted-sm">Ukuran: {share.totalSize}</span>
+                  </td>
+                  <td class="muted-sm">{share.lastIndexed}</td>
+                  <td>
+                    <div class="role-tags">
+                      {share.allowedRoles.map((r) => (
+                        <span class="badge badge-role">{r}</span>
+                      ))}
+                    </div>
+                  </td>
+                  <td style="text-align: right;">
+                    <button class="btn-action btn-copy-path" data-path={share.smbPath}>Salin Jalur</button>
+                    <button class="btn-action btn-sync-share" data-name={share.name}>Pindai</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PETUNJUK AKSES TIM HUMAS -->
+      <div class="card" style="margin-top: 1.5rem; background: #f8fafc;">
+        <div class="card-header">
+          <h3>Panduan Akses Cepat Aset DAM untuk Tim Peliput</h3>
+          <p class="muted">Tata cara menghubungkan laptop kerja reporter dan fotografer ke server DAM NAS lokal saat di kantor pusat.</p>
+        </div>
+        <div class="guidance-grid">
+          <div class="guide-box">
+            <h4>🖥️ Akses Melalui Windows File Explorer</h4>
+            <p>Tekan tombol <code>Win + R</code>, lalu ketik <code>\\192.168.1.200\dam-humas</code> dan tekan Enter. Masukkan kredensial akun domain Anda.</p>
+          </div>
+          <div class="guide-box">
+            <h4>🍎 Akses Melalui macOS Finder</h4>
+            <p>Buka Finder, tekan <code>Cmd + K</code> (Connect to Server), ketik <code>smb://192.168.1.200/dam-humas</code>, lalu klik Connect.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f8fafc;
+        color: #1e293b;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 1.75rem;
+        background: #0f172a;
+        color: #fff;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .brand { display: flex; align-items: center; gap: 0.6rem; }
+      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+      .top nav a.active, .top nav a:hover { color: #38bdf8; }
+      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
+      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
+
+      main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .breadcrumb a { color: #0284c7; text-decoration: none; }
+      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+      .muted-sm { display: block; font-size: 0.78rem; color: #64748b; margin-top: 0.15rem; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+      .actions { display: flex; gap: 0.6rem; }
+      .btn {
+        font: inherit;
+        background: #0284c7;
+        color: #fff;
+        border: 0;
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.88rem;
+      }
+      .btn:hover { background: #0369a1; }
+      .btn-secondary {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+      }
+      .btn-secondary:hover { background: #f1f5f9; }
+      .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+      /* Alert */
+      .alert-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+      }
+      .btn-alert-close { background: none; border: none; font-size: 1rem; color: inherit; cursor: pointer; }
+
+      /* Card styles */
+      .card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+      }
+      .card-header { margin-bottom: 1.25rem; }
+      .card-header h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: #0f172a; }
+      .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+
+      .nas-overview-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .nas-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        padding-bottom: 1rem;
+      }
+      .nas-logo-box {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+      .nas-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: #e0f2fe;
+        color: #0284c7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+      .nas-logo-box h3 { margin: 0; font-size: 1.2rem; color: #0f172a; }
+
+      .connection-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .connection-pill.connected { background: #dcfce7; color: #166534; }
+      .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; }
+
+      /* Form Grid */
+      .nas-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+      @media (max-width: 768px) {
+        .nas-form-grid { grid-template-columns: 1fr; }
+      }
+      .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+      .form-group.full { grid-column: 1 / -1; }
+      .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; }
+      .form-group input, .form-group select {
+        font: inherit;
+        padding: 0.55rem 0.75rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.9rem;
+      }
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.6rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f1f5f9;
+      }
+
+      /* Table */
+      .table-wrap { overflow-x: auto; }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: #f8fafc;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 700;
+      }
+      .data-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+      }
+      .data-table tr:hover td { background: #f8fafc; }
+
+      .code-pill {
+        display: inline-block;
+        background: #f1f5f9;
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+        font-size: 0.78rem;
+        color: #334155;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .role-tags { display: flex; gap: 0.3rem; }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 600;
+      }
+      .badge-role { background: #e0f2fe; color: #0369a1; text-transform: uppercase; }
+
+      .btn-action {
+        font: inherit;
+        background: none;
+        border: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #0284c7;
+        cursor: pointer;
+        padding: 0.2rem 0.4rem;
+      }
+      .btn-action:hover { text-decoration: underline; }
+
+      /* Guidance */
+      .guidance-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 768px) {
+        .guidance-grid { grid-template-columns: 1fr; }
+      }
+      .guide-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+      .guide-box h4 { margin: 0 0 0.4rem; font-size: 0.92rem; color: #0f172a; }
+      .guide-box p { margin: 0; font-size: 0.82rem; color: #475569; line-height: 1.45; }
+      .guide-box code {
+        background: #f1f5f9;
+        padding: 0.15rem 0.35rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        color: #0f172a;
+      }
+    </style>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const alertBox = document.getElementById('dam-alert');
+        const alertText = document.getElementById('dam-alert-text');
+        const btnCloseAlert = document.getElementById('btn-close-alert');
+
+        function notify(msg: string) {
+          if (alertBox && alertText) {
+            alertText.textContent = msg;
+            alertBox.hidden = false;
+            setTimeout(() => { alertBox.hidden = true; }, 3500);
+          }
+        }
+
+        btnCloseAlert?.addEventListener('click', () => {
+          if (alertBox) alertBox.hidden = true;
+        });
+
+        // Ping NAS
+        document.getElementById('btn-ping-nas')?.addEventListener('click', () => {
+          notify('Ping sukses ke 192.168.1.200 (Waktu tanggap: 1.8ms, SMBv3 Handshake OK).');
+        });
+
+        // Save Config
+        document.getElementById('form-nas-config')?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          notify('Konfigurasi server DAM NAS lokal berhasil disimpan.');
+        });
+
+        // Rescan all
+        document.getElementById('btn-rescan-nas')?.addEventListener('click', () => {
+          notify('Pemindaian menyeluruh 4 direktori aset DAM NAS dimulai di latar belakang.');
+        });
+
+        // Copy path buttons
+        document.querySelectorAll('.btn-copy-path').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const path = (e.currentTarget as HTMLElement).getAttribute('data-path') || '';
+            navigator.clipboard?.writeText(path);
+            notify(`Jalur jaringan disalin ke papan klip: ${path}`);
+          });
+        });
+
+        // Single share sync
+        document.querySelectorAll('.btn-sync-share').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const name = (e.currentTarget as HTMLElement).getAttribute('data-name');
+            notify(`Indeks berkas diperbarui untuk: ${name}`);
+          });
+        });
+
+        document.getElementById('btn-add-share')?.addEventListener('click', () => {
+          notify('Formulir pemetaan folder baru dibuka.');
+        });
+      });
+    </script>
+  </body>
+</html>

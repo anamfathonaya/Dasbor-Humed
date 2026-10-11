@@ -1,0 +1,634 @@
+---
+import type { IdeaRecommendationItem } from '../data/mockInsights';
+
+interface Props {
+  ideas: IdeaRecommendationItem[];
+  title?: string;
+}
+
+const { ideas, title = 'Daftar Ide Konten Tersimpan' } = Astro.props;
+---
+
+<div class="saved-ideas-component">
+  <div class="saved-ideas-header">
+    <div>
+      <h3>⭐ {title}</h3>
+      <p class="saved-ideas-subtitle">Koleksi gagasan konten pilihan tim yang siap dijadwalkan langsung ke Kalender Konten</p>
+    </div>
+    <div class="saved-stats-badge">
+      <span class="active-badge"><b id="total-saved-badge">0</b> Ide Siap Dipakai</span>
+      <button type="button" id="clear-all-saved-ideas" class="btn-clear-saved" title="Kosongkan semua ide tersimpan">
+        🗑️ Kosongkan
+      </button>
+    </div>
+  </div>
+
+  <div id="saved-ideas-empty" class="saved-empty-state">
+    <span class="empty-icon">💡</span>
+    <h4>Belum ada ide yang disimpan</h4>
+    <p>Simpan rekomendasi ide di atas dengan menekan tombol <b>⭐ Simpan Ide</b> agar masuk ke antrean perencanaan kalender ini.</p>
+  </div>
+
+  <div id="saved-ideas-container" class="saved-ideas-list">
+    <!-- Diisi secara dinamis oleh JavaScript berdasarkan localStorage -->
+  </div>
+
+  <!-- MODAL EDIT IDE TERSIMPAN -->
+  <dialog id="edit-saved-idea-modal" class="edit-modal">
+    <form id="edit-saved-idea-form" method="dialog">
+      <div class="modal-head">
+        <h4>✏️ Ubah Ide Konten Tersimpan</h4>
+        <button type="button" id="btn-close-edit-modal" class="btn-close-icon">✕</button>
+      </div>
+      <input type="hidden" id="edit-idea-id" />
+      <div class="form-group">
+        <label for="edit-idea-title">Judul / Hook Konten:</label>
+        <textarea id="edit-idea-title" rows="2" required></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="edit-idea-channel">Saluran Utama:</label>
+          <select id="edit-idea-channel">
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Website">Website</option>
+            <option value="Facebook">Facebook</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="edit-idea-pillar">Pilar Konten:</label>
+          <select id="edit-idea-pillar">
+            <option value="Edukasi Bencana & Humaniora">Edukasi Bencana & Humaniora</option>
+            <option value="Transparansi & Akuntabilitas">Transparansi & Akuntabilitas</option>
+            <option value="Sosial & Relawan">Sosial & Relawan</option>
+            <option value="Pengembangan Kapasitas">Pengembangan Kapasitas</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="edit-idea-rationale">Catatan / Rasional Editorial:</label>
+        <textarea id="edit-idea-rationale" rows="3"></textarea>
+      </div>
+      <div class="modal-foot">
+        <button type="button" id="btn-cancel-edit" class="btn-cancel">Batal</button>
+        <button type="submit" class="btn-save-edit">Simpan Perubahan</button>
+      </div>
+    </form>
+  </dialog>
+</div>
+
+<style>
+  .saved-ideas-component {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .saved-ideas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .saved-ideas-header h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.15rem;
+    color: #0f172a;
+  }
+
+  .saved-ideas-subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+
+  .saved-stats-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .active-badge {
+    background: #fef9c3;
+    color: #854d0e;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid #fef08a;
+  }
+
+  .btn-clear-saved {
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-clear-saved:hover {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+
+  .saved-empty-state {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    display: none;
+  }
+
+  .saved-empty-state.show {
+    display: block;
+  }
+
+  .saved-empty-state .empty-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .saved-empty-state h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+    color: #1e293b;
+  }
+
+  .saved-empty-state p {
+    margin: 0;
+    font-size: 0.84rem;
+    color: #64748b;
+  }
+
+  .saved-ideas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  :global(.saved-idea-row) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    transition: all 0.15s ease;
+  }
+
+  :global(.saved-idea-row:hover) {
+    background: #fff;
+    border-color: #facc15;
+    box-shadow: 0 4px 12px rgba(234, 179, 8, 0.08);
+  }
+
+  :global(.saved-row-info) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  :global(.saved-row-tags) {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  :global(.saved-status-badge) {
+    font-size: 0.68rem;
+    font-weight: 800;
+    background: #facc15;
+    color: #713f12;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+
+  :global(.saved-channel-tag) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #0f172a;
+    color: #fff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  :global(.saved-pillar-tag) {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  :global(.saved-title) {
+    margin: 0;
+    font-size: 1rem;
+    color: #0f172a;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  :global(.saved-desc) {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #713f12;
+    line-height: 1.4;
+  }
+
+  :global(.saved-row-actions) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  :global(.btn-send-to-cal) {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.45rem 0.85rem;
+    background: #0284c7;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  :global(.btn-send-to-cal:hover) {
+    background: #0369a1;
+  }
+
+  :global(.btn-edit-saved) {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #0369a1;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  :global(.btn-edit-saved:hover) {
+    background: #e0f2fe;
+    border-color: #bae6fd;
+  }
+
+  :global(.btn-remove-saved) {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.45rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  :global(.btn-remove-saved:hover) {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+
+  /* MODAL STYLES */
+  .edit-modal {
+    padding: 0;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 520px;
+  }
+  .edit-modal::backdrop {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+  }
+  .edit-modal form {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: #fff;
+    border-radius: 12px;
+  }
+  .modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal-head h4 {
+    margin: 0;
+    font-size: 1.15rem;
+    color: #0f172a;
+  }
+  .btn-close-icon {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    color: #64748b;
+    cursor: pointer;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .form-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+  }
+  .form-group textarea, .form-group select {
+    font: inherit;
+    font-size: 0.88rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+  }
+  .form-group textarea:focus, .form-group select:focus {
+    border-color: #0284c7;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .modal-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+  .btn-cancel {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #475569;
+    cursor: pointer;
+  }
+  .btn-save-edit {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-save-edit:hover {
+    background: #0369a1;
+  }
+</style>
+
+<script is:inline define:vars={{ initialIdeas: ideas }}>
+  function renderSavedIdeasList() {
+    let savedIds = new Set();
+    try {
+      const raw = localStorage.getItem('insight_saved_idea_ids');
+      if (raw) savedIds = new Set(JSON.parse(raw));
+    } catch (e) {}
+
+    // Set default item pertama disimpan jika belum pernah ada preferensi tersimpan
+    if (!localStorage.getItem('insight_saved_idea_ids') && initialIdeas.length > 0) {
+      savedIds.add(initialIdeas[0].id);
+      localStorage.setItem('insight_saved_idea_ids', JSON.stringify(Array.from(savedIds)));
+    }
+
+    const container = document.getElementById('saved-ideas-container');
+    const emptyState = document.getElementById('saved-ideas-empty');
+    const badgeEl = document.getElementById('total-saved-badge');
+
+    if (badgeEl) badgeEl.textContent = String(savedIds.size);
+
+    const savedItems = initialIdeas.filter(item => savedIds.has(item.id));
+
+    if (savedItems.length === 0) {
+      if (container) container.innerHTML = '';
+      emptyState?.classList.add('show');
+      return;
+    }
+
+    emptyState?.classList.remove('show');
+
+    if (container) {
+      container.innerHTML = savedItems.map(item => `
+        <article class="saved-idea-row" data-id="${item.id}">
+          <div class="saved-row-info">
+            <div class="saved-row-tags">
+              <span class="saved-status-badge">⭐ TERSIMPAN</span>
+              <span class="saved-channel-tag">${item.suggestedChannel}</span>
+              <span class="saved-pillar-tag">${item.pillar}</span>
+            </div>
+            <h4 class="saved-title">"${item.hookTitle}"</h4>
+            <p class="saved-desc"><b>Rasional:</b> ${item.rationale}</p>
+          </div>
+          <div class="saved-row-actions">
+            <a
+              href="/kalender-konten?idea=${encodeURIComponent(item.hookTitle)}&channel=${encodeURIComponent(item.suggestedChannel)}&pillar=${encodeURIComponent(item.pillar)}"
+              class="btn-send-to-cal"
+              title="Kirim dan buat draft di Kalender Konten"
+            >
+              📅 Kirim ke Kalender →
+            </a>
+            <button
+              type="button"
+              class="btn-edit-saved"
+              data-id="${item.id}"
+              title="Ubah judul, saluran, atau rasional ide ini"
+            >
+              ✏️ Ubah
+            </button>
+            <button
+              type="button"
+              class="btn-remove-saved"
+              data-id="${item.id}"
+              data-title="${item.hookTitle}"
+              title="Hapus dari daftar ide tersimpan"
+            >
+              Hapus
+            </button>
+          </div>
+        </article>
+      `).join('');
+
+      // Listener tombol ubah (edit)
+      const editModal = document.getElementById('edit-saved-idea-modal');
+      const editIdInput = document.getElementById('edit-idea-id');
+      const editTitleInput = document.getElementById('edit-idea-title');
+      const editChannelInput = document.getElementById('edit-idea-channel');
+      const editPillarInput = document.getElementById('edit-idea-pillar');
+      const editRationaleInput = document.getElementById('edit-idea-rationale');
+
+      container.querySelectorAll('.btn-edit-saved').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = Number(e.currentTarget.dataset.id);
+          const item = savedItems.find(x => x.id === id);
+          if (item && editModal) {
+            editIdInput.value = String(item.id);
+            editTitleInput.value = item.hookTitle;
+            editChannelInput.value = item.suggestedChannel;
+            editPillarInput.value = item.pillar;
+            editRationaleInput.value = item.rationale;
+            editModal.showModal();
+          }
+        });
+      });
+
+      container.querySelectorAll('.btn-remove-saved').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = Number(e.currentTarget.dataset.id);
+          const title = e.currentTarget.dataset.title;
+          savedIds.delete(id);
+          try {
+            localStorage.setItem('insight_saved_idea_ids', JSON.stringify(Array.from(savedIds)));
+          } catch (err) {}
+          
+          // Sinkronisasi tombol di komponen kartu rekomendasi bila ada
+          const card = document.getElementById(`idea-card-${id}`);
+          if (card) {
+            card.classList.remove('is-saved');
+            const saveBtn = card.querySelector('.btn-idea-save');
+            if (saveBtn) {
+              saveBtn.classList.remove('saved');
+              saveBtn.textContent = '⭐ Simpan Ide';
+            }
+          }
+
+          const toast = document.getElementById('toast');
+          if (toast) {
+            toast.textContent = `Ide dihapus: "${title.substring(0, 30)}..."`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+          }
+
+          renderSavedIdeasList();
+        });
+      });
+    }
+  }
+
+  // Handle edit form submit
+  const editModal = document.getElementById('edit-saved-idea-modal');
+  const editForm = document.getElementById('edit-saved-idea-form');
+  const cancelEditBtn = document.getElementById('btn-cancel-edit');
+  const closeEditBtn = document.getElementById('btn-close-edit-modal');
+
+  if (cancelEditBtn && editModal) {
+    cancelEditBtn.addEventListener('click', () => editModal.close());
+  }
+  if (closeEditBtn && editModal) {
+    closeEditBtn.addEventListener('click', () => editModal.close());
+  }
+
+  if (editForm && editModal) {
+    editForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = Number(document.getElementById('edit-idea-id').value);
+      const newTitle = document.getElementById('edit-idea-title').value.trim();
+      const newChannel = document.getElementById('edit-idea-channel').value;
+      const newPillar = document.getElementById('edit-idea-pillar').value;
+      const newRationale = document.getElementById('edit-idea-rationale').value.trim();
+
+      const item = initialIdeas.find(x => x.id === id);
+      if (item) {
+        item.hookTitle = newTitle;
+        item.suggestedChannel = newChannel;
+        item.pillar = newPillar;
+        item.rationale = newRationale;
+
+        // Simpan modifikasi ke localStorage
+        try {
+          const modifications = JSON.parse(localStorage.getItem('insight_modified_ideas') || '{}');
+          modifications[id] = { hookTitle: newTitle, suggestedChannel: newChannel, pillar: newPillar, rationale: newRationale };
+          localStorage.setItem('insight_modified_ideas', JSON.stringify(modifications));
+        } catch (err) {}
+
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.textContent = `Perubahan ide "${newTitle.substring(0, 30)}..." berhasil disimpan!`;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 2800);
+        }
+      }
+
+      editModal.close();
+      renderSavedIdeasList();
+    });
+  }
+
+  // Clear all button
+  const clearBtn = document.getElementById('clear-all-saved-ideas');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      try {
+        localStorage.setItem('insight_saved_idea_ids', JSON.stringify([]));
+      } catch (e) {}
+      document.querySelectorAll('.idea-card').forEach(card => {
+        card.classList.remove('is-saved');
+        const saveBtn = card.querySelector('.btn-idea-save');
+        if (saveBtn) {
+          saveBtn.classList.remove('saved');
+          saveBtn.textContent = '⭐ Simpan Ide';
+        }
+      });
+      const toast = document.getElementById('toast');
+      if (toast) {
+        toast.textContent = 'Semua ide tersimpan telah dikosongkan.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2800);
+      }
+      renderSavedIdeasList();
+    });
+  }
+
+  // Initial render
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderSavedIdeasList);
+  } else {
+    renderSavedIdeasList();
+  }
+
+  // Event listener agar daftar otomatis me-refresh saat tombol simpan ide di IdeaRecommendations ditekan
+  window.addEventListener('storage', renderSavedIdeasList);
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.btn-idea-save')) {
+      setTimeout(renderSavedIdeasList, 50);
+    }
+  });
+</script>

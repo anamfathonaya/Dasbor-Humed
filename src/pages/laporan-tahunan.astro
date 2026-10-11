@@ -1,0 +1,342 @@
+---
+import { mockAnnualReportsByYear, mockBudgetLines } from '../data/mockBudget';
+import { formatRupiah, formatNumber } from '../lib/format';
+
+const availableYears = Object.keys(mockAnnualReportsByYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Laporan Tahunan Program — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <!-- HEADER NAVIGASI -->
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
+      </nav>
+      <div class="role">
+        <span>Peran Aktif:</span>
+        <select id="user-role">
+          <option value="head">Ketua Bidang</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staf</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <!-- HEADER HALAMAN -->
+      <div class="head">
+        <div>
+          <h2>Laporan Tahunan & Rencana Program</h2>
+          <p class="muted">
+            Kompilasi capaian tahunan, realisasi serapan anggaran (RAB & LRA), dan indikator dampak kemanusiaan.
+            <a href="/laporan-anggaran">← Kembali ke Laporan & Anggaran</a>
+          </p>
+        </div>
+        <div class="actions">
+          <div class="year-selector-box">
+            <label for="select-year">Pilih Tahun Program:</label>
+            <select id="select-year" class="year-select">
+              {availableYears.map(y => <option value={y} selected={y === '2026'}>Tahun {y}</option>)}
+            </select>
+          </div>
+          <button class="btn" id="btn-print">🖨️ Cetak / Unduh PDF</button>
+        </div>
+      </div>
+
+      <!-- KONTEN LAPORAN TAHUNAN -->
+      <div id="report-container">
+        <!-- BANNER TEMA TAHUNAN -->
+        <section class="theme-banner">
+          <div class="theme-content">
+            <span class="theme-year-tag" id="display-year-tag">Laporan Tahunan 2026</span>
+            <h1 id="display-theme" class="theme-title">Menjangkau yang Terjauh</h1>
+            <p id="display-summary" class="theme-desc">Ringkasan eksekutif...</p>
+          </div>
+        </section>
+
+        <!-- KPI UTAMA TAHUNAN -->
+        <section class="stats" id="annual-stats">
+          <div class="card hl">
+            <span class="lbl">Total Donatur Terhimpun</span>
+            <strong id="stat-donors">0</strong>
+          </div>
+          <div class="card">
+            <span class="lbl">Penerima Manfaat (Jiwa)</span>
+            <strong id="stat-beneficiaries">0</strong>
+          </div>
+          <div class="card">
+            <span class="lbl">Total Donasi Terhimpun</span>
+            <strong id="stat-raised">Rp 0</strong>
+          </div>
+          <div class="card">
+            <span class="lbl">Total Dana Disalurkan</span>
+            <strong id="stat-distributed">Rp 0</strong>
+          </div>
+        </section>
+
+        <!-- PROGRESS PROGRAM PER KUARTAL -->
+        <section class="box">
+          <div class="box-head">
+            <h3>Rencana Program Tahunan & Progres Penyerapan Kuartal</h3>
+            <span class="tag-status" id="plan-status-badge">Tahun Berjalan</span>
+          </div>
+          <div class="quarterly-grid" id="quarterly-cards"></div>
+        </section>
+
+        <!-- MILESTONE & PENCAPAIAN PENTING -->
+        <section class="box">
+          <h3>Tonggak Capaian (Milestones) Utama</h3>
+          <div class="timeline" id="milestones-timeline"></div>
+        </section>
+
+        <!-- TABEL REKAP ANGGARAN TAHUNAN TERKAIT -->
+        <section class="box">
+          <div class="box-head">
+            <h3>Rekapitulasi Anggaran (RAB vs LRA) Terkait</h3>
+            <a href="/daftar-rab-lra" class="link-detail">Lihat Rincian Lengkap & Filter →</a>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Program</th>
+                  <th>Kategori</th>
+                  <th>PJ</th>
+                  <th>Kuartal</th>
+                  <th class="r">RAB</th>
+                  <th class="r">LRA</th>
+                  <th class="r">Serapan</th>
+                </tr>
+              </thead>
+              <tbody id="related-budget-rows"></tbody>
+            </table>
+          </div>
+          <p id="empty-budget-notice" class="empty-msg" hidden>
+            Tidak ada rincian RAB khusus untuk tahun ini.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script define:vars={{ reports: mockAnnualReportsByYear, allBudgets: mockBudgetLines }}>
+      const yearSelect = document.getElementById('select-year');
+      const yearTagEl = document.getElementById('display-year-tag');
+      const themeEl = document.getElementById('display-theme');
+      const summaryEl = document.getElementById('display-summary');
+
+      const statDonors = document.getElementById('stat-donors');
+      const statBeneficiaries = document.getElementById('stat-beneficiaries');
+      const statRaised = document.getElementById('stat-raised');
+      const statDistributed = document.getElementById('stat-distributed');
+
+      const quarterlyCards = document.getElementById('quarterly-cards');
+      const timelineEl = document.getElementById('milestones-timeline');
+      const budgetRowsEl = document.getElementById('related-budget-rows');
+      const emptyBudgetNotice = document.getElementById('empty-budget-notice');
+      const toast = document.getElementById('toast');
+
+      const fmtRupiah = (val) => 'Rp ' + Number(val).toLocaleString('id-ID');
+      const fmtNum = (val) => Number(val).toLocaleString('id-ID');
+
+      function renderReport(yearKey) {
+        const report = reports[yearKey] || reports['2026'];
+        if (!report) return;
+
+        // 1. Teks tema & ringkasan
+        if (yearTagEl) yearTagEl.textContent = `Laporan Kinerja Tahunan ${report.year}`;
+        if (themeEl) themeEl.textContent = report.theme;
+        if (summaryEl) summaryEl.textContent = report.executiveSummary;
+
+        // 2. Statistik metrik
+        if (statDonors) statDonors.textContent = fmtNum(report.totalDonors) + ' Donatur';
+        if (statBeneficiaries) statBeneficiaries.textContent = fmtNum(report.totalBeneficiaries) + ' Jiwa';
+        if (statRaised) statRaised.textContent = fmtRupiah(report.totalFundsRaised);
+        if (statDistributed) statDistributed.textContent = fmtRupiah(report.totalFundsDistributed);
+
+        // 3. Progres per Kuartal
+        if (quarterlyCards) {
+          quarterlyCards.innerHTML = report.quarterlyProgress.map(qp => `
+            <div class="quarter-card">
+              <div class="quarter-top">
+                <span class="q-badge">${qp.quarter}</span>
+                <span class="q-pct">${qp.progress}%</span>
+              </div>
+              <p class="q-target">${qp.target}</p>
+              <div class="bar">
+                <div class="fill ${qp.progress === 100 ? 'done' : ''}" style="width: ${qp.progress}%"></div>
+              </div>
+              <span class="q-status ${qp.status.toLowerCase()}">${qp.status}</span>
+            </div>
+          `).join('');
+        }
+
+        // 4. Milestones
+        if (timelineEl) {
+          timelineEl.innerHTML = report.milestones.map(m => `
+            <div class="timeline-item">
+              <div class="tl-bullet"></div>
+              <div class="tl-content">
+                <span class="tl-date">${m.date}</span>
+                <h4 class="tl-title">${m.title}</h4>
+                <p class="tl-impact">${m.impact}</p>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        // 5. Rekap RAB & LRA terkait tahun ini
+        const yrNumber = Number(yearKey);
+        const relatedBudgets = allBudgets.filter(b => b.year === yrNumber);
+
+        if (emptyBudgetNotice) emptyBudgetNotice.hidden = relatedBudgets.length > 0;
+        if (budgetRowsEl) {
+          budgetRowsEl.innerHTML = relatedBudgets.map(b => {
+            const pct = Math.round((b.lra / b.rab) * 100);
+            const isOver = b.lra > b.rab;
+            return `
+              <tr>
+                <td><strong>${b.program}</strong></td>
+                <td><span class="tag">${b.category}</span></td>
+                <td><small>${b.owner}</small></td>
+                <td><span class="tag-q">${b.quarter}</span></td>
+                <td class="r">${fmtRupiah(b.rab)}</td>
+                <td class="r">${fmtRupiah(b.lra)}</td>
+                <td class="r">
+                  <span class="${isOver ? 'overtext' : ''}">${pct}%</span>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      if (yearSelect) {
+        yearSelect.addEventListener('change', (e) => {
+          renderReport(e.target.value);
+          if (toast) {
+            toast.textContent = `Memuat Laporan Tahunan ${e.target.value}...`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+          }
+        });
+      }
+
+      // Cetak PDF
+      const btnPrint = document.getElementById('btn-print');
+      if (btnPrint) {
+        btnPrint.addEventListener('click', () => {
+          window.print();
+        });
+      }
+
+      // Render awal default
+      renderReport(yearSelect?.value || '2026');
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
+  .top nav a.active, .top nav a:hover { color: #38bdf8; }
+  .role { display: flex; gap: .5rem; align-items: center; font-size: .8rem; }
+
+  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .head h2 { margin: 0 0 .25rem; }
+  .muted { margin: 0; color: #64748b; font-size: .9rem; }
+  .muted a { color: #0284c7; margin-left: .5rem; text-decoration: none; }
+  .actions { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+
+  .year-selector-box { display: flex; align-items: center; gap: .5rem; background: #fff; padding: .35rem .75rem; border: 1px solid #cbd5e1; border-radius: 8px; }
+  .year-selector-box label { font-size: .8rem; font-weight: 600; color: #475569; }
+  .year-select { font: inherit; font-size: .88rem; font-weight: 700; color: #0f172a; border: 0; background: none; cursor: pointer; outline: none; }
+
+  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #0369a1; }
+
+  /* BANNER TEMA TAHUNAN */
+  .theme-banner { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #fff; border-radius: 14px; padding: 2rem; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(15,23,42,0.08); }
+  .theme-year-tag { display: inline-block; background: #0284c7; color: #fff; font-size: .75rem; font-weight: 700; text-transform: uppercase; padding: .25rem .65rem; border-radius: 6px; margin-bottom: .6rem; }
+  .theme-title { margin: 0 0 .6rem; font-size: 1.6rem; color: #f8fafc; line-height: 1.3; }
+  .theme-desc { margin: 0; color: #cbd5e1; font-size: .92rem; line-height: 1.6; max-width: 900px; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.15rem; }
+  .card.hl { border-left: 4px solid #0284c7; }
+  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .card strong { font-size: 1.25rem; color: #0f172a; }
+
+  /* BOXES */
+  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.35rem; margin-bottom: 1.5rem; }
+  .box-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: .5rem; }
+  .box-head h3 { margin: 0; font-size: 1.05rem; }
+  .tag-status { background: #e0f2fe; color: #0284c7; font-size: .75rem; font-weight: 700; padding: .2rem .6rem; border-radius: 999px; }
+  .link-detail { color: #0284c7; font-size: .82rem; font-weight: 600; text-decoration: none; }
+  .link-detail:hover { text-decoration: underline; }
+
+  /* QUARTERLY GRID */
+  .quarterly-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+  .quarter-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; background: #fafbfc; }
+  .quarter-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem; }
+  .q-badge { font-weight: 700; color: #0f172a; font-size: .95rem; }
+  .q-pct { font-weight: 700; color: #0284c7; font-size: .85rem; }
+  .q-target { font-size: .84rem; color: #475569; margin: 0 0 .7rem; min-height: 40px; line-height: 1.4; }
+  .bar { background: #e2e8f0; height: 7px; border-radius: 99px; overflow: hidden; margin-bottom: .5rem; }
+  .fill { background: #0284c7; height: 100%; }
+  .fill.done { background: #16a34a; }
+  .q-status { font-size: .72rem; font-weight: 600; padding: .15rem .45rem; border-radius: 4px; display: inline-block; }
+  .q-status.tuntas { background: #dcfce7; color: #166534; }
+  .q-status.berjalan { background: #e0f2fe; color: #0369a1; }
+  .q-status.direncanakan { background: #f1f5f9; color: #475569; }
+
+  /* TIMELINE */
+  .timeline { display: flex; flex-direction: column; gap: 1rem; position: relative; padding-left: 1.25rem; border-left: 2px solid #e2e8f0; margin-left: .5rem; }
+  .timeline-item { position: relative; }
+  .tl-bullet { position: absolute; left: -1.65rem; top: .25rem; width: 10px; height: 10px; border-radius: 50%; background: #0284c7; border: 2px solid #fff; box-shadow: 0 0 0 2px #0284c7; }
+  .tl-date { font-size: .75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+  .tl-title { margin: .2rem 0 .25rem; font-size: .95rem; color: #0f172a; }
+  .tl-impact { margin: 0; font-size: .85rem; color: #475569; line-height: 1.45; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  th { color: #64748b; font-size: .75rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .r { text-align: right; white-space: nowrap; }
+  .tag { background: #f1f5f9; color: #334155; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; }
+  .tag-q { background: #eff6ff; color: #1d4ed8; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; font-weight: 600; }
+  .overtext { color: #b91c1c; font-weight: 600; }
+  .empty-msg { text-align: center; padding: 1.5rem; color: #64748b; font-size: .88rem; }
+
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: #0f172a; color: #fff; padding: .75rem 1.25rem; border-radius: 8px; transform: translateY(100px); opacity: 0; transition: all .25s; }
+  .toast.show { transform: none; opacity: 1; }
+
+  @media print {
+    .top, .actions, .year-selector-box, .btn, #btn-print, .link-detail { display: none !important; }
+    body { background: #fff; }
+    main { padding: 0; max-width: 100%; }
+    .theme-banner { background: #0f172a !important; -webkit-print-color-adjust: exact; }
+    .box { border: 1px solid #ccc; page-break-inside: avoid; }
+  }
+</style>

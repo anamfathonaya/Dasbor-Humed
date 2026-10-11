@@ -1,0 +1,601 @@
+---
+// Halaman Integrasi Google Workspace (Calendar, Drive, Sheets)
+interface SyncJob {
+  id: string;
+  service: string;
+  targetObject: string;
+  status: 'synced' | 'pending' | 'syncing';
+  lastRun: string;
+  itemsProcessed: number;
+  details: string;
+}
+
+const syncJobs: SyncJob[] = [
+  {
+    id: 'sync-cal-1',
+    service: 'Google Calendar API',
+    targetObject: 'Kalender Acara & Rilis Pers Humas',
+    status: 'synced',
+    lastRun: '10 menit yang lalu (20:44 WIB)',
+    itemsProcessed: 14,
+    details: 'Sinkronisasi 2 arah agenda rilis siaran pers dan liputan lapangan relawan.'
+  },
+  {
+    id: 'sync-drive-1',
+    service: 'Google Drive API (Shared Drive)',
+    targetObject: 'Folder Bersama: Arsip Dokumen Publikasi Lembaga',
+    status: 'synced',
+    lastRun: '25 menit yang lalu (20:29 WIB)',
+    itemsProcessed: 88,
+    details: 'Cadangan berkas PDF siaran pers, SOP, dan infografis ke Shared Drive tim.'
+  },
+  {
+    id: 'sync-sheets-1',
+    service: 'Google Sheets API',
+    targetObject: 'Lembar Sebar: Rekap Anggaran RAB/LRA Real-time',
+    status: 'synced',
+    lastRun: '1 jam yang lalu (19:54 WIB)',
+    itemsProcessed: 124,
+    details: 'Ekspor berkala baris anggaran program bantuan kemanusiaan ke Google Sheet pimpinan.'
+  }
+];
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Integrasi Google Workspace & Status Sinkronisasi - Dasbor Humas Media</title>
+  </head>
+  <body>
+    <!-- HEADER NAVIGASI DASBOR -->
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran">Laporan & Anggaran</a>
+        <a href="/basis-pengetahuan">Basis Pengetahuan & SOP</a>
+        <a href="/pengaturan" class="active">Pengaturan & Integrasi</a>
+      </nav>
+      <div class="role">
+        <span>Peran Aktif:</span>
+        <select id="user-role">
+          <option value="head">Ketua Bidang</option>
+          <option value="admin">Admin Teknis</option>
+          <option value="staff">Staf Konten</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <!-- HEADER HALAMAN -->
+      <div class="head">
+        <div>
+          <div class="breadcrumb">
+            <a href="/pengaturan">Pengaturan</a>
+            <span>/</span>
+            <span>Integrasi Cloud</span>
+          </div>
+          <h2>Sambungan Google Workspace & Status Sinkronisasi</h2>
+          <p class="muted">
+            Kelola otentikasi Google Service Account, sinkronisasi Google Calendar, Google Drive Shared Folder, dan ekspor Google Sheets.
+          </p>
+        </div>
+        <div class="actions">
+          <a href="/pengaturan" class="btn btn-secondary">
+            ← Kembali ke Pengaturan
+          </a>
+          <button class="btn" id="btn-sync-all-google">
+            ⚡ Sinkronkan Semua Layanan
+          </button>
+        </div>
+      </div>
+
+      <!-- NOTIFIKASI -->
+      <div id="google-alert" class="alert-box" hidden>
+        <span id="google-alert-text">Koneksi Google Workspace aktif.</span>
+        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
+      </div>
+
+      <!-- KARTU STATUS KONEKSI UTAMA -->
+      <div class="card status-overview-card">
+        <div class="connection-status-header">
+          <div class="google-logo-box">
+            <span class="g-icon">G</span>
+            <div>
+              <h3>Google Workspace Enterprise</h3>
+              <span class="muted-sm">Akun Layanan Terverifikasi (OAuth2 Service Account)</span>
+            </div>
+          </div>
+          <div class="connection-pill connected">
+            <span class="pill-dot"></span>
+            <span>Terhubung Normal</span>
+          </div>
+        </div>
+
+        <div class="connection-details-grid">
+          <div class="detail-box">
+            <span class="detail-label">Service Account Email</span>
+            <strong class="mono truncate" title="gsuite-humas-sync@pedulinegeri.iam.gserviceaccount.com">
+              gsuite-humas-sync@pedulinegeri.iam.gserviceaccount.com
+            </strong>
+          </div>
+          <div class="detail-box">
+            <span class="detail-label">Domain Delegasi</span>
+            <strong>pedulinegeri.org (GSuite Org ID: GO-98214)</strong>
+          </div>
+          <div class="detail-box">
+            <span class="detail-label">Masa Berlaku Kunci Kredensial</span>
+            <strong>Hingga 31 Des 2027 (Kunci RSA 2048-bit)</strong>
+          </div>
+          <div class="detail-box">
+            <span class="detail-label">Status Kuota API Harian</span>
+            <strong>2,140 / 50,000 Panggilan (4.2% Terpakai)</strong>
+          </div>
+        </div>
+
+        <div class="card-action-bar">
+          <button class="btn btn-secondary btn-sm" id="btn-test-auth">
+            🔑 Uji Token Otorisasi
+          </button>
+          <button class="btn btn-secondary btn-sm" id="btn-renew-creds">
+            🔄 Perbarui Kunci Kredensial JSON
+          </button>
+          <button class="btn btn-danger btn-sm" id="btn-disconnect-google">
+            Putuskan Sambungan
+          </button>
+        </div>
+      </div>
+
+      <!-- MODUL SINKRONISASI INDIVIDUAL -->
+      <div class="sync-services-grid">
+        <!-- 1. Google Calendar -->
+        <div class="card service-card">
+          <div class="service-header">
+            <div class="service-icon cal-icon">📅</div>
+            <div>
+              <h4>Google Calendar Tim</h4>
+              <span class="muted-sm">ID Kalender: c_humas_pedulinegeri@group.calendar.google.com</span>
+            </div>
+          </div>
+          <p class="service-desc">
+            Sinkronisasi otomatis agenda rilis pers, peluncuran posko bencana, dan siaran langsung ke kalender tim humas.
+          </p>
+          <div class="service-stats">
+            <div class="stat-row">
+              <span>Status Terakhir:</span>
+              <span class="badge badge-active">● Sinkron Otomatis (Interval 15m)</span>
+            </div>
+            <div class="stat-row">
+              <span>Acara Terjadwal:</span>
+              <strong>14 Agenda Aktif</strong>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn btn-secondary btn-sm btn-trigger-sync" data-service="Google Calendar">
+              Sinkronkan Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Google Drive Shared -->
+        <div class="card service-card">
+          <div class="service-header">
+            <div class="service-icon drive-icon">📁</div>
+            <div>
+              <h4>Google Drive Shared Folder</h4>
+              <span class="muted-sm">Folder: "Arsip Publikasi Humas 2026"</span>
+            </div>
+          </div>
+          <p class="service-desc">
+            Menyimpan salinan digital otomatis untuk setiap siaran pers berformat PDF, dokumen SOP, dan lembar materi liputan.
+          </p>
+          <div class="service-stats">
+            <div class="stat-row">
+              <span>Status Terakhir:</span>
+              <span class="badge badge-active">● Terhubung (88 Berkas)</span>
+            </div>
+            <div class="stat-row">
+              <span>Kapasitas Drive:</span>
+              <strong>14.2 GB / 2 TB Terpakai</strong>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn btn-secondary btn-sm btn-trigger-sync" data-service="Google Drive">
+              Sinkronkan Sekarang
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Google Sheets -->
+        <div class="card service-card">
+          <div class="service-header">
+            <div class="service-icon sheets-icon">📊</div>
+            <div>
+              <h4>Google Sheets Rekapitulasi</h4>
+              <span class="muted-sm">Spreadsheet ID: 1aB7...xY9q</span>
+            </div>
+          </div>
+          <p class="service-desc">
+            Pembaruan live sheet rekapan anggaran RAB/LRA dan indikator kinerja kunci (KPI) untuk tinjauan dewan pembina.
+          </p>
+          <div class="service-stats">
+            <div class="stat-row">
+              <span>Status Terakhir:</span>
+              <span class="badge badge-active">● Siap Ekspor Real-time</span>
+            </div>
+            <div class="stat-row">
+              <span>Total Baris Sinkron:</span>
+              <strong>124 Baris Terpetakan</strong>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn btn-secondary btn-sm btn-trigger-sync" data-service="Google Sheets">
+              Perbarui Lembar Sebar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABEL RIWAYAT PEKERJAAN SINKRONISASI -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header flex-between">
+          <div>
+            <h3>Riwayat & Antrean Pekerjaan Sinkronisasi Google</h3>
+            <p class="muted">Log pemrosesan tugas latar belakang penyelarasan data antar-sistem.</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btn-refresh-sync-table">
+            🔄 Segarkan Log
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Layanan Google</th>
+                <th>Target Penyelarasan</th>
+                <th>Rincian Operasi</th>
+                <th>Jumlah Objek</th>
+                <th>Waktu Selesai</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {syncJobs.map((job) => (
+                <tr>
+                  <td><strong>{job.service}</strong></td>
+                  <td>{job.targetObject}</td>
+                  <td class="muted-sm">{job.details}</td>
+                  <td><strong>{job.itemsProcessed} data</strong></td>
+                  <td class="muted-sm">{job.lastRun}</td>
+                  <td>
+                    <span class="badge badge-active">● Selesai</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f8fafc;
+        color: #1e293b;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.85rem 1.75rem;
+        background: #0f172a;
+        color: #fff;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .brand { display: flex; align-items: center; gap: 0.6rem; }
+      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
+      .top nav a.active, .top nav a:hover { color: #38bdf8; }
+      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
+      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
+
+      main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+      .head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+        display: flex;
+        gap: 0.4rem;
+        align-items: center;
+      }
+      .breadcrumb a { color: #0284c7; text-decoration: none; }
+      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
+      .muted-sm { font-size: 0.78rem; color: #64748b; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .actions { display: flex; gap: 0.6rem; }
+      .btn {
+        font: inherit;
+        background: #0284c7;
+        color: #fff;
+        border: 0;
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.88rem;
+      }
+      .btn:hover { background: #0369a1; }
+      .btn-secondary {
+        background: #fff;
+        border: 1px solid #cbd5e1;
+        color: #334155;
+      }
+      .btn-secondary:hover { background: #f1f5f9; }
+      .btn-danger {
+        background: #fff;
+        border: 1px solid #fecaca;
+        color: #dc2626;
+      }
+      .btn-danger:hover { background: #fef2f2; }
+      .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
+
+      /* Alert Box */
+      .alert-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        color: #065f46;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-size: 0.88rem;
+        margin-bottom: 1.5rem;
+      }
+      .btn-alert-close { background: none; border: none; font-size: 1rem; color: inherit; cursor: pointer; }
+
+      /* Status Overview Card */
+      .card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+      }
+      .status-overview-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+      }
+      .connection-status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .google-logo-box {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+      .g-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #ea4335;
+      }
+      .google-logo-box h3 { margin: 0; font-size: 1.25rem; color: #0f172a; }
+
+      .connection-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+      .connection-pill.connected { background: #dcfce7; color: #166534; }
+      .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; }
+
+      .connection-details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+        background: #f8fafc;
+        padding: 1.15rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+      }
+      .detail-box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      .detail-label { font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
+      .detail-box strong { font-size: 0.85rem; color: #1e293b; }
+
+      .card-action-bar {
+        display: flex;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 1rem;
+      }
+
+      /* Services Grid */
+      .sync-services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1.25rem;
+      }
+      .service-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .service-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .service-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+      }
+      .cal-icon { background: #e0f2fe; }
+      .drive-icon { background: #fef3c7; }
+      .sheets-icon { background: #dcfce7; }
+      .service-header h4 { margin: 0; font-size: 1.05rem; color: #0f172a; }
+      .service-desc { font-size: 0.82rem; color: #475569; margin: 0 0 1rem; line-height: 1.45; }
+
+      .service-stats {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+      .stat-row { display: flex; justify-content: space-between; align-items: center; }
+
+      .service-footer {
+        border-top: 1px solid #f1f5f9;
+        padding-top: 0.85rem;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      /* Table */
+      .card-header { margin-bottom: 1.25rem; }
+      .card-header h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: #0f172a; }
+      .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+
+      .table-wrap { overflow-x: auto; }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+        font-size: 0.88rem;
+      }
+      .data-table th {
+        background: #f8fafc;
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        font-weight: 700;
+      }
+      .data-table td {
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+      }
+      .data-table tr:hover td { background: #f8fafc; }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-active { background: #dcfce7; color: #166534; }
+    </style>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const alertBox = document.getElementById('google-alert');
+        const alertText = document.getElementById('google-alert-text');
+        const btnCloseAlert = document.getElementById('btn-close-alert');
+
+        function notify(msg: string) {
+          if (alertBox && alertText) {
+            alertText.textContent = msg;
+            alertBox.hidden = false;
+            setTimeout(() => { alertBox.hidden = true; }, 3500);
+          }
+        }
+
+        btnCloseAlert?.addEventListener('click', () => {
+          if (alertBox) alertBox.hidden = true;
+        });
+
+        document.getElementById('btn-sync-all-google')?.addEventListener('click', () => {
+          notify('Sinkronisasi penuh Google Calendar, Drive, dan Sheets dimulai.');
+        });
+
+        document.getElementById('btn-test-auth')?.addEventListener('click', () => {
+          notify('Token OAuth2 Service Account terverifikasi valid (Masa aktif 3,598 detik).');
+        });
+
+        document.getElementById('btn-renew-creds')?.addEventListener('click', () => {
+          notify('Kredensial Service Account berhasil diperbarui dari konsol Google Cloud.');
+        });
+
+        document.getElementById('btn-disconnect-google')?.addEventListener('click', () => {
+          notify('Peringatan: Pemutusan sambungan Google Workspace memerlukan konfirmasi akun admin.');
+        });
+
+        document.querySelectorAll('.btn-trigger-sync').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            const service = (e.currentTarget as HTMLElement).getAttribute('data-service');
+            notify(`Sinkronisasi latar belakang untuk ${service} berhasil dieksekusi.`);
+          });
+        });
+
+        document.getElementById('btn-refresh-sync-table')?.addEventListener('click', () => {
+          notify('Tabel riwayat pekerjaan sinkronisasi diperbarui.');
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,490 @@
+---
+import type { IdeaRecommendationItem } from '../data/mockInsights';
+
+interface Props {
+  ideas: IdeaRecommendationItem[];
+  title?: string;
+}
+
+const { ideas, title = 'Rekomendasi Ide Konten Terkurasi' } = Astro.props;
+---
+
+<div class="ideas-recommendation-card">
+  <div class="ideas-header">
+    <div>
+      <h3>✨ {title}</h3>
+      <p class="ideas-subtitle">Saran sudut pandang & hook konten siap pakai berdasarkan analisis tren dan performa redaksi</p>
+    </div>
+    <div class="ideas-header-badge">
+      <span class="badge-saved-indicator">⭐ Disimpan: <b id="ideas-saved-count">0</b></span>
+      <span class="badge-skipped-indicator">⏭️ Dilewati: <b id="ideas-skipped-count">0</b></span>
+    </div>
+  </div>
+
+  <div class="ideas-grid" id="ideas-card-grid">
+    {ideas.map((item) => (
+      <article class="idea-card" data-id={item.id} id={`idea-card-${item.id}`}>
+        <div class="idea-top-row">
+          <div class="idea-meta-tags">
+            <span class="source-context-chip">{item.sourceContext}</span>
+            <span class="channel-chip">{item.suggestedChannel}</span>
+            <span class="pillar-chip">{item.pillar}</span>
+          </div>
+          <span class="impact-badge">{item.expectedImpact}</span>
+        </div>
+
+        <h4 class="idea-hook-title">"{item.hookTitle}"</h4>
+
+        <p class="idea-rationale">{item.rationale}</p>
+
+        <div class="key-points-box">
+          <span class="key-points-title">📌 Poin Penting Eksekusi:</span>
+          <ul class="key-points-list">
+            {item.keyPoints.map((point) => (
+              <li>{point}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="idea-footer">
+          <div class="action-buttons-left">
+            <button
+              type="button"
+              class="btn-idea-save"
+              data-id={item.id}
+              data-title={item.hookTitle}
+              title="Simpan ide konten ini ke koleksi ide tersimpan"
+            >
+              ⭐ Simpan Ide
+            </button>
+            <button
+              type="button"
+              class="btn-idea-skip"
+              data-id={item.id}
+              data-title={item.hookTitle}
+              title="Lewati rekomendasi ini"
+            >
+              ⏭️ Lewati
+            </button>
+          </div>
+          <a
+            href={`/kalender-konten?idea=${encodeURIComponent(item.hookTitle)}&channel=${encodeURIComponent(item.suggestedChannel)}`}
+            class="btn-use-calendar"
+            title="Gunakan ide ini langsung di Kalender Konten"
+          >
+            + Jadwalkan di Kalender
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</div>
+
+<style>
+  .ideas-recommendation-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  }
+
+  .ideas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .ideas-header h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1.15rem;
+    color: #0f172a;
+  }
+
+  .ideas-subtitle {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+
+  .ideas-header-badge {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+  }
+
+  .badge-saved-indicator {
+    background: #fef9c3;
+    color: #854d0e;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .badge-skipped-indicator {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .ideas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.1rem;
+  }
+
+  .idea-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+  }
+
+  .idea-card:hover {
+    background: #fff;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  }
+
+  .idea-card.is-saved {
+    border-color: #facc15;
+    background: #fefce8;
+  }
+
+  .idea-card.is-skipped {
+    opacity: 0.45;
+    filter: grayscale(0.8);
+  }
+
+  .idea-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .idea-meta-tags {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .source-context-chip {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .channel-chip {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #0f172a;
+    color: #fff;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .pillar-chip {
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #f1f5f9;
+    color: #334155;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+  }
+
+  .impact-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: #dcfce7;
+    color: #15803d;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .idea-hook-title {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+    color: #0f172a;
+    line-height: 1.4;
+    font-weight: 700;
+  }
+
+  .idea-rationale {
+    margin: 0 0 0.85rem;
+    font-size: 0.84rem;
+    color: #475569;
+    line-height: 1.45;
+  }
+
+  .key-points-box {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.65rem 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .key-points-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #334155;
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .key-points-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 0.8rem;
+    color: #475569;
+    line-height: 1.4;
+  }
+
+  .key-points-list li {
+    margin-bottom: 0.2rem;
+  }
+
+  .key-points-list li:last-child {
+    margin-bottom: 0;
+  }
+
+  .idea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .action-buttons-left {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .btn-idea-save, .btn-idea-skip {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-idea-save:hover {
+    background: #fefce8;
+    border-color: #fde047;
+    color: #854d0e;
+  }
+
+  .btn-idea-save.saved {
+    background: #facc15;
+    color: #854d0e;
+    border-color: #eab308;
+    font-weight: 700;
+  }
+
+  .btn-idea-skip:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+  }
+
+  .btn-idea-skip.skipped {
+    background: #e2e8f0;
+    color: #64748b;
+  }
+
+  .btn-use-calendar {
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    background: #0284c7;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .btn-use-calendar:hover {
+    background: #0369a1;
+  }
+</style>
+
+<script is:inline>
+  function setupIdeaActions() {
+    let savedIdeaIds = new Set();
+    let skippedIdeaIds = new Set();
+
+    try {
+      const rawSaved = localStorage.getItem('insight_saved_idea_ids');
+      if (rawSaved) savedIdeaIds = new Set(JSON.parse(rawSaved));
+      const rawSkipped = localStorage.getItem('insight_skipped_idea_ids');
+      if (rawSkipped) skippedIdeaIds = new Set(JSON.parse(rawSkipped));
+    } catch (e) {}
+
+    const countSavedEl = document.getElementById('ideas-saved-count');
+    const countSkippedEl = document.getElementById('ideas-skipped-count');
+
+    function updateBadgeCounts() {
+      if (countSavedEl) countSavedEl.textContent = String(savedIdeaIds.size);
+      if (countSkippedEl) countSkippedEl.textContent = String(skippedIdeaIds.size);
+    }
+
+    updateBadgeCounts();
+
+    // Render status awal pada kartu
+    document.querySelectorAll('.idea-card').forEach(card => {
+      const id = Number(card.getAttribute('data-id'));
+      const saveBtn = card.querySelector('.btn-idea-save');
+      const skipBtn = card.querySelector('.btn-idea-skip');
+
+      if (savedIdeaIds.has(id)) {
+        card.classList.add('is-saved');
+        if (saveBtn) {
+          saveBtn.classList.add('saved');
+          saveBtn.textContent = '★ Tersimpan';
+        }
+      }
+
+      if (skippedIdeaIds.has(id)) {
+        card.classList.add('is-skipped');
+        if (skipBtn) {
+          skipBtn.classList.add('skipped');
+          skipBtn.textContent = '↩️ Batal Lewati';
+        }
+      }
+    });
+
+    // Listeners tombol simpan
+    document.querySelectorAll('.btn-idea-save').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const card = document.getElementById(`idea-card-${id}`);
+        const title = btn.getAttribute('data-title') || 'Ide';
+        const toast = document.getElementById('toast');
+
+        if (savedIdeaIds.has(id)) {
+          savedIdeaIds.delete(id);
+          card?.classList.remove('is-saved');
+          btn.classList.remove('saved');
+          btn.textContent = '⭐ Simpan Ide';
+          if (toast) {
+            toast.textContent = `Ide dihapus dari simpanan: "${title.substring(0, 30)}..."`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+          }
+        } else {
+          savedIdeaIds.add(id);
+          // Hapus dari skipped bila sebelumnya dilewati
+          if (skippedIdeaIds.has(id)) {
+            skippedIdeaIds.delete(id);
+            card?.classList.remove('is-skipped');
+            const skipBtn = card?.querySelector('.btn-idea-skip');
+            if (skipBtn) {
+              skipBtn.classList.remove('skipped');
+              skipBtn.textContent = '⏭️ Lewati';
+            }
+          }
+          card?.classList.add('is-saved');
+          btn.classList.add('saved');
+          btn.textContent = '★ Tersimpan';
+          if (toast) {
+            toast.textContent = `⭐ Ide berhasil disimpan: "${title.substring(0, 30)}..."`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+          }
+        }
+
+        try {
+          localStorage.setItem('insight_saved_idea_ids', JSON.stringify(Array.from(savedIdeaIds)));
+          localStorage.setItem('insight_skipped_idea_ids', JSON.stringify(Array.from(skippedIdeaIds)));
+        } catch (e) {}
+
+        updateBadgeCounts();
+      });
+    });
+
+    // Listeners tombol lewati
+    document.querySelectorAll('.btn-idea-skip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-id'));
+        const card = document.getElementById(`idea-card-${id}`);
+        const title = btn.getAttribute('data-title') || 'Ide';
+        const toast = document.getElementById('toast');
+
+        if (skippedIdeaIds.has(id)) {
+          skippedIdeaIds.delete(id);
+          card?.classList.remove('is-skipped');
+          btn.classList.remove('skipped');
+          btn.textContent = '⏭️ Lewati';
+          if (toast) {
+            toast.textContent = `Rekomendasi ide dimunculkan kembali: "${title.substring(0, 30)}..."`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+          }
+        } else {
+          skippedIdeaIds.add(id);
+          // Hapus dari saved bila sebelumnya disimpan
+          if (savedIdeaIds.has(id)) {
+            savedIdeaIds.delete(id);
+            card?.classList.remove('is-saved');
+            const saveBtn = card?.querySelector('.btn-idea-save');
+            if (saveBtn) {
+              saveBtn.classList.remove('saved');
+              saveBtn.textContent = '⭐ Simpan Ide';
+            }
+          }
+          card?.classList.add('is-skipped');
+          btn.classList.add('skipped');
+          btn.textContent = '↩️ Batal Lewati';
+          if (toast) {
+            toast.textContent = `Rekomendasi ide dilewati: "${title.substring(0, 30)}..."`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2800);
+          }
+        }
+
+        try {
+          localStorage.setItem('insight_saved_idea_ids', JSON.stringify(Array.from(savedIdeaIds)));
+          localStorage.setItem('insight_skipped_idea_ids', JSON.stringify(Array.from(skippedIdeaIds)));
+        } catch (e) {}
+
+        updateBadgeCounts();
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupIdeaActions);
+  } else {
+    setupIdeaActions();
+  }
+</script>

@@ -1,0 +1,221 @@
+---
+import { mockPerformance, reportChannels, reportPeriods } from '../data/mockReport';
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Laporan Kinerja — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
+      </nav>
+    </header>
+
+    <main>
+      <div class="head">
+        <div>
+          <h2>Laporan Kinerja</h2>
+          <p class="muted">Ringkasan performa per kanal dan periode.
+            <a href="/laporan-anggaran">← Kembali ke Laporan & Anggaran</a></p>
+        </div>
+        <div class="filters">
+          <select id="period">
+            {reportPeriods.map((p) => <option value={p.value} selected={p.value === '30d'}>{p.label}</option>)}
+          </select>
+          <select id="channel">
+            {reportChannels.map((c) => <option value={c}>{c}</option>)}
+          </select>
+          <button type="button" id="save-note-btn" class="btn">📝 Simpan sebagai Catatan</button>
+        </div>
+      </div>
+
+      <section class="stats" id="stats"></section>
+
+      <section class="box">
+        <h3>Rincian per Kanal</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Kanal</th><th class="r">Jangkauan</th><th class="r">Interaksi</th><th class="r">Konversi</th><th class="r">Perubahan</th></tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p id="empty" class="muted" hidden>Tidak ada data untuk filter ini.</p>
+      </section>
+
+      <section class="box" style="margin-top:1.5rem;">
+        <h3>Catatan Tersimpan</h3>
+        <ul id="notes" class="notes"></ul>
+      </section>
+
+      <dialog id="note-dialog">
+        <form id="note-form" method="dialog">
+          <h3>Simpan sebagai Catatan</h3>
+          <label>Judul<input id="note-title" required maxlength="120" /></label>
+          <label>Catatan<textarea id="note-body" rows="4" placeholder="Temuan atau tindak lanjut..."></textarea></label>
+          <div class="dlg-actions">
+            <button type="button" id="note-cancel" class="btn-ghost">Batal</button>
+            <button type="submit" class="btn">Simpan</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <script define:vars={{ data: mockPerformance }}>
+      const periodEl = document.getElementById('period');
+      const channelEl = document.getElementById('channel');
+      const rowsEl = document.getElementById('rows');
+      const statsEl = document.getElementById('stats');
+      const emptyEl = document.getElementById('empty');
+      const n = (v) => v.toLocaleString('id-ID');
+
+      function render() {
+        const list = data.filter(
+          (d) => d.period === periodEl.value && (channelEl.value === 'Semua Kanal' || d.channel === channelEl.value)
+        );
+        emptyEl.hidden = list.length > 0;
+        const sum = (k) => list.reduce((s, d) => s + d[k], 0);
+        statsEl.innerHTML = [
+          ['Total Jangkauan', n(sum('reach'))],
+          ['Total Interaksi', n(sum('engagement'))],
+          ['Total Konversi', n(sum('conversions'))],
+        ].map(([l, v]) => `<div class="card"><span class="lbl">${l}</span><strong>${v}</strong></div>`).join('');
+        rowsEl.innerHTML = list.map((d) => {
+          const up = d.delta >= 0;
+          return `<tr><td>${d.channel}</td><td class="r">${n(d.reach)}</td><td class="r">${n(d.engagement)}</td><td class="r">${n(d.conversions)}</td><td class="r ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(d.delta)}%</td></tr>`;
+        }).join('');
+      }
+      // --- Simpan laporan sebagai catatan terhubung ke SQLite API ---
+      const dlg = document.getElementById('note-dialog');
+      const titleEl = document.getElementById('note-title');
+      const bodyEl = document.getElementById('note-body');
+      const listEl = document.getElementById('notes');
+      const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+      async function renderNotes() {
+        try {
+          const res = await fetch('/api/reports/performance/notes');
+          const data = await res.json();
+          const notes = data.success ? data.notes : [];
+          listEl.innerHTML = notes.length ? notes.map((x) =>
+            `<li><div><strong>${esc(x.title)}</strong><small>${esc(x.meta)} · ${esc(x.date)}</small><p>${esc(x.body || '')}</p></div><button data-id="${x.id}" class="del">Hapus</button></li>`
+          ).join('') : '<li class="muted">Belum ada catatan tersimpan.</li>';
+        } catch (e) {
+          listEl.innerHTML = '<li class="muted">Gagal memuat catatan dari server.</li>';
+        }
+      }
+
+      document.getElementById('save-note-btn').addEventListener('click', () => {
+        titleEl.value = `Laporan ${channelEl.value} (${periodEl.options[periodEl.selectedIndex].text})`;
+        bodyEl.value = '';
+        dlg.showModal();
+      });
+
+      document.getElementById('note-cancel').addEventListener('click', () => dlg.close());
+
+      document.getElementById('note-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          title: titleEl.value.trim(),
+          body: bodyEl.value.trim(),
+          channel: channelEl.value,
+          period: periodEl.value,
+          meta: `${channelEl.value} / ${periodEl.value}`
+        };
+
+        try {
+          const res = await fetch('/api/reports/performance/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          const result = await res.json();
+          if (result.success) {
+            dlg.close();
+            await renderNotes();
+          } else {
+            alert(result.error || 'Gagal menyimpan catatan');
+          }
+        } catch (err) {
+          alert('Terjadi kesalahan jaringan.');
+        }
+      });
+
+      listEl.addEventListener('click', async (e) => {
+        const id = e.target.dataset && e.target.dataset.id;
+        if (!id) return;
+        try {
+          const res = await fetch(`/api/reports/performance/notes/${id}`, { method: 'DELETE' });
+          const result = await res.json();
+          if (result.success) {
+            await renderNotes();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+      renderNotes();
+
+      periodEl.addEventListener('change', render);
+      channelEl.addEventListener('change', render);
+      render();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
+  .top nav a.active, .top nav a:hover { color: #38bdf8; }
+  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .head h2 { margin: 0 0 .25rem; }
+  .muted { margin: 0; color: #64748b; font-size: .9rem; }
+  .muted a { color: #0284c7; margin-left: .5rem; }
+  .filters { display: flex; gap: .6rem; }
+  select { font: inherit; padding: .45rem .7rem; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
+  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .card strong { font-size: 1.3rem; }
+  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; }
+  .box h3 { margin: 0 0 1rem; font-size: 1.05rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; }
+  th { color: #64748b; font-size: .75rem; text-transform: uppercase; }
+  .r { text-align: right; white-space: nowrap; }
+  .up { color: #15803d; font-weight: 600; }
+  .down { color: #b91c1c; font-weight: 600; }
+  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #0369a1; }
+  .btn-ghost { font: inherit; background: #fff; border: 1px solid #cbd5e1; padding: .5rem 1rem; border-radius: 8px; cursor: pointer; }
+  dialog { border: 0; border-radius: 12px; padding: 1.5rem; width: min(480px, 92vw); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  dialog::backdrop { background: rgba(15,23,42,.5); }
+  dialog h3 { margin: 0 0 1rem; }
+  dialog label { display: block; font-size: .85rem; color: #475569; margin-bottom: .8rem; }
+  dialog input, dialog textarea { display: block; width: 100%; margin-top: .3rem; font: inherit; padding: .5rem; border: 1px solid #cbd5e1; border-radius: 8px; }
+  .dlg-actions { display: flex; justify-content: flex-end; gap: .6rem; }
+  .notes { list-style: none; margin: 0; padding: 0; }
+  .notes li { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid #f1f5f9; }
+  .notes small { display: block; color: #94a3b8; font-size: .75rem; }
+  .notes p { margin: .3rem 0 0; font-size: .85rem; color: #475569; }
+  .del { font: inherit; font-size: .75rem; background: none; border: 1px solid #fecaca; color: #b91c1c; border-radius: 6px; padding: .2rem .6rem; cursor: pointer; align-self: flex-start; }
+</style>

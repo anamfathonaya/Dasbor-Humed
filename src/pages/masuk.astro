@@ -1,0 +1,444 @@
+---
+// Halaman Masuk Akun Pengguna Dasbor Humas Media
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Masuk Akun - Dasbor Humas Media</title>
+  </head>
+  <body>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <!-- Logo & Header Lembaga -->
+        <div class="brand-header">
+          <div class="brand-icon">🌐</div>
+          <h1>Dasbor Humas Media</h1>
+          <p class="brand-sub">Yayasan Kemanusiaan Peduli Negeri</p>
+        </div>
+
+        <!-- Banner Pemberitahuan / Error -->
+        <div id="login-alert" class="alert-box" hidden>
+          <span id="login-alert-text">Email atau kata sandi tidak cocok.</span>
+        </div>
+
+        <!-- Formulir Masuk Email & Sandi -->
+        <form id="form-login" class="login-form">
+          <div class="form-group">
+            <label for="login-email">Alamat Email Resmi</label>
+            <input
+              type="email"
+              id="login-email"
+              name="email"
+              placeholder="nama@pedulinegeri.org"
+              required
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="login-password">Kata Sandi Akun</label>
+              <a href="#" id="btn-forgot-password" class="link-small">Lupa Sandi?</a>
+            </div>
+            <div class="password-input-wrap">
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                placeholder="••••••••••••"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" id="btn-toggle-password" class="btn-eye" title="Tampilkan sandi">
+                👁️
+              </button>
+            </div>
+          </div>
+
+          <!-- Pilihan Cepat Peran Demo (Mock Autentikasi) -->
+          <div class="demo-role-box">
+            <span class="demo-title">Pilih Akun Cepat (Akses Simulasi):</span>
+            <div class="demo-buttons">
+              <button
+                type="button"
+                class="btn-demo-role"
+                data-email="rani.head@pedulinegeri.org"
+                data-role="head"
+                data-name="Rani Maulida (Ketua Bidang)"
+              >
+                Ketua Bidang (Head)
+              </button>
+              <button
+                type="button"
+                class="btn-demo-role"
+                data-email="budi.admin@pedulinegeri.org"
+                data-role="admin"
+                data-name="Budi Santoso (Admin Teknis)"
+              >
+                Admin Teknis
+              </button>
+              <button
+                type="button"
+                class="btn-demo-role"
+                data-email="dewi.creative@pedulinegeri.org"
+                data-role="staff"
+                data-name="Dewi Lestari (Staf Konten)"
+              >
+                Staf Konten
+              </button>
+            </div>
+          </div>
+
+          <div class="form-check">
+            <label>
+              <input type="checkbox" id="remember-me" checked />
+              <span>Ingat sesi masuk di perangkat ini selama 30 hari</span>
+            </label>
+          </div>
+
+          <button type="submit" id="btn-submit" class="btn-submit">
+            Masuk ke Dasbor
+          </button>
+        </form>
+
+        <div class="footer-note">
+          <p>
+            Memerlukan bantuan akses? Hubungi tim administrator teknis di
+            <a href="mailto:admin@pedulinegeri.org">admin@pedulinegeri.org</a>
+          </p>
+          <div class="security-badge">
+            🔒 Sesi terlindungi enkripsi TLS & audit log otomatis
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #0f172a;
+        color: #1e293b;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+
+      .login-wrapper {
+        width: 100%;
+        max-width: 460px;
+      }
+
+      .login-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        padding: 2.25rem 2rem;
+      }
+
+      .brand-header {
+        text-align: center;
+        margin-bottom: 1.75rem;
+      }
+      .brand-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.35rem;
+      }
+      .brand-header h1 {
+        font-size: 1.45rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0 0 0.25rem;
+      }
+      .brand-sub {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+      }
+
+      .alert-box {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        color: #991b1b;
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+        text-align: center;
+      }
+      .alert-box.success {
+        background: #ecfdf5;
+        border-color: #a7f3d0;
+        color: #065f46;
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .form-group label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #334155;
+      }
+      .form-group input {
+        font: inherit;
+        padding: 0.65rem 0.85rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 0.92rem;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .form-group input:focus {
+        outline: none;
+        border-color: #0284c7;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+      }
+
+      .label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .link-small {
+        font-size: 0.78rem;
+        color: #0284c7;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      .link-small:hover {
+        text-decoration: underline;
+      }
+
+      .password-input-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .password-input-wrap input {
+        width: 100%;
+        padding-right: 2.5rem;
+      }
+      .btn-eye {
+        position: absolute;
+        right: 0.6rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.2rem;
+      }
+
+      .demo-role-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.85rem;
+        margin-top: 0.25rem;
+      }
+      .demo-title {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+      }
+      .demo-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.4rem;
+      }
+      .btn-demo-role {
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.45rem 0.25rem;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        color: #334155;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-align: center;
+      }
+      .btn-demo-role:hover {
+        border-color: #0284c7;
+        color: #0284c7;
+        background: #f0f9ff;
+      }
+      .btn-demo-role.selected {
+        background: #0284c7;
+        color: #ffffff;
+        border-color: #0284c7;
+      }
+
+      .form-check label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8rem;
+        color: #475569;
+        cursor: pointer;
+      }
+      .form-check input {
+        width: 16px;
+        height: 16px;
+        accent-color: #0284c7;
+        cursor: pointer;
+      }
+
+      .btn-submit {
+        font: inherit;
+        background: #0284c7;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+        margin-top: 0.25rem;
+      }
+      .btn-submit:hover {
+        background: #0369a1;
+      }
+      .btn-submit:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      .footer-note {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid #f1f5f9;
+        text-align: center;
+      }
+      .footer-note p {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin: 0 0 0.75rem;
+        line-height: 1.4;
+      }
+      .footer-note a {
+        color: #0284c7;
+        text-decoration: none;
+      }
+      .footer-note a:hover {
+        text-decoration: underline;
+      }
+      .security-badge {
+        font-size: 0.72rem;
+        color: #94a3b8;
+      }
+    </style>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const formLogin = document.getElementById('form-login') as HTMLFormElement | null;
+        const inputEmail = document.getElementById('login-email') as HTMLInputElement | null;
+        const inputPassword = document.getElementById('login-password') as HTMLInputElement | null;
+        const btnTogglePassword = document.getElementById('btn-toggle-password');
+        const alertBox = document.getElementById('login-alert');
+        const alertText = document.getElementById('login-alert-text');
+        const btnSubmit = document.getElementById('btn-submit') as HTMLButtonElement | null;
+        const demoButtons = document.querySelectorAll('.btn-demo-role');
+
+        let selectedRole = 'head';
+
+        // Toggle visibility password
+        btnTogglePassword?.addEventListener('click', () => {
+          if (inputPassword) {
+            const isPassword = inputPassword.type === 'password';
+            inputPassword.type = isPassword ? 'text' : 'password';
+            btnTogglePassword.textContent = isPassword ? '🙈' : '👁️';
+          }
+        });
+
+        // Quick demo role autofill
+        demoButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            demoButtons.forEach((b) => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            const email = btn.getAttribute('data-email');
+            const role = btn.getAttribute('data-role');
+            if (email && inputEmail) inputEmail.value = email;
+            if (inputPassword) inputPassword.value = 'PeduliNegeri2026!';
+            if (role) selectedRole = role;
+          });
+        });
+
+        // Forgot password notice
+        document.getElementById('btn-forgot-password')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (alertBox && alertText) {
+            alertBox.classList.remove('success');
+            alertText.textContent = 'Silakan hubungi administrator teknis untuk tautan pemulihan sandi.';
+            alertBox.hidden = false;
+          }
+        });
+
+        // Submit form
+        formLogin?.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (btnSubmit) {
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Memverifikasi kredensial...';
+          }
+
+          const email = inputEmail?.value.trim().toLowerCase() || '';
+          const password = inputPassword?.value || '';
+
+          setTimeout(() => {
+            if (!password || password.length < 6) {
+              if (alertBox && alertText) {
+                alertBox.classList.remove('success');
+                alertText.textContent = 'Kata sandi minimal 6 karakter.';
+                alertBox.hidden = false;
+              }
+              if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Masuk ke Dasbor';
+              }
+              return;
+            }
+
+            // Simpan peran & sesi ke localStorage
+            try {
+              localStorage.setItem('user_role', selectedRole);
+              localStorage.setItem('user_email', email);
+              localStorage.setItem('user_logged_in', 'true');
+              document.cookie = `user_role=${selectedRole}; path=/; max-age=2592000`;
+            } catch {}
+
+            if (alertBox && alertText) {
+              alertBox.classList.add('success');
+              alertText.textContent = `Berhasil masuk! Mengarahkan ke Dasbor Humas (${selectedRole})...`;
+              alertBox.hidden = false;
+            }
+
+            setTimeout(() => {
+              window.location.href = '/dasbor-metrik';
+            }, 800);
+          }, 500);
+        });
+      });
+    </script>
+  </body>
+</html>

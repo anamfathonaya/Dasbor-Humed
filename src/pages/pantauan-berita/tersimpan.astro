@@ -1,0 +1,744 @@
+---
+import { mockNewsItems } from '../../data/mockNews';
+
+// Fallback berita yang tersimpan secara default untuk data tiruan
+const defaultSavedIds = [1, 2, 5];
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Berita Tersimpan & Rujukan — Pusat Pantauan Berita</title>
+  </head>
+  <body>
+    <!-- TOP HEADER -->
+    <header class="top">
+      <div class="brand">
+        <span class="brand-icon">🌐</span>
+        <h1>Dasbor Humas Media</h1>
+      </div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita" class="active">Pantauan Berita</a>
+      </nav>
+      <div class="user-role-badge">
+        <a href="/pantauan-berita" class="back-link">← Kembali ke Aliran Berita</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="head">
+        <div>
+          <h2>Koleksi Berita Tersimpan & Rujukan Konten</h2>
+          <p class="muted">Daftar kabar penting dan rujukan lapangan yang dikurasi oleh tim untuk bahan publikasi</p>
+        </div>
+        <div class="head-actions">
+          <a href="/pantauan-berita" class="btn-secondary">
+            + Jelajahi Berita Lain
+          </a>
+          <button id="export-btn" class="btn-primary">
+            📥 Ekspor Rujukan (.txt)
+          </button>
+        </div>
+      </div>
+
+      <!-- STATS BANNER -->
+      <section class="stats-row">
+        <div class="scard">
+          <span class="sicon">⭐</span>
+          <div>
+            <b id="stat-total-saved">3</b>
+            <span class="slabel">Berita Disimpan</span>
+          </div>
+        </div>
+        <div class="scard">
+          <span class="sicon">📌</span>
+          <div>
+            <b id="stat-total-ref">2</b>
+            <span class="slabel">Rujukan Resmi Tim</span>
+          </div>
+        </div>
+        <div class="scard">
+          <span class="sicon">🚨</span>
+          <div>
+            <b id="stat-urgent">2</b>
+            <span class="slabel">Kabar Mendesak / Bencana</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTER & SEARCH BAR -->
+      <section class="filter-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-saved" placeholder="Cari dalam berita tersimpan..." />
+        </div>
+        <div class="filter-controls">
+          <select id="cat-filter">
+            <option value="all">Semua Kategori</option>
+            <option value="Bencana">Bencana</option>
+            <option value="Bantuan Kemanusiaan">Bantuan Kemanusiaan</option>
+            <option value="Sosial">Sosial</option>
+            <option value="Kesehatan">Kesehatan</option>
+            <option value="Regulasi">Regulasi</option>
+          </select>
+          <button id="clear-all-btn" class="btn-text-danger">
+            Hapus Semua Simpanan
+          </button>
+        </div>
+      </section>
+
+      <!-- DAFTAR KARTU BERITA TERSIMPAN -->
+      <section id="saved-list" class="saved-cards-list">
+        <!-- Diisi secara dinamis oleh JavaScript -->
+      </section>
+    </main>
+
+    <!-- MODAL JADIKAN JADWAL KALENDER -->
+    <dialog id="calendar-dialog">
+      <form id="calendar-form" method="dialog">
+        <div class="dialog-header">
+          <h3>Jadikan Ide Kalender Konten</h3>
+          <button type="button" id="close-dialog-btn" class="btn-close">✕</button>
+        </div>
+        <div class="dialog-body">
+          <label>Judul Rencana Konten
+            <input type="text" id="form-content-title" required />
+          </label>
+          <div class="form-row">
+            <label>Kanal Publikasi
+              <select id="form-content-channel">
+                <option>Instagram</option>
+                <option>Facebook</option>
+                <option>TikTok</option>
+                <option>YouTube</option>
+                <option>Website</option>
+                <option>Telegram</option>
+              </select>
+            </label>
+            <label>Pilar Konten
+              <select id="form-content-pillar">
+                <option value="1">Aksi Kemanusiaan</option>
+                <option value="2">Edukasi</option>
+                <option value="3">Donasi & Galang Dana</option>
+                <option value="4">Laporan & Transparansi</option>
+              </select>
+            </label>
+          </div>
+          <label>Catatan Rujukan Berita
+            <textarea id="form-content-notes" rows="3" readonly></textarea>
+          </label>
+        </div>
+        <div class="dialog-footer">
+          <button type="button" id="cancel-dialog-btn" class="btn-secondary">Batal</button>
+          <button type="submit" class="btn-primary">Tambahkan ke Kalender</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast">Aksi berhasil dilakukan!</div>
+
+    <script is:inline define:vars={{ allNews: mockNewsItems, defaultSavedIds }}>
+      let currentAllNews = [...allNews];
+
+      // Ambil saved IDs dari localStorage atau default fallback
+      let savedIds = new Set(defaultSavedIds);
+      let refIds = new Set([1, 2]);
+
+      try {
+        const stored = localStorage.getItem('pantauan_saved_ids');
+        if (stored) savedIds = new Set(JSON.parse(stored));
+        const storedRef = localStorage.getItem('pantauan_ref_ids');
+        if (storedRef) refIds = new Set(JSON.parse(storedRef));
+      } catch (e) {}
+
+      let searchQuery = '';
+      let categoryFilter = 'all';
+
+      const listEl = document.getElementById('saved-list');
+      const searchInput = document.getElementById('search-saved');
+      const catSelect = document.getElementById('cat-filter');
+      const clearBtn = document.getElementById('clear-all-btn');
+      const exportBtn = document.getElementById('export-btn');
+      const toastEl = document.getElementById('toast');
+      const statTotalEl = document.getElementById('stat-total-saved');
+      const statRefEl = document.getElementById('stat-total-ref');
+      const statUrgentEl = document.getElementById('stat-urgent');
+
+      const dialog = document.getElementById('calendar-dialog');
+      const dialogForm = document.getElementById('calendar-form');
+      const formTitle = document.getElementById('form-content-title');
+      const formNotes = document.getElementById('form-content-notes');
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(() => toastEl.classList.remove('show'), 3000);
+      }
+
+      function updateStats() {
+        const savedItems = currentAllNews.filter(n => savedIds.has(n.id));
+        statTotalEl.textContent = String(savedItems.length);
+        statRefEl.textContent = String(savedItems.filter(n => refIds.has(n.id)).length);
+        statUrgentEl.textContent = String(savedItems.filter(n => n.isImportant).length);
+      }
+
+      function renderSaved() {
+        updateStats();
+
+        const savedItems = currentAllNews.filter(n => savedIds.has(n.id));
+
+        const filtered = savedItems.filter(item => {
+          const matchCat = categoryFilter === 'all' || item.category === categoryFilter;
+          const q = searchQuery.toLowerCase().trim();
+          const matchQ = !q || item.title.toLowerCase().includes(q) || item.summary.toLowerCase().includes(q) || item.sourceName.toLowerCase().includes(q);
+          return matchCat && matchQ;
+        });
+
+        if (filtered.length === 0) {
+          listEl.innerHTML = `
+            <div class="empty-state">
+              <span class="empty-icon">📂</span>
+              <h4>Belum ada berita dalam koleksi simpanan</h4>
+              <p>Klik tombol <b>☆ Simpan</b> pada halaman <a href="/pantauan-berita">Pantauan Berita</a> untuk menyimpan artikel rujukan ke halaman ini.</p>
+            </div>
+          `;
+          return;
+        }
+
+        listEl.innerHTML = filtered.map(item => {
+          const isRef = refIds.has(item.id);
+          return `
+            <article class="saved-card ${item.isImportant ? 'card-alert' : ''}" data-id="${item.id}">
+              <div class="card-head">
+                <div class="head-left">
+                  <span class="source-tag">${item.sourceName}</span>
+                  <span class="cat-pill">${item.category}</span>
+                  ${item.isImportant ? '<span class="alert-pill">🚨 PENTING</span>' : ''}
+                  ${isRef ? '<span class="ref-pill">📌 Rujukan Tim</span>' : ''}
+                </div>
+                <time class="time-meta">📅 ${item.publishedAt}</time>
+              </div>
+
+              <h3 class="card-title">
+                <a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.title}</a>
+              </h3>
+
+              <p class="card-summary">${item.summary}</p>
+
+              <div class="card-footer">
+                <div class="btn-group">
+                  <button type="button" class="btn-action-primary btn-to-calendar" data-id="${item.id}">
+                    📅 Buat Ide Kalender
+                  </button>
+                  <button type="button" class="btn-action-secondary btn-toggle-ref ${isRef ? 'is-ref' : ''}" data-id="${item.id}">
+                    ${isRef ? '✓ Sudah Ditandai Rujukan' : '📌 Tandai Rujukan'}
+                  </button>
+                  <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn-action-outline">
+                    Buka Sumber ↗
+                  </a>
+                </div>
+                <button type="button" class="btn-remove" data-id="${item.id}" title="Hapus dari simpanan">
+                  🗑️ Hapus
+                </button>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+        // Listeners Hapus
+        listEl.querySelectorAll('.btn-remove').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = Number(e.currentTarget.dataset.id);
+            const found = currentAllNews.find(x => x.id === id);
+            savedIds.delete(id);
+            try {
+              localStorage.setItem('pantauan_saved_ids', JSON.stringify(Array.from(savedIds)));
+            } catch (err) {}
+            renderSaved();
+            showToast(`Berita "${found?.title.substring(0, 30)}..." dihapus dari koleksi.`);
+          });
+        });
+
+        // Listeners Toggle Rujukan
+        listEl.querySelectorAll('.btn-toggle-ref').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = Number(e.currentTarget.dataset.id);
+            const found = currentAllNews.find(x => x.id === id);
+            if (refIds.has(id)) {
+              refIds.delete(id);
+              showToast('Tanda rujukan resmi dicabut.');
+            } else {
+              refIds.add(id);
+              showToast(`📌 Berita "${found?.title.substring(0, 30)}..." ditandai sebagai rujukan resmi tim!`);
+            }
+            try {
+              localStorage.setItem('pantauan_ref_ids', JSON.stringify(Array.from(refIds)));
+            } catch (err) {}
+            renderSaved();
+          });
+        });
+
+        // Listeners Buat Ide Kalender
+        listEl.querySelectorAll('.btn-to-calendar').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const id = Number(e.currentTarget.dataset.id);
+            const found = currentAllNews.find(x => x.id === id);
+            if (found) {
+              formTitle.value = `Konten Edukasi: ${found.title.substring(0, 50)}`;
+              formNotes.value = `Rujukan: ${found.sourceName} (${found.publishedAt})\n${found.summary}\nSumber: ${found.url}`;
+              dialog.showModal();
+            }
+          });
+        });
+      }
+
+      // Dialog close
+      document.getElementById('close-dialog-btn').addEventListener('click', () => dialog.close());
+      document.getElementById('cancel-dialog-btn').addEventListener('click', () => dialog.close());
+
+      dialogForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        dialog.close();
+        showToast('Ide konten baru berhasil ditambahkan ke rencana Kalender Konten!');
+      });
+
+      // Search & category filter
+      searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderSaved();
+      });
+
+      catSelect.addEventListener('change', (e) => {
+        categoryFilter = e.target.value;
+        renderSaved();
+      });
+
+      // Hapus Semua
+      clearBtn.addEventListener('click', () => {
+        if (savedIds.size === 0) return;
+        if (confirm('Yakin ingin menghapus seluruh berita dari koleksi simpanan?')) {
+          savedIds.clear();
+          try {
+            localStorage.setItem('pantauan_saved_ids', JSON.stringify([]));
+          } catch (err) {}
+          renderSaved();
+          showToast('Seluruh koleksi berita tersimpan berhasil dibersihkan.');
+        }
+      });
+
+      // Ekspor Rujukan
+      exportBtn.addEventListener('click', () => {
+        const savedItems = currentAllNews.filter(n => savedIds.has(n.id));
+        if (savedItems.length === 0) {
+          showToast('Tidak ada berita tersimpan untuk diekspor.');
+          return;
+        }
+
+        const lines = [
+          '=== REKAP RUJUKAN BERITA TIM HUMAS & MEDIA ===',
+          `Tanggal Ekspor: ${new Date().toLocaleDateString('id-ID')}`,
+          `Total Berita: ${savedItems.length}`,
+          '===============================================\n',
+        ];
+
+        savedItems.forEach((item, idx) => {
+          lines.push(`${idx + 1}. [${item.category}] ${item.title}`);
+          lines.push(`   Sumber : ${item.sourceName} (${item.publishedAt})`);
+          lines.push(`   Tautan : ${item.url}`);
+          lines.push(`   Ringkasan: ${item.summary}\n`);
+        });
+
+        const blob = new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `rujukan-berita-humas-${new Date().toISOString().substring(0, 10)}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('File rekap rujukan berita berhasil diunduh!');
+      });
+
+      renderSaved();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f8fafc;
+    color: #1e293b;
+  }
+
+  /* TOP HEADER */
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.75rem;
+    background: #0f172a;
+    color: #fff;
+    border-bottom: 1px solid #1e293b;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; }
+  .brand-icon { font-size: 1.3rem; }
+  .top h1 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #f8fafc; }
+  .top nav { display: flex; gap: 1.25rem; }
+  .top nav a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .top nav a.active, .top nav a:hover { color: #38bdf8; }
+  .back-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    transition: all 0.15s;
+  }
+  .back-link:hover { background: #334155; color: #fff; }
+
+  /* MAIN CONTENT */
+  main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .head h2 { margin: 0 0 0.25rem; font-size: 1.4rem; color: #0f172a; }
+  .muted { color: #64748b; font-size: 0.88rem; margin: 0; }
+  .head-actions { display: flex; gap: 0.6rem; }
+
+  .btn-primary {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.95rem;
+    border-radius: 8px;
+    border: 1px solid #0284c7;
+    background: #0284c7;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: #0369a1; }
+
+  .btn-secondary {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.5rem 0.95rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #334155;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { background: #f1f5f9; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .scard {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+  .sicon { font-size: 1.5rem; }
+  .scard b { font-size: 1.3rem; color: #0f172a; display: block; line-height: 1.2; }
+  .slabel { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.85rem 1.15rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .search-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 260px;
+  }
+  .search-input-wrap input {
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: 0.9rem;
+    width: 100%;
+    color: #1e293b;
+  }
+  .filter-controls { display: flex; align-items: center; gap: 0.85rem; }
+  .filter-controls select {
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .btn-text-danger {
+    font: inherit;
+    font-size: 0.82rem;
+    color: #dc2626;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .btn-text-danger:hover { text-decoration: underline; }
+
+  /* CARDS LIST */
+  .saved-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .saved-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    border-top: 3px solid #eab308;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .saved-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  }
+  .saved-card.card-alert { border-left: 4px solid #ef4444; }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .head-left { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+  .source-tag { font-weight: 700; color: #334155; }
+  .cat-pill {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .alert-pill {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .ref-pill {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .time-meta { color: #64748b; font-size: 0.78rem; }
+
+  .card-title {
+    margin: 0 0 0.55rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
+  }
+  .card-title a {
+    color: #0f172a;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .card-title a:hover { color: #0284c7; }
+
+  .card-summary {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.5;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.85rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .btn-action-primary {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: #0284c7;
+    color: #fff;
+    border: 1px solid #0284c7;
+    cursor: pointer;
+  }
+  .btn-action-primary:hover { background: #0369a1; }
+  .btn-action-secondary {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+    cursor: pointer;
+  }
+  .btn-action-secondary.is-ref {
+    background: #15803d;
+    color: #fff;
+    border-color: #15803d;
+  }
+  .btn-action-outline {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    background: #fff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn-action-outline:hover { background: #f8fafc; }
+  .btn-remove {
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.65rem;
+    border-radius: 6px;
+    background: #fff;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    cursor: pointer;
+  }
+  .btn-remove:hover { background: #fee2e2; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    background: #fff;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+  }
+  .empty-icon { font-size: 3rem; display: block; margin-bottom: 0.6rem; }
+  .empty-state h4 { margin: 0 0 0.35rem; font-size: 1.15rem; color: #1e293b; }
+  .empty-state p { margin: 0; font-size: 0.88rem; color: #64748b; }
+  .empty-state a { color: #0284c7; text-decoration: none; font-weight: 600; }
+
+  /* DIALOG */
+  dialog {
+    border: none;
+    border-radius: 12px;
+    padding: 0;
+    width: min(540px, 94vw);
+    box-shadow: 0 20px 45px rgba(0,0,0,0.25);
+  }
+  dialog::backdrop { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); }
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .dialog-header h3 { margin: 0; font-size: 1.1rem; color: #0f172a; }
+  .btn-close { background: transparent; border: none; font-size: 1.1rem; color: #64748b; cursor: pointer; }
+  .dialog-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
+  .dialog-body label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.82rem; font-weight: 600; color: #334155; }
+  .dialog-body input, .dialog-body select, .dialog-body textarea {
+    font: inherit;
+    font-size: 0.88rem;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+  }
+  .dialog-body textarea { resize: vertical; font-family: monospace; font-size: 0.8rem; background: #f8fafc; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #0f172a;
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.25s ease-out;
+    z-index: 9999;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+</style>

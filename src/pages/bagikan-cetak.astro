@@ -1,0 +1,692 @@
+---
+import { mockBudgetLines } from '../data/mockBudget';
+import { formatRupiah, formatPercent } from '../lib/format';
+
+// Filter tahun 2026 sebagai default dokumen cetak
+const currentYear = 2026;
+const budgetItems = mockBudgetLines.filter(item => item.year === currentYear);
+const totalRAB = budgetItems.reduce((acc, curr) => acc + curr.rab, 0);
+const totalLRA = budgetItems.reduce((acc, curr) => acc + curr.lra, 0);
+const totalSisa = totalRAB - totalLRA;
+const overallAbsorption = totalRAB > 0 ? (totalLRA / totalRAB) * 100 : 0;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Salinan Resmi Laporan Anggaran {currentYear} (RAB & LRA) — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <!-- ACTION BAR KHUSUS LAYAR (TIDAK DICETAK) -->
+    <div class="screen-action-bar no-print">
+      <div class="action-container">
+        <a href="/laporan-anggaran" class="btn-back">← Kembali ke Dasbor</a>
+        <div class="action-buttons">
+          <button id="btn-copy-link" class="btn-action">🔗 Salin Tautan</button>
+          <button id="btn-share-modal" class="btn-action" style="background:#0284c7; color:#fff;">📤 Bagikan ke Mitra</button>
+          <a href="/api/reports/export?type=budget&year=2026" class="btn-action" style="text-decoration:none; background:#334155; color:#fff;">📥 Unduh CSV</a>
+          <button id="btn-print" class="btn-primary">🖨️ Cetak / Simpan PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIALOG BAGIKAN TAUTAN RESMI KE PENERIMA -->
+    <dialog id="share-dialog" style="border:1px solid #cbd5e1; border-radius:8px; padding:1.5rem; max-width:480px; width:90%; background:#fff; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+      <form id="share-form" method="dialog">
+        <h3 style="margin-top:0; font-size:1.15rem; color:#0f172a;">Bagikan Laporan Resmi</h3>
+        <p style="font-size:0.85rem; color:#64748b; margin-bottom:1rem;">Kirim tautan akses aman dan berkas laporan ke dewan pengawas atau mitra donor.</p>
+        
+        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.3rem;">Tujuan Penerima (Email / Kontak)</label>
+        <input type="text" id="share-recipient" required placeholder="misal: auditor@ngo.or.id atau Dewan Pembina" style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:0.8rem; font-size:0.88rem;" />
+
+        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.3rem;">Kanal Distribusi</label>
+        <select id="share-channel" style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:0.8rem; font-size:0.88rem;">
+          <option value="link">Tautan Publik / Unduhan</option>
+          <option value="email">Email Pemberitahuan</option>
+          <option value="telegram">Telegram Dispatch</option>
+        </select>
+
+        <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.3rem;">Catatan Pengantar</label>
+        <textarea id="share-notes" rows="2" placeholder="Catatan pengantar laporan..." style="width:100%; padding:0.5rem; border:1px solid #cbd5e1; border-radius:4px; margin-bottom:1.2rem; font-size:0.88rem;"></textarea>
+
+        <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+          <button type="button" id="btn-cancel-share" style="padding:0.5rem 1rem; border:1px solid #cbd5e1; background:#f1f5f9; border-radius:4px; cursor:pointer;">Batal</button>
+          <button type="submit" style="padding:0.5rem 1rem; border:none; background:#0284c7; color:#fff; border-radius:4px; font-weight:600; cursor:pointer;">Kirim Tautan</button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- LEMBAR DOKUMEN CETAK RESMI -->
+    <div class="document-sheet">
+      <!-- KOP SURAT RESMI LEMBAGA -->
+      <header class="formal-header">
+        <div class="org-brand">
+          <div class="org-logo">
+            <span class="logo-symbol">🤝</span>
+          </div>
+          <div class="org-meta">
+            <h1 class="org-name">YAYASAN KEMANUSIAAN PEDULI NEGERI</h1>
+            <p class="org-dept">Divisi Hubungan Masyarakat, Kemitraan & Media Komunikasi</p>
+            <p class="org-address">Jl. Kemanusiaan Raya No. 45, Gedung Graha Peduli Lt. 3, Jakarta Selatan | Telp: (021) 7890-1234 | www.pedulinegeri.org</p>
+          </div>
+        </div>
+        <div class="doc-badge">
+          <span class="badge-title">DOKUMEN RESMI</span>
+          <span class="badge-no">Ref: HUMAS-LRA/2026/04</span>
+        </div>
+      </header>
+
+      <div class="header-divider"></div>
+
+      <!-- JUDUL DOKUMEN & METADATA PENERBITAN -->
+      <section class="doc-title-section">
+        <h2 class="doc-title">LAPORAN REALISASI ANGGARAN & BIAYA (RAB / LRA)</h2>
+        <p class="doc-subtitle">Tahun Anggaran {currentYear} (Konsolidasi Divisi Humas & Media)</p>
+        
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Tanggal Terbit</span>
+            <span class="meta-val">11 Oktober 2026</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Klasifikasi Dokumen</span>
+            <span class="meta-val">Internal Terbuka & Auditor</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Penanggung Jawab</span>
+            <span class="meta-val">Ketua Bidang Humas & Media</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Status Verifikasi</span>
+            <span class="meta-val status-verified">✓ Terverifikasi Bendahara</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RINGKASAN AGREGAT KEUANGAN -->
+      <section class="summary-box">
+        <h3 class="section-title">I. Ringkasan Eksekutif Anggaran</h3>
+        <table class="summary-table">
+          <tbody>
+            <tr>
+              <td><strong>Total Pagu Anggaran (RAB)</strong></td>
+              <td class="text-right"><strong>{formatRupiah(totalRAB)}</strong></td>
+              <td><strong>Tingkat Penyerapan</strong></td>
+              <td class="text-right"><strong>{formatPercent(overallAbsorption)}</strong></td>
+            </tr>
+            <tr>
+              <td>Total Realisasi Belanja (LRA)</td>
+              <td class="text-right">{formatRupiah(totalLRA)}</td>
+              <td>Sisa Saldo Kas Alokasi</td>
+              <td class="text-right">{formatRupiah(totalSisa)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- RINCIAN POS ANGGARAN -->
+      <section class="table-section">
+        <h3 class="section-title">II. Rincian Pos Program, Pagu, & Realisasi</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 35px;">No</th>
+              <th>Nama Program & Uraian Kegiatan</th>
+              <th>Kategori</th>
+              <th style="width: 90px;">PJ</th>
+              <th style="width: 50px;">Kuartal</th>
+              <th class="text-right" style="width: 120px;">Pagu RAB</th>
+              <th class="text-right" style="width: 120px;">Realisasi (LRA)</th>
+              <th class="text-right" style="width: 110px;">Sisa Alokasi</th>
+              <th class="text-center" style="width: 75px;">Serapan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {budgetItems.map((item, idx) => {
+              const diff = item.rab - item.lra;
+              const pct = (item.lra / item.rab) * 100;
+              const isOver = item.lra > item.rab;
+              return (
+                <tr>
+                  <td class="text-center">{idx + 1}</td>
+                  <td>
+                    <strong>{item.program}</strong>
+                  </td>
+                  <td>{item.category}</td>
+                  <td>{item.owner}</td>
+                  <td class="text-center">{item.quarter}</td>
+                  <td class="text-right font-mono">{formatRupiah(item.rab)}</td>
+                  <td class="text-right font-mono">{formatRupiah(item.lra)}</td>
+                  <td class:list={['text-right font-mono', { 'text-danger': diff < 0 }]}>
+                    {formatRupiah(diff)}
+                  </td>
+                  <td class:list={['text-center font-bold', { 'text-danger': isOver }]}>
+                    {Math.round(pct)}%
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="5" class="text-right"><strong>TOTAL KESELURUHAN (TA {currentYear})</strong></td>
+              <td class="text-right font-mono"><strong>{formatRupiah(totalRAB)}</strong></td>
+              <td class="text-right font-mono"><strong>{formatRupiah(totalLRA)}</strong></td>
+              <td class="text-right font-mono"><strong>{formatRupiah(totalSisa)}</strong></td>
+              <td class="text-center font-bold"><strong>{Math.round(overallAbsorption)}%</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </section>
+
+      <!-- KOLOM TANDA TANGAN RESMI -->
+      <section class="signature-section">
+        <p class="sig-date">Jakarta, 11 Oktober 2026</p>
+        <div class="signature-grid">
+          <div class="sig-box">
+            <p class="sig-role">Disusun Oleh,</p>
+            <p class="sig-title">Staf Administrasi & Data Humas</p>
+            <div class="sig-space"></div>
+            <p class="sig-name"><strong>( Nurdin Arifin, S.I.Kom )</strong></p>
+            <p class="sig-nip">NIP. 202203-018</p>
+          </div>
+          <div class="sig-box">
+            <p class="sig-role">Diverifikasi Oleh,</p>
+            <p class="sig-title">Koordinator Keuangan & Kepatuhan</p>
+            <div class="sig-space"></div>
+            <p class="sig-name"><strong>( Siti Nurhaliza, S.Ak )</strong></p>
+            <p class="sig-nip">NIP. 202008-009</p>
+          </div>
+          <div class="sig-box">
+            <p class="sig-role">Mengetahui & Menyetujui,</p>
+            <p class="sig-title">Ketua Bidang Humas & Media</p>
+            <div class="sig-space"></div>
+            <p class="sig-name"><strong>( Ahmad Fauzan, M.Si )</strong></p>
+            <p class="sig-nip">NIP. 201801-002</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CATATAN KAKI DOKUMEN -->
+      <footer class="formal-footer">
+        <p>Salinan dokumen ini dicetak otomatis dari Sistem Terpadu Dasbor Humas & Media Lembaga.</p>
+        <p>Keabsahan dokumen dapat diverifikasi secara daring melalui sistem integrasi internal.</p>
+      </footer>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+      const btnPrint = document.getElementById('btn-print');
+      const btnCopy = document.getElementById('btn-copy-link');
+      const btnShareModal = document.getElementById('btn-share-modal');
+      const shareDialog = document.getElementById('share-dialog') as HTMLDialogElement | null;
+      const btnCancelShare = document.getElementById('btn-cancel-share');
+      const shareForm = document.getElementById('share-form');
+      const toast = document.getElementById('toast');
+
+      if (btnPrint) {
+        btnPrint.addEventListener('click', () => {
+          window.print();
+        });
+      }
+
+      if (btnShareModal && shareDialog) {
+        btnShareModal.addEventListener('click', () => {
+          shareDialog.showModal();
+        });
+      }
+
+      if (btnCancelShare && shareDialog) {
+        btnCancelShare.addEventListener('click', () => {
+          shareDialog.close();
+        });
+      }
+
+      if (shareForm && shareDialog) {
+        shareForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const recipient = (document.getElementById('share-recipient') as HTMLInputElement)?.value;
+          const channel = (document.getElementById('share-channel') as HTMLSelectElement)?.value;
+          const notes = (document.getElementById('share-notes') as HTMLTextAreaElement)?.value;
+
+          try {
+            const res = await fetch('/api/reports/share', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                reportType: 'budget',
+                year: 2026,
+                targetRecipient: recipient,
+                recipientChannel: channel,
+                notes: notes,
+              }),
+            });
+            const result = await res.json();
+            if (result.success) {
+              shareDialog.close();
+              showToast(`Tautan berhasil dibuat & dicatat untuk: ${recipient}`);
+              if (navigator.clipboard && result.data?.shareLink) {
+                navigator.clipboard.writeText(result.data.shareLink);
+              }
+            } else {
+              alert(result.error || 'Gagal membagikan laporan');
+            }
+          } catch (err) {
+            alert('Terjadi kesalahan jaringan.');
+          }
+        });
+      }
+
+      if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+          if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+              showToast('Tautan dokumen berhasil disalin ke clipboard');
+            }).catch(() => {
+              showToast('Gagal menyalin tautan');
+            });
+          } else {
+            showToast('Tautan: ' + window.location.href);
+          }
+        });
+      }
+
+      function showToast(msg: string) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, -apple-system, Arial, sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    line-height: 1.5;
+  }
+
+  /* BAR AKSI DI LAYAR */
+  .screen-action-bar {
+    background: #0f172a;
+    color: #fff;
+    padding: 0.85rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+  .action-container {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .btn-back {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+  .btn-back:hover {
+    color: #38bdf8;
+  }
+  .action-buttons {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .btn-action {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 0.9rem;
+    background: #1e293b;
+    color: #f1f5f9;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-action:hover {
+    background: #334155;
+  }
+  .btn-primary {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.45rem 1rem;
+    background: #0284c7;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: #0369a1;
+  }
+
+  /* KERTAS LEMBAR RESMI */
+  .document-sheet {
+    max-width: 960px;
+    margin: 2rem auto 4rem;
+    background: #fff;
+    padding: 3rem 3.5rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+
+  /* KOP SURAT */
+  .formal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+  .org-brand {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+  }
+  .org-logo {
+    width: 64px;
+    height: 64px;
+    background: #f8fafc;
+    border: 2px solid #0f172a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  .org-name {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.04em;
+  }
+  .org-dept {
+    margin: 0.2rem 0;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #0284c7;
+  }
+  .org-address {
+    margin: 0;
+    font-size: 0.74rem;
+    color: #64748b;
+    line-height: 1.4;
+  }
+  .doc-badge {
+    text-align: right;
+    border-left: 2px solid #cbd5e1;
+    padding-left: 1rem;
+    flex-shrink: 0;
+  }
+  .badge-title {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: 0.05em;
+  }
+  .badge-no {
+    display: block;
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 0.2rem;
+  }
+  .header-divider {
+    height: 3px;
+    background: #0f172a;
+    margin: 1.25rem 0 1.5rem;
+    border-bottom: 1px solid #0f172a;
+  }
+
+  /* JUDUL DAN METADATA */
+  .doc-title-section {
+    margin-bottom: 2rem;
+  }
+  .doc-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #0f172a;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .doc-subtitle {
+    margin: 0.25rem 0 1.25rem;
+    font-size: 0.88rem;
+    color: #475569;
+    text-align: center;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.9rem 1.2rem;
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .meta-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .meta-val {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .status-verified {
+    color: #166534;
+  }
+
+  /* TABEL DAN KONTEN */
+  .section-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  .summary-box {
+    margin-bottom: 2rem;
+  }
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid #e2e8f0;
+  }
+  .summary-table td {
+    padding: 0.6rem 0.9rem;
+    border: 1px solid #e2e8f0;
+  }
+  .summary-table tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .table-section {
+    margin-bottom: 2.5rem;
+  }
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    border: 1px solid #cbd5e1;
+  }
+  .data-table th, .data-table td {
+    padding: 0.55rem 0.65rem;
+    border: 1px solid #cbd5e1;
+    vertical-align: middle;
+  }
+  .data-table th {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+  }
+  .total-row {
+    background: #f8fafc;
+    border-top: 2px solid #0f172a;
+  }
+
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+  .text-danger { color: #dc2626; font-weight: 700; }
+  .font-mono { font-family: ui-monospace, "Segoe UI Mono", monospace; font-size: 0.8rem; }
+  .font-bold { font-weight: 700; }
+
+  /* TANDA TANGAN */
+  .signature-section {
+    margin-top: 3rem;
+    page-break-inside: avoid;
+  }
+  .sig-date {
+    text-align: right;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    color: #334155;
+  }
+  .signature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .sig-role {
+    margin: 0;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+  .sig-title {
+    margin: 0.2rem 0 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1e293b;
+  }
+  .sig-space {
+    height: 75px;
+  }
+  .sig-name {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #0f172a;
+  }
+  .sig-nip {
+    margin: 0.15rem 0 0;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  /* FOOTER */
+  .formal-footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    text-align: center;
+    font-size: 0.72rem;
+    color: #94a3b8;
+  }
+  .formal-footer p {
+    margin: 0.2rem 0;
+  }
+
+  /* TOAST NOTIFIKASI */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: #0f172a;
+    color: #fff;
+    padding: 0.65rem 1.15rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.25s ease-out;
+    z-index: 999;
+  }
+  .toast.show {
+    transform: none;
+    opacity: 1;
+  }
+
+  /* CETAK / PRINT STYLES */
+  @media print {
+    body {
+      background: #fff;
+      color: #000;
+    }
+    .no-print {
+      display: none !important;
+    }
+    .document-sheet {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      border: none;
+      box-shadow: none;
+    }
+    .meta-grid {
+      border: 1px solid #ccc;
+      background: none;
+    }
+    .data-table th {
+      background: #eee !important;
+      -webkit-print-color-adjust: exact;
+    }
+    .total-row {
+      background: #f5f5f5 !important;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .document-sheet {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+    .formal-header {
+      flex-direction: column;
+    }
+    .doc-badge {
+      border-left: none;
+      padding-left: 0;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 0.5rem;
+      text-align: left;
+    }
+    .signature-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .sig-space {
+      height: 45px;
+    }
+  }
+</style>

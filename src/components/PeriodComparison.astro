@@ -1,0 +1,35 @@
+---
+import { formatCompact, formatPercent, percentChange } from '../lib/format';
+
+interface Props {
+  label: string;
+  current: number;
+  previous: number;
+  /** Jika true, kenaikan dianggap buruk (mis. biaya). */
+  invert?: boolean;
+  prefix?: string;
+}
+const { label, current, previous, invert = false, prefix = '' } = Astro.props;
+const change = percentChange(current, previous);
+const up = change >= 0;
+const good = invert ? !up : up;
+---
+
+<div class="cmp-card">
+  <span class="cmp-label">{label}</span>
+  <strong class="cmp-value">{prefix}{formatCompact(current)}</strong>
+  <div class:list={['cmp-delta', good ? 'good' : 'bad']}>
+    {up ? '▲' : '▼'} {formatPercent(Math.abs(change))}
+    <small>vs periode lalu ({prefix}{formatCompact(previous)})</small>
+  </div>
+</div>
+
+<style>
+  .cmp-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
+  .cmp-label { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .cmp-value { font-size: 1.4rem; color: #0f172a; }
+  .cmp-delta { margin-top: .4rem; font-size: .85rem; font-weight: 600; }
+  .cmp-delta small { display: block; font-weight: 400; color: #94a3b8; font-size: .72rem; }
+  .good { color: #15803d; }
+  .bad { color: #b91c1c; }
+</style>

@@ -1,0 +1,188 @@
+---
+import { mockBudgetLines, mockAnnualPlan } from '../data/mockBudget';
+import PeriodComparison from '../components/PeriodComparison.astro';
+
+const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID');
+const totalRab = mockBudgetLines.reduce((s, l) => s + l.rab, 0);
+const totalLra = mockBudgetLines.reduce((s, l) => s + l.lra, 0);
+const absorption = Math.round((totalLra / totalRab) * 100);
+const rows = mockBudgetLines.map((l) => {
+  const pct = Math.round((l.lra / l.rab) * 100);
+  return { ...l, pct, over: l.lra > l.rab };
+});
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Laporan & Anggaran — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
+        <a href="/basis-pengetahuan">Basis Pengetahuan</a>
+      </nav>
+      <div class="role">
+        <span>Peran Aktif:</span>
+        <select id="user-role">
+          <option value="head">Ketua Bidang</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staf</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <div class="head">
+        <div>
+          <h2>Laporan & Anggaran</h2>
+          <p class="muted">RAB, LRA, dan rencana program tahunan untuk laporan tahunan lembaga</p>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+          <a class="btn" href="/daftar-rab-lra" style="text-decoration:none;">📑 Daftar RAB & LRA</a>
+          <a class="btn" href="/laporan-kinerja" style="text-decoration:none;">📊 Laporan Kinerja</a>
+          <a class="btn" href="/laporan-tahunan" style="text-decoration:none;">📄 Laporan Tahunan</a>
+          <a class="btn" href="/bagikan-cetak" style="text-decoration:none;">🖨️ Cetak Resmi</a>
+        </div>
+      </div>
+
+      <section id="restricted" class="notice" hidden>
+        🔒 Data anggaran hanya dapat dilihat oleh Admin dan Ketua Bidang.
+      </section>
+
+      <div id="content">
+        <section class="stats">
+          <div class="card"><span class="lbl">Total RAB</span><strong>{fmt(totalRab)}</strong></div>
+          <div class="card"><span class="lbl">Total Realisasi (LRA)</span><strong>{fmt(totalLra)}</strong></div>
+          <div class="card"><span class="lbl">Sisa Anggaran</span><strong>{fmt(totalRab - totalLra)}</strong></div>
+          <div class="card hl"><span class="lbl">Daya Serap</span><strong>{absorption}%</strong></div>
+        </section>
+
+        <section class="stats">
+          <PeriodComparison label="Realisasi Bulan Ini" current={totalLra / 6} previous={totalLra / 7} prefix="Rp " invert />
+          <PeriodComparison label="Donasi Terhimpun" current={860} previous={745} />
+        </section>
+
+        <section class="box">
+          <h3>RAB vs LRA per Program</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Program</th><th>Kategori</th><th>PJ</th><th class="r">RAB</th><th class="r">LRA</th><th>Serapan</th></tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr>
+                    <td>{r.program}</td>
+                    <td><span class="tag">{r.category}</span></td>
+                    <td>{r.owner}</td>
+                    <td class="r">{fmt(r.rab)}</td>
+                    <td class="r">{fmt(r.lra)}</td>
+                    <td>
+                      <div class="bar"><div class:list={['fill', { over: r.over }]} style={`width:${Math.min(r.pct, 100)}%`}></div></div>
+                      <small class:list={{ overtext: r.over }}>{r.pct}%{r.over ? ' — melebihi RAB' : ''}</small>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="box">
+          <h3>Rencana Program Tahunan</h3>
+          <div class="plan">
+            {mockAnnualPlan.map((p) => (
+              <div class="plan-item">
+                <div class="plan-top"><strong>{p.quarter}</strong><span>{p.progress}%</span></div>
+                <p>{p.target}</p>
+                <div class="bar"><div class="fill" style={`width:${p.progress}%`}></div></div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const sel = document.getElementById('user-role') as HTMLSelectElement;
+      const content = document.getElementById('content')!;
+      const restricted = document.getElementById('restricted')!;
+      const toast = document.getElementById('toast')!;
+      let role = 'head';
+      try { role = localStorage.getItem('user_role') || 'head'; } catch {}
+      sel.value = role;
+
+      function apply() {
+        const staff = role === 'staff';
+        content.hidden = staff;
+        restricted.hidden = !staff;
+      }
+      sel.addEventListener('change', () => {
+        role = sel.value;
+        try { localStorage.setItem('user_role', role); } catch {}
+        apply();
+      });
+      document.getElementById('gen-btn')!.addEventListener('click', () => {
+        toast.textContent = 'Penyusunan laporan tahunan akan tersedia setelah backend terhubung.';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      });
+      apply();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
+  .top nav a.active, .top nav a:hover { color: #38bdf8; }
+  .role { display: flex; gap: .5rem; align-items: center; font-size: .8rem; }
+  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .head h2 { margin: 0 0 .25rem; }
+  .muted { margin: 0; color: #64748b; font-size: .9rem; }
+  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+  .btn:hover { background: #0369a1; }
+  .notice { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; padding: 1rem; border-radius: 10px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
+  .card.hl { border-left: 4px solid #0284c7; }
+  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .card strong { font-size: 1.25rem; }
+  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+  .box h3 { margin: 0 0 1rem; font-size: 1.05rem; }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  th { color: #64748b; font-size: .75rem; text-transform: uppercase; }
+  .r { text-align: right; white-space: nowrap; }
+  .tag { background: #f1f5f9; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; }
+  .bar { background: #e2e8f0; height: 8px; border-radius: 99px; overflow: hidden; min-width: 120px; }
+  .fill { background: #0284c7; height: 100%; }
+  .fill.over { background: #dc2626; }
+  .overtext { color: #b91c1c; }
+  small { color: #64748b; font-size: .75rem; }
+  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .plan-item { border: 1px solid #e2e8f0; border-radius: 10px; padding: .9rem; }
+  .plan-item p { margin: .4rem 0 .7rem; font-size: .85rem; color: #475569; }
+  .plan-top { display: flex; justify-content: space-between; }
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: #0f172a; color: #fff; padding: .75rem 1.25rem; border-radius: 8px; transform: translateY(100px); opacity: 0; transition: all .25s; }
+  .toast.show { transform: none; opacity: 1; }
+</style>

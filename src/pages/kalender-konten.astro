@@ -1,0 +1,434 @@
+---
+import { contentItems, pillars, statusLabels, reminderOptions } from '../data/mockContent';
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kalender Konten — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <header class="top">
+      <h1>Dasbor Humas Media</h1>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten" class="active">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="toolbar">
+        <div class="nav">
+          <button id="prev" aria-label="Sebelumnya">‹</button>
+          <button id="today-btn">Hari ini</button>
+          <button id="next" aria-label="Berikutnya">›</button>
+          <h2 id="title"></h2>
+        </div>
+        <div class="actions">
+          <button id="add-btn" class="primary">+ Tambah Konten</button>
+          <div class="views" role="tablist" aria-label="Tampilan kalender">
+            <button data-view="day" role="tab">Harian</button>
+            <button data-view="week" role="tab">Mingguan</button>
+            <button data-view="month" role="tab" class="active">Bulanan</button>
+          </div>
+        </div>
+      </section>
+
+      <dialog id="add-dialog">
+        <form id="add-form" method="dialog">
+          <h3>Tambah Konten</h3>
+          <label>Judul
+            <input name="title" required minlength="3" />
+          </label>
+          <div class="row">
+            <label>Tanggal
+              <input type="date" name="date" required />
+            </label>
+            <label>Jam
+              <input type="time" name="time" required value="09:00" />
+            </label>
+          </div>
+          <div class="row">
+            <label>Kanal
+              <select name="channel">
+                {['Instagram', 'Facebook', 'TikTok', 'YouTube', 'Website', 'Telegram'].map((c) => <option>{c}</option>)}
+              </select>
+            </label>
+            <label>Pilar Konten
+              <select name="pillarId">
+                {pillars.map((p) => <option value={p.id}>{p.name}</option>)}
+              </select>
+            </label>
+          </div>
+          <div class="row">
+            <label>Penanggung jawab (kosongkan jika belum ditugaskan)
+              <input name="assignee" />
+            </label>
+            <label>Status
+              <select name="status">
+                {Object.entries(statusLabels).map(([k, v]) => <option value={k}>{v}</option>)}
+              </select>
+            </label>
+          </div>
+          <label>Pengingat
+            <select name="remindBefore">
+              {reminderOptions.map((o) => <option value={o.value}>{o.label}</option>)}
+            </select>
+          </label>
+          <div class="row end">
+            <button type="button" id="cancel-btn">Batal</button>
+            <button type="submit" class="primary">Simpan</button>
+          </div>
+        </form>
+      </dialog>
+
+      <div class="legend">
+        {pillars.map((p) => (
+          <span class="chip" data-pillar={p.id} title="Klik untuk menyaring pilar"><i style={`background:${p.color}`}></i>{p.name}</span>
+        ))}
+      </div>
+
+      <section id="calendar" class="calendar" aria-live="polite"></section>
+      <section id="reminders" class="summary" aria-label="Daftar pengingat"></section>
+      <section id="summary" class="summary" aria-label="Ringkasan komposisi pilar"></section>
+      <section id="members" class="summary" aria-label="Daftar konten per anggota tim"></section>
+    </main>
+
+    <script
+      is:inline
+      define:vars={{ items: contentItems, pillars, statusLabels, reminderOptions }}
+    >
+      const TODAY = new Date(2026, 9, 10); // tanggal acuan data tiruan
+      const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+      const monthNames = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      const longDay = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+
+      let view = 'month';
+      let cursor = new Date(TODAY);
+
+      const el = document.getElementById('calendar');
+      const titleEl = document.getElementById('title');
+
+      const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+      const startOfWeek = (d) => addDays(d, -((d.getDay() + 6) % 7));
+      const pillar = (id) => pillars.find((p) => p.id === id);
+      const hiddenPillars = new Set();
+      const itemsOn = (d) => items.filter((c) => c.date === iso(d) && !hiddenPillars.has(c.pillarId)).sort((a, b) => a.time.localeCompare(b.time));
+      const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+      const eventHtml = (c, detailed) => `
+        <div class="event ${c.assignee ? '' : 'unassigned'}" draggable="true" data-id="${c.id}" style="border-left-color:${pillar(c.pillarId).color}" title="${esc(c.title)}${c.assignee ? '' : ' — belum ditugaskan'}">
+          <span class="badge" style="background:${pillar(c.pillarId).color}1a;color:${pillar(c.pillarId).color}">${esc(pillar(c.pillarId).name)}</span>
+          <b>${c.time}</b> ${esc(c.title)}
+          <small>${c.channel} · ${statusLabels[c.status]}${detailed ? ` · ${esc(pillar(c.pillarId).name)}` : ''}</small>
+          <small class="who">${c.assignee ? `👤 ${esc(c.assignee)}` : '<span class="warn">⚠ Belum ditugaskan</span>'}${c.remindBefore ? ` · <span title="Pengingat">🔔 ${(reminderOptions.find((o) => o.value === c.remindBefore) || { label: '' }).label.replace(' sebelumnya', '')}</span>` : ''}</small>
+        </div>`;
+
+      function renderMonth() {
+        const y = cursor.getFullYear(), m = cursor.getMonth();
+        titleEl.textContent = `${monthNames[m]} ${y}`;
+        const first = new Date(y, m, 1);
+        const start = startOfWeek(first);
+        const total = Math.ceil(((first.getDay() + 6) % 7 + new Date(y, m + 1, 0).getDate()) / 7) * 7;
+        let html = dayNames.map((d) => `<div class="dow">${d}</div>`).join('');
+        for (let i = 0; i < total; i++) {
+          const d = addDays(start, i);
+          const other = d.getMonth() !== m;
+          html += `<div class="cell ${other ? 'empty' : ''} ${iso(d) === iso(TODAY) ? 'today' : ''}" data-date="${iso(d)}">
+            <span class="num">${d.getDate()}</span>${itemsOn(d).map((c) => eventHtml(c, false)).join('')}</div>`;
+        }
+        el.className = 'calendar month';
+        el.innerHTML = html;
+      }
+
+      function renderWeek() {
+        const start = startOfWeek(cursor);
+        const end = addDays(start, 6);
+        titleEl.textContent = `${start.getDate()} ${monthNames[start.getMonth()]} – ${end.getDate()} ${monthNames[end.getMonth()]} ${end.getFullYear()}`;
+        let html = '';
+        for (let i = 0; i < 7; i++) {
+          const d = addDays(start, i);
+          html += `<div class="dow ${iso(d) === iso(TODAY) ? 'today-h' : ''}">${dayNames[i]} ${d.getDate()}</div>`;
+        }
+        for (let i = 0; i < 7; i++) {
+          const d = addDays(start, i);
+          html += `<div class="cell tall ${iso(d) === iso(TODAY) ? 'today' : ''}" data-date="${iso(d)}">${itemsOn(d).map((c) => eventHtml(c, false)).join('') || '<span class="none">—</span>'}</div>`;
+        }
+        el.className = 'calendar week';
+        el.innerHTML = html;
+      }
+
+      function renderDay() {
+        titleEl.textContent = `${longDay[cursor.getDay()]}, ${cursor.getDate()} ${monthNames[cursor.getMonth()]} ${cursor.getFullYear()}`;
+        const list = itemsOn(cursor);
+        el.className = 'calendar day';
+        el.innerHTML = list.length
+          ? `<div class="daylist">${list.map((c) => eventHtml(c, true)).join('')}</div>`
+          : '<p class="none">Tidak ada konten dijadwalkan pada hari ini.</p>';
+      }
+
+      // Ringkasan komposisi pilar untuk periode yang sedang ditampilkan
+      function periodRange() {
+        if (view === 'month') return [new Date(cursor.getFullYear(), cursor.getMonth(), 1), new Date(cursor.getFullYear(), cursor.getMonth() + 1, 0)];
+        if (view === 'week') { const s = startOfWeek(cursor); return [s, addDays(s, 6)]; }
+        return [cursor, cursor];
+      }
+
+      function renderSummary() {
+        const [from, to] = periodRange();
+        const inRange = items.filter((c) => c.date >= iso(from) && c.date <= iso(to));
+        const label = { month: 'bulan ini', week: 'pekan ini', day: 'hari ini' }[view];
+        const total = inRange.length;
+        const rows = pillars.map((p) => {
+          const n = inRange.filter((c) => c.pillarId === p.id).length;
+          const pct = total ? Math.round((n / total) * 100) : 0;
+          return `<div class="srow"><span class="sname"><i style="background:${p.color}"></i>${esc(p.name)}</span>
+            <span class="bar"><span style="width:${pct}%;background:${p.color}"></span></span>
+            <span class="sval">${n} (${pct}%)</span></div>`;
+        }).join('');
+        document.getElementById('summary').innerHTML = `<h3>Komposisi pilar ${label} <small>· ${total} konten</small></h3>${rows}`;
+      }
+
+      // Daftar konten dikelompokkan per anggota tim untuk periode yang tampil
+      function renderMembers() {
+        const [from, to] = periodRange();
+        const inRange = items
+          .filter((c) => c.date >= iso(from) && c.date <= iso(to) && !hiddenPillars.has(c.pillarId))
+          .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+        const groups = new Map();
+        inRange.forEach((c) => {
+          const key = c.assignee || '';
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(c);
+        });
+        const names = [...groups.keys()].sort((a, b) => (a === '' ? 1 : b === '' ? -1 : a.localeCompare(b)));
+        const body = names.map((n) => `
+          <div class="mgroup ${n ? '' : 'unassigned-group'}">
+            <h4>${n ? `👤 ${esc(n)}` : '⚠ Belum ditugaskan'} <small>${groups.get(n).length} konten</small></h4>
+            <ul>${groups.get(n).map((c) => `<li><b>${c.date.slice(8)}/${c.date.slice(5, 7)} ${c.time}</b> ${esc(c.title)}
+              <small>${c.channel} · ${statusLabels[c.status]}</small></li>`).join('')}</ul>
+          </div>`).join('');
+        document.getElementById('members').innerHTML = `<h3>Konten per anggota tim</h3>${body || '<p class="none">Tidak ada konten pada periode ini.</p>'}`;
+      }
+
+      // Daftar pengingat: urut berdasarkan waktu pengingat, dengan aksi tandai selesai
+      const reminderAt = (c) => {
+        const [y, m, d] = c.date.split('-').map(Number);
+        const [hh, mm] = c.time.split(':').map(Number);
+        return new Date(new Date(y, m - 1, d, hh, mm).getTime() - c.remindBefore * 60000);
+      };
+      const fmtDT = (dt) => `${String(dt.getDate()).padStart(2, '0')}/${String(dt.getMonth() + 1).padStart(2, '0')} ${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}`;
+      const NOW = new Date(2026, 9, 10, 21, 0); // waktu acuan data tiruan
+
+      function renderReminders() {
+        const list = items.filter((c) => c.remindBefore).sort((a, b) => reminderAt(a) - reminderAt(b));
+        const pending = list.filter((c) => !c.reminderDone);
+        const done = list.filter((c) => c.reminderDone);
+        const row = (c) => {
+          const at = reminderAt(c);
+          const overdue = !c.reminderDone && at < NOW;
+          return `<li class="rem ${c.reminderDone ? 'rem-done' : ''} ${overdue ? 'rem-overdue' : ''}">
+            <span class="rem-main"><b>${esc(c.title)}</b>
+              <small>🔔 ${fmtDT(at)} · tayang ${c.date.slice(8)}/${c.date.slice(5, 7)} ${c.time} · ${c.assignee ? esc(c.assignee) : 'belum ditugaskan'}${overdue ? ' · <span class="warn">terlewat</span>' : ''}</small></span>
+            <button data-remind-toggle="${c.id}">${c.reminderDone ? 'Batalkan' : 'Tandai selesai'}</button>
+          </li>`;
+        };
+        document.getElementById('reminders').innerHTML = `<h3>Pengingat <small>· ${pending.length} aktif, ${done.length} selesai</small></h3>
+          ${list.length ? `<ul class="rem-list">${[...pending, ...done].map(row).join('')}</ul>` : '<p class="none">Belum ada pengingat.</p>'}`;
+      }
+
+      document.getElementById('reminders').addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-remind-toggle]');
+        if (!btn) return;
+        const item = items.find((c) => c.id === Number(btn.dataset.remindToggle));
+        if (item) { item.reminderDone = !item.reminderDone; renderReminders(); }
+      });
+
+      function render() {
+        document.querySelectorAll('[data-view]').forEach((b) => b.classList.toggle('active', b.dataset.view === view));
+        ({ month: renderMonth, week: renderWeek, day: renderDay })[view]();
+        renderReminders();
+        renderSummary();
+        renderMembers();
+      }
+
+      function shift(dir) {
+        if (view === 'month') cursor = new Date(cursor.getFullYear(), cursor.getMonth() + dir, 1);
+        else cursor = addDays(cursor, dir * (view === 'week' ? 7 : 1));
+        render();
+      }
+
+      document.getElementById('prev').onclick = () => shift(-1);
+      document.getElementById('next').onclick = () => shift(1);
+      document.getElementById('today-btn').onclick = () => { cursor = new Date(TODAY); render(); };
+      document.querySelectorAll('[data-view]').forEach((b) => (b.onclick = () => { view = b.dataset.view; render(); }));
+
+      // --- Form tambah konten ---
+      const dialog = document.getElementById('add-dialog');
+      const form = document.getElementById('add-form');
+      const openForm = (dateStr) => {
+        form.reset();
+        form.elements.date.value = dateStr || iso(cursor);
+        dialog.showModal();
+      };
+      document.getElementById('add-btn').onclick = () => openForm();
+      document.getElementById('cancel-btn').onclick = () => dialog.close();
+      // Klik sel tanggal (bulanan/mingguan) membuka form dengan tanggal terisi
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.event')) return;
+        const cell = e.target.closest('[data-date]');
+        if (cell) openForm(cell.dataset.date);
+      });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!form.reportValidity()) return;
+        const f = new FormData(form);
+        items.push({
+          id: Date.now(),
+          title: f.get('title').trim(),
+          date: f.get('date'),
+          time: f.get('time'),
+          channel: f.get('channel'),
+          pillarId: Number(f.get('pillarId')),
+          assignee: f.get('assignee').trim(),
+          status: f.get('status'),
+          remindBefore: Number(f.get('remindBefore')) || 0,
+        });
+        const [y, m, d] = f.get('date').split('-').map(Number);
+        cursor = new Date(y, m - 1, d);
+        dialog.close();
+        render();
+      });
+
+      // --- Geser jadwal (drag and drop) ---
+      let dragId = null;
+      el.addEventListener('dragstart', (e) => {
+        const ev = e.target.closest('.event');
+        if (!ev) return;
+        dragId = Number(ev.dataset.id);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', String(dragId));
+        ev.classList.add('dragging');
+      });
+      el.addEventListener('dragend', () => {
+        dragId = null;
+        el.querySelectorAll('.dragging, .drop-over').forEach((n) => n.classList.remove('dragging', 'drop-over'));
+      });
+      el.addEventListener('dragover', (e) => {
+        const cell = e.target.closest('[data-date]');
+        if (!cell || dragId === null) return;
+        e.preventDefault();
+        el.querySelectorAll('.drop-over').forEach((n) => n !== cell && n.classList.remove('drop-over'));
+        cell.classList.add('drop-over');
+      });
+      el.addEventListener('drop', (e) => {
+        const cell = e.target.closest('[data-date]');
+        if (!cell || dragId === null) return;
+        e.preventDefault();
+        const item = items.find((c) => c.id === dragId);
+        if (item && item.date !== cell.dataset.date) {
+          item.date = cell.dataset.date;
+          render();
+        }
+        dragId = null;
+      });
+      // --- Saring berdasarkan pilar lewat legenda ---
+      document.querySelectorAll('.chip[data-pillar]').forEach((chip) => {
+        chip.onclick = () => {
+          const id = Number(chip.dataset.pillar);
+          if (hiddenPillars.has(id)) hiddenPillars.delete(id); else hiddenPillars.add(id);
+          chip.classList.toggle('off', hiddenPillars.has(id));
+          render();
+        };
+      });
+      render();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; background: #f5f6f8; color: #1f2937; }
+  .top { display: flex; gap: 2rem; align-items: baseline; padding: 1rem 1.5rem; background: #111827; color: #fff; }
+  .top h1 { font-size: 1.1rem; margin: 0; }
+  .top nav { display: flex; gap: 1rem; }
+  .top nav a { color: #9ca3af; text-decoration: none; font-size: .9rem; }
+  .top nav a.active, .top nav a:hover { color: #fff; }
+  .muted { color: #9ca3af; font-size: .9rem; }
+  main { padding: 1.5rem; }
+  .toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem; }
+  .nav { display: flex; align-items: center; gap: .4rem; }
+  .nav h2 { margin: 0 0 0 .6rem; font-size: 1.2rem; }
+  button { font: inherit; padding: .35rem .75rem; border: 1px solid #d1d5db; background: #fff; border-radius: 6px; cursor: pointer; }
+  button:hover { background: #f3f4f6; }
+  .views { display: inline-flex; }
+  .views button { border-radius: 0; margin-left: -1px; }
+  .views button:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+  .views button:last-child { border-radius: 0 6px 6px 0; }
+  .views button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .actions { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+  button.primary { background: #2563eb; color: #fff; border-color: #2563eb; }
+  button.primary:hover { background: #1d4ed8; }
+  .cell[data-date] { cursor: pointer; }
+  .event[draggable] { cursor: grab; }
+  .badge { display: inline-block; font-size: .65rem; font-weight: 600; padding: .05rem .4rem; border-radius: 999px; margin-bottom: .15rem; }
+  .chip { cursor: pointer; user-select: none; }
+  .chip.off { opacity: .4; }
+  .event.dragging { opacity: .4; }
+  .event.unassigned { background: #fffbeb; outline: 1px dashed #d97706; }
+  .event .warn { color: #b45309; font-weight: 600; }
+  .mgroup { margin-bottom: .9rem; }
+  .mgroup h4 { margin: 0 0 .3rem; font-size: .9rem; }
+  .mgroup h4 small { color: #6b7280; font-weight: 400; }
+  .mgroup ul { margin: 0; padding-left: 1.1rem; font-size: .85rem; display: grid; gap: .2rem; }
+  .mgroup li small { color: #6b7280; margin-left: .3rem; }
+  .unassigned-group h4 { color: #b45309; }
+  .rem-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+  .rem { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: .5rem .75rem; border: 1px solid #e5e7eb; border-radius: 6px; font-size: .88rem; }
+  .rem small { display: block; color: #6b7280; }
+  .rem-main { display: block; }
+  .rem-overdue { background: #fffbeb; border-color: #d97706; }
+  .rem-done { opacity: .55; }
+  .rem-done b { text-decoration: line-through; }
+  .summary { margin-top: 1rem; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; }
+  .summary h3 { margin: 0 0 .75rem; font-size: 1rem; }
+  .summary h3 small { color: #6b7280; font-weight: 400; }
+  .srow { display: grid; grid-template-columns: 200px 1fr 90px; gap: .75rem; align-items: center; margin-bottom: .4rem; font-size: .85rem; }
+  .sname { display: inline-flex; align-items: center; gap: .4rem; }
+  .sname i { width: .6rem; height: .6rem; border-radius: 50%; display: inline-block; }
+  .bar { background: #f3f4f6; border-radius: 999px; height: .6rem; overflow: hidden; display: block; }
+  .bar span { display: block; height: 100%; }
+  .sval { text-align: right; color: #6b7280; }
+  .cell.drop-over { background: #eff6ff; outline: 2px dashed #2563eb; outline-offset: -2px; }
+  dialog { border: 0; border-radius: 10px; padding: 1.25rem; width: min(480px, 92vw); box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+  dialog::backdrop { background: rgba(17,24,39,.5); }
+  dialog h3 { margin: 0 0 .75rem; }
+  dialog label { display: flex; flex-direction: column; gap: .25rem; font-size: .85rem; flex: 1; margin-bottom: .6rem; }
+  dialog input, dialog select { font: inherit; padding: .4rem .5rem; border: 1px solid #d1d5db; border-radius: 6px; }
+  dialog .row { display: flex; gap: .75rem; }
+  dialog .row.end { justify-content: flex-end; margin-top: .5rem; }
+  .legend { display: flex; gap: .5rem; flex-wrap: wrap; margin: .75rem 0; }
+  .chip { display: inline-flex; align-items: center; gap: .35rem; font-size: .8rem; background: #fff; padding: .2rem .6rem; border-radius: 999px; border: 1px solid #e5e7eb; }
+  .chip i { width: .6rem; height: .6rem; border-radius: 50%; display: inline-block; }
+  .calendar { background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+  .calendar.month, .calendar.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; }
+  .calendar.day { background: #fff; padding: 1rem; }
+  .dow { background: #f9fafb; padding: .4rem; text-align: center; font-size: .8rem; font-weight: 600; }
+  .dow.today-h { color: #2563eb; }
+  .cell { background: #fff; min-height: 110px; padding: .3rem; display: flex; flex-direction: column; gap: .25rem; }
+  .cell.tall { min-height: 320px; }
+  .cell.empty { background: #f9fafb; }
+  .cell.today { outline: 2px solid #2563eb; outline-offset: -2px; }
+  .num { font-size: .8rem; color: #6b7280; }
+  .none { color: #9ca3af; font-size: .85rem; }
+  .daylist { display: grid; gap: .6rem; }
+  .event { font-size: .72rem; background: #f3f4f6; border-left: 3px solid; padding: .2rem .3rem; border-radius: 3px; }
+  .event small { display: block; color: #6b7280; }
+  .day .event { font-size: .95rem; padding: .6rem .8rem; }
+  @media (max-width: 700px) { .calendar.month, .calendar.week { grid-template-columns: repeat(7, minmax(80px, 1fr)); overflow-x: auto; } }
+</style>

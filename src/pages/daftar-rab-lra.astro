@@ -1,0 +1,615 @@
+---
+import { mockBudgetLines, budgetCategories, budgetOwners, budgetQuarters, budgetYears } from '../data/mockBudget';
+import { formatRupiah, formatPercent } from '../lib/format';
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daftar RAB & LRA — Dasbor Humas Media</title>
+  </head>
+  <body>
+    <!-- HEADER NAVIGASI -->
+    <header class="top">
+      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
+      <nav>
+        <a href="/dasbor-metrik">Dasbor Metrik</a>
+        <a href="/kalender-konten">Kalender Konten</a>
+        <a href="/papan-proyek">Papan Proyek</a>
+        <a href="/pantauan-berita">Pantauan Berita</a>
+        <a href="/insight-konten">Insight Konten</a>
+        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
+      </nav>
+      <div class="role">
+        <span>Peran Aktif:</span>
+        <select id="user-role">
+          <option value="head">Ketua Bidang</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staf</option>
+        </select>
+      </div>
+    </header>
+
+    <main>
+      <!-- HEADER HALAMAN -->
+      <div class="head">
+        <div>
+          <h2>Daftar Anggaran (RAB & LRA)</h2>
+          <p class="muted">
+            Rincian Rencana Anggaran Biaya vs Laporan Realisasi Anggaran dengan filter komprehensif.
+            <a href="/laporan-anggaran">← Kembali ke Laporan & Anggaran</a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="btn-add-budget">➕ Tambah Program Anggaran</button>
+          <a href="/laporan-kinerja" class="btn-ghost">📊 Laporan Kinerja</a>
+          <button class="btn-ghost" id="export-btn">📥 Ekspor CSV</button>
+        </div>
+      </div>
+
+      <!-- PERINGATAN LEAST PRIVILEGE -->
+      <section id="restricted" class="notice" hidden>
+        🔒 Akses Terbatas: Data rincian keuangan dan anggaran lembaga hanya dapat diakses oleh peran <strong>Admin</strong> dan <strong>Ketua Bidang</strong>.
+      </section>
+
+      <div id="content">
+        <!-- BARIS FILTER -->
+        <section class="filter-card">
+          <div class="filter-grid">
+            <div>
+              <label for="filter-search">Pencarian Program</label>
+              <input type="text" id="filter-search" placeholder="Cari nama program..." />
+            </div>
+            <div>
+              <label for="filter-category">Kategori</label>
+              <select id="filter-category">
+                {budgetCategories.map(c => <option value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="filter-owner">Penanggung Jawab (PJ)</label>
+              <select id="filter-owner">
+                {budgetOwners.map(o => <option value={o}>{o}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="filter-year">Tahun</label>
+              <select id="filter-year">
+                <option value="Semua Tahun">Semua Tahun</option>
+                {budgetYears.map(y => <option value={y}>{y}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="filter-quarter">Kuartal</label>
+              <select id="filter-quarter">
+                {budgetQuarters.map(q => <option value={q}>{q}</option>)}
+              </select>
+            </div>
+            <div>
+              <label for="filter-status">Status Serapan</label>
+              <select id="filter-status">
+                <option value="Semua Status">Semua Status</option>
+                <option value="hemat">Hemat (&lt; 85%)</option>
+                <option value="sesuai">Optimal (85% - 100%)</option>
+                <option value="melebihi">Melebihi RAB (&gt; 100%)</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- RINGKASAN METRIK FILTERED -->
+        <section class="stats" id="stats-summary"></section>
+
+        <!-- TABEL RINCIAN RAB & LRA -->
+        <section class="box">
+          <div class="box-head">
+            <h3>Daftar Item Program & Penyerapan</h3>
+            <span id="count-info" class="count-badge">0 item ditemukan</span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Program & Kegiatan</th>
+                  <th>Kategori</th>
+                  <th>PJ</th>
+                  <th>Periode</th>
+                  <th class="r">Pagu RAB</th>
+                  <th class="r">Realisasi (LRA)</th>
+                  <th class="r">Sisa Saldo</th>
+                  <th style="min-width: 140px;">Persentase Serapan</th>
+                  <th>Status</th>
+                  <th class="r">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="budget-rows"></tbody>
+            </table>
+          </div>
+          <p id="empty-state" class="empty-msg" hidden>
+            🔍 Tidak ditemukan data RAB/LRA yang cocok dengan kombinasi filter yang dipilih.
+          </p>
+        </section>
+      </div>
+
+      <!-- DIALOG FORM TAMBAH & UBAH RAB LRA -->
+      <dialog id="budget-dialog" class="budget-modal">
+        <form id="budget-form" method="dialog">
+          <div class="modal-header">
+            <h3 id="modal-title">Tambah Program Anggaran (RAB & LRA)</h3>
+            <button type="button" class="btn-close" id="btn-cancel-top">✕</button>
+          </div>
+
+          <input type="hidden" id="form-item-id" value="" />
+
+          <div class="form-body">
+            <div class="form-group">
+              <label for="form-program">Nama Program & Kegiatan <span class="req">*</span></label>
+              <input type="text" id="form-program" required placeholder="Contoh: Kampanye Kemanusiaan Musim Dingin Gaza" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-category">Kategori <span class="req">*</span></label>
+                <select id="form-category" required>
+                  {budgetCategories.filter(c => c !== 'Semua Kategori').map(c => <option value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="form-owner">Penanggung Jawab (PJ) <span class="req">*</span></label>
+                <select id="form-owner" required>
+                  {budgetOwners.filter(o => o !== 'Semua PJ').map(o => <option value={o}>{o}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-year">Tahun Anggaran <span class="req">*</span></label>
+                <select id="form-year" required>
+                  {budgetYears.map(y => <option value={y}>{y}</option>)}
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="form-quarter">Kuartal Target <span class="req">*</span></label>
+                <select id="form-quarter" required>
+                  {budgetQuarters.filter(q => q !== 'Semua Kuartal').map(q => <option value={q}>{q}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="form-rab">Pagu Rencana (RAB) - Rp <span class="req">*</span></label>
+                <input type="number" id="form-rab" required min="0" step="500000" placeholder="Contoh: 50000000" />
+              </div>
+
+              <div class="form-group">
+                <label for="form-lra">Realisasi Berjalan (LRA) - Rp <span class="req">*</span></label>
+                <input type="number" id="form-lra" required min="0" step="500000" placeholder="Contoh: 35000000" />
+              </div>
+            </div>
+
+            <div class="form-preview-box">
+              <span class="preview-lbl">Kalkulasi Penyerapan:</span>
+              <div class="preview-metrics">
+                <span>Sisa Anggaran: <strong id="preview-sisa">Rp 0</strong></span>
+                <span>Tingkat Serapan: <strong id="preview-persen">0%</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" id="btn-cancel">Batal</button>
+            <button type="submit" class="btn" id="btn-save">💾 Simpan Data Anggaran</button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script define:vars={{ initialData: mockBudgetLines }}>
+      const roleSel = document.getElementById('user-role');
+      const content = document.getElementById('content');
+      const restricted = document.getElementById('restricted');
+      const toast = document.getElementById('toast');
+
+      let currentRole = 'head';
+      try { currentRole = localStorage.getItem('user_role') || 'head'; } catch {}
+      if (roleSel) roleSel.value = currentRole;
+
+      function applyRole() {
+        const isStaff = currentRole === 'staff';
+        if (content) content.hidden = isStaff;
+        if (restricted) restricted.hidden = !isStaff;
+      }
+
+      if (roleSel) {
+        roleSel.addEventListener('change', () => {
+          currentRole = roleSel.value;
+          try { localStorage.setItem('user_role', currentRole); } catch {}
+          applyRole();
+        });
+      }
+      applyRole();
+
+      // Logika Filter & Render
+      const searchEl = document.getElementById('filter-search');
+      const categoryEl = document.getElementById('filter-category');
+      const ownerEl = document.getElementById('filter-owner');
+      const yearEl = document.getElementById('filter-year');
+      const quarterEl = document.getElementById('filter-quarter');
+      const statusEl = document.getElementById('filter-status');
+      
+      const rowsEl = document.getElementById('budget-rows');
+      const statsEl = document.getElementById('stats-summary');
+      const emptyEl = document.getElementById('empty-state');
+      const countEl = document.getElementById('count-info');
+
+      const fmtRupiah = (val) => 'Rp ' + Number(val).toLocaleString('id-ID');
+
+      function filterAndRender() {
+        const query = (searchEl?.value || '').toLowerCase().trim();
+        const cat = categoryEl?.value || 'Semua Kategori';
+        const own = ownerEl?.value || 'Semua PJ';
+        const yr = yearEl?.value || 'Semua Tahun';
+        const qtr = quarterEl?.value || 'Semua Kuartal';
+        const stat = statusEl?.value || 'Semua Status';
+
+        const filtered = initialData.filter(item => {
+          const matchQuery = !query || item.program.toLowerCase().includes(query);
+          const matchCat = cat === 'Semua Kategori' || item.category === cat;
+          const matchOwn = own === 'Semua PJ' || item.owner === own;
+          const matchYr = yr === 'Semua Tahun' || String(item.year) === yr;
+          const matchQtr = qtr === 'Semua Kuartal' || item.quarter === qtr;
+
+          let matchStat = true;
+          const pct = (item.lra / item.rab) * 100;
+          if (stat === 'hemat') matchStat = pct < 85;
+          else if (stat === 'sesuai') matchStat = pct >= 85 && pct <= 100;
+          else if (stat === 'melebihi') matchStat = pct > 100;
+
+          return matchQuery && matchCat && matchOwn && matchYr && matchQtr && matchStat;
+        });
+
+        // Hitung agregat
+        const totalRab = filtered.reduce((acc, i) => acc + i.rab, 0);
+        const totalLra = filtered.reduce((acc, i) => acc + i.lra, 0);
+        const sisa = totalRab - totalLra;
+        const avgSerap = totalRab > 0 ? Math.round((totalLra / totalRab) * 100) : 0;
+
+        if (statsEl) {
+          statsEl.innerHTML = `
+            <div class="card"><span class="lbl">Total Alokasi (RAB)</span><strong>${fmtRupiah(totalRab)}</strong></div>
+            <div class="card"><span class="lbl">Realisasi (LRA)</span><strong>${fmtRupiah(totalLra)}</strong></div>
+            <div class="card"><span class="lbl">Sisa Pagu</span><strong>${fmtRupiah(sisa)}</strong></div>
+            <div class="card hl"><span class="lbl">Rata-rata Serapan</span><strong>${avgSerap}%</strong></div>
+          `;
+        }
+
+        if (countEl) countEl.textContent = `${filtered.length} program ditemukan`;
+        if (emptyEl) emptyEl.hidden = filtered.length > 0;
+
+        if (rowsEl) {
+          rowsEl.innerHTML = filtered.map((item, idx) => {
+            const pct = Math.round((item.lra / item.rab) * 100);
+            const isOver = item.lra > item.rab;
+            const diff = item.rab - item.lra;
+
+            let badgeHtml = '<span class="status-badge ok">Optimal</span>';
+            if (isOver) {
+              badgeHtml = '<span class="status-badge over">Defisit/Over</span>';
+            } else if (pct < 85) {
+              badgeHtml = '<span class="status-badge under">Hemat</span>';
+            }
+
+            return `
+              <tr>
+                <td>${idx + 1}</td>
+                <td>
+                  <strong>${item.program}</strong>
+                </td>
+                <td><span class="tag">${item.category}</span></td>
+                <td><small>${item.owner}</small></td>
+                <td><span class="tag-period">${item.year} - ${item.quarter}</span></td>
+                <td class="r">${fmtRupiah(item.rab)}</td>
+                <td class="r">${fmtRupiah(item.lra)}</td>
+                <td class="r ${diff < 0 ? 'overtext' : ''}">${fmtRupiah(diff)}</td>
+                <td>
+                  <div class="bar">
+                    <div class="fill ${isOver ? 'over' : ''}" style="width: ${Math.min(pct, 100)}%"></div>
+                  </div>
+                  <small class="${isOver ? 'overtext' : ''}">${pct}%</small>
+                </td>
+                <td>${badgeHtml}</td>
+                <td class="r">
+                  <div class="row-actions">
+                    <button class="btn-sm btn-edit" data-id="${item.id}" title="Ubah item anggaran">✏️ Ubah</button>
+                    <button class="btn-sm btn-del" data-id="${item.id}" title="Hapus item anggaran">🗑️</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+
+      // Event listeners filter
+      [searchEl, categoryEl, ownerEl, yearEl, quarterEl, statusEl].forEach(el => {
+        if (el) el.addEventListener('input', filterAndRender);
+      });
+
+      // Dialog Form Tambah & Ubah
+      const budgetDialog = document.getElementById('budget-dialog');
+      const budgetForm = document.getElementById('budget-form');
+      const modalTitle = document.getElementById('modal-title');
+      const formItemId = document.getElementById('form-item-id');
+      const formProgram = document.getElementById('form-program');
+      const formCategory = document.getElementById('form-category');
+      const formOwner = document.getElementById('form-owner');
+      const formYear = document.getElementById('form-year');
+      const formQuarter = document.getElementById('form-quarter');
+      const formRab = document.getElementById('form-rab');
+      const formLra = document.getElementById('form-lra');
+      const previewSisa = document.getElementById('preview-sisa');
+      const previewPersen = document.getElementById('preview-persen');
+
+      function updatePreview() {
+        const r = Number(formRab?.value || 0);
+        const l = Number(formLra?.value || 0);
+        const diff = r - l;
+        const pct = r > 0 ? Math.round((l / r) * 100) : 0;
+        if (previewSisa) previewSisa.textContent = fmtRupiah(diff);
+        if (previewPersen) {
+          previewPersen.textContent = `${pct}% ${l > r ? '(Over/Defisit)' : ''}`;
+          previewPersen.style.color = l > r ? '#b91c1c' : '#15803d';
+        }
+      }
+
+      if (formRab) formRab.addEventListener('input', updatePreview);
+      if (formLra) formLra.addEventListener('input', updatePreview);
+
+      // Buka dialog Tambah
+      const btnAddBudget = document.getElementById('btn-add-budget');
+      if (btnAddBudget) {
+        btnAddBudget.addEventListener('click', () => {
+          if (modalTitle) modalTitle.textContent = 'Tambah Program Anggaran Baru';
+          if (formItemId) formItemId.value = '';
+          if (budgetForm) budgetForm.reset();
+          if (formYear) formYear.value = '2026';
+          if (formQuarter) formQuarter.value = 'Q1';
+          updatePreview();
+          if (budgetDialog) budgetDialog.showModal();
+        });
+      }
+
+      // Tutup dialog
+      const btnCancel = document.getElementById('btn-cancel');
+      const btnCancelTop = document.getElementById('btn-cancel-top');
+      [btnCancel, btnCancelTop].forEach(btn => {
+        if (btn) btn.addEventListener('click', () => budgetDialog?.close());
+      });
+
+      // Delegasi klik Ubah & Hapus di tabel
+      if (rowsEl) {
+        rowsEl.addEventListener('click', (e) => {
+          const editBtn = e.target.closest('.btn-edit');
+          const delBtn = e.target.closest('.btn-del');
+
+          if (editBtn) {
+            const id = Number(editBtn.dataset.id);
+            const item = initialData.find(x => x.id === id);
+            if (item) {
+              if (modalTitle) modalTitle.textContent = `Ubah Anggaran: ${item.program}`;
+              if (formItemId) formItemId.value = String(item.id);
+              if (formProgram) formProgram.value = item.program;
+              if (formCategory) formCategory.value = item.category;
+              if (formOwner) formOwner.value = item.owner;
+              if (formYear) formYear.value = String(item.year);
+              if (formQuarter) formQuarter.value = item.quarter;
+              if (formRab) formRab.value = String(item.rab);
+              if (formLra) formLra.value = String(item.lra);
+              updatePreview();
+              budgetDialog?.showModal();
+            }
+            return;
+          }
+
+          if (delBtn) {
+            const id = Number(delBtn.dataset.id);
+            const item = initialData.find(x => x.id === id);
+            if (item && confirm(`Apakah Anda yakin ingin menghapus anggaran untuk program "${item.program}"?`)) {
+              const idx = initialData.findIndex(x => x.id === id);
+              if (idx !== -1) {
+                initialData.splice(idx, 1);
+                filterAndRender();
+                if (toast) {
+                  toast.textContent = `Program "${item.program}" berhasil dihapus.`;
+                  toast.classList.add('show');
+                  setTimeout(() => toast.classList.remove('show'), 2500);
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // Submit Form (Tambah atau Ubah)
+      if (budgetForm) {
+        budgetForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const idVal = formItemId?.value;
+          const rabVal = Number(formRab?.value || 0);
+          const lraVal = Number(formLra?.value || 0);
+          const pct = rabVal > 0 ? (lraVal / rabVal) * 100 : 0;
+          let statusVal = 'sesuai';
+          if (pct > 100) statusVal = 'melebihi';
+          else if (pct < 85) statusVal = 'hemat';
+
+          if (idVal) {
+            // Mode Edit / Ubah
+            const item = initialData.find(x => x.id === Number(idVal));
+            if (item) {
+              item.program = formProgram?.value.trim() || item.program;
+              item.category = formCategory?.value || item.category;
+              item.owner = formOwner?.value || item.owner;
+              item.year = Number(formYear?.value || 2026);
+              item.quarter = formQuarter?.value || 'Q1';
+              item.rab = rabVal;
+              item.lra = lraVal;
+              item.status = statusVal;
+
+              if (toast) {
+                toast.textContent = `Anggaran "${item.program}" berhasil diperbarui.`;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2500);
+              }
+            }
+          } else {
+            // Mode Tambah Baru
+            const newId = initialData.length ? Math.max(...initialData.map(x => x.id)) + 1 : 1;
+            const newItem = {
+              id: newId,
+              program: formProgram?.value.trim() || 'Program Baru',
+              category: formCategory?.value || 'Media Sosial',
+              owner: formOwner?.value || 'Tim Media',
+              year: Number(formYear?.value || 2026),
+              quarter: formQuarter?.value || 'Q1',
+              rab: rabVal,
+              lra: lraVal,
+              status: statusVal,
+            };
+            initialData.unshift(newItem);
+
+            if (toast) {
+              toast.textContent = `Program "${newItem.program}" berhasil ditambahkan ke RAB & LRA!`;
+              toast.classList.add('show');
+              setTimeout(() => toast.classList.remove('show'), 2500);
+            }
+          }
+
+          budgetDialog?.close();
+          filterAndRender();
+        });
+      }
+
+      // Tombol Ekspor CSV
+      const exportBtn = document.getElementById('export-btn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          if (toast) {
+            toast.textContent = 'Mengekspor data RAB & LRA ke CSV...';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+          }
+        });
+      }
+
+      filterAndRender();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
+  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: .6rem; }
+  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
+  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
+  .top nav a.active, .top nav a:hover { color: #38bdf8; }
+  .role { display: flex; gap: .5rem; align-items: center; font-size: .8rem; }
+
+  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
+  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .head h2 { margin: 0 0 .25rem; }
+  .muted { margin: 0; color: #64748b; font-size: .9rem; }
+  .muted a { color: #0284c7; margin-left: .5rem; text-decoration: none; }
+  .actions { display: flex; gap: .6rem; }
+
+  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; }
+  .btn:hover { background: #0369a1; }
+  .btn-ghost { font: inherit; background: #fff; border: 1px solid #cbd5e1; color: #334155; padding: .55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; text-decoration: none; }
+  .btn-ghost:hover { background: #f1f5f9; }
+
+  .notice { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; padding: 1rem; border-radius: 10px; margin-bottom: 1.5rem; }
+
+  /* FILTER CARD */
+  .filter-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+  .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; align-items: flex-end; }
+  .filter-grid label { display: block; font-size: .78rem; font-weight: 600; color: #475569; margin-bottom: .35rem; }
+  .filter-grid input, .filter-grid select { width: 100%; font: inherit; padding: .5rem .65rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: .85rem; background: #fff; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
+  .card.hl { border-left: 4px solid #0284c7; }
+  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
+  .card strong { font-size: 1.25rem; }
+
+  /* BOX & TABLE */
+  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; }
+  .box-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+  .box-head h3 { margin: 0; font-size: 1.05rem; }
+  .count-badge { background: #f1f5f9; color: #475569; font-size: .78rem; padding: .25rem .65rem; border-radius: 999px; font-weight: 600; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+  th { color: #64748b; font-size: .75rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  .r { text-align: right; white-space: nowrap; }
+
+  .tag { background: #f1f5f9; color: #334155; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; }
+  .tag-period { background: #eff6ff; color: #1d4ed8; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; font-weight: 600; }
+
+  .bar { background: #e2e8f0; height: 7px; border-radius: 99px; overflow: hidden; min-width: 100px; margin-bottom: .2rem; }
+  .fill { background: #0284c7; height: 100%; }
+  .fill.over { background: #dc2626; }
+  .overtext { color: #b91c1c; font-weight: 600; }
+
+  .status-badge { font-size: .72rem; font-weight: 600; padding: .2rem .5rem; border-radius: 6px; }
+  .status-badge.ok { background: #dcfce7; color: #166534; }
+  .status-badge.over { background: #fee2e2; color: #991b1b; }
+  .status-badge.under { background: #fef9c3; color: #854d0e; }
+
+  .empty-msg { text-align: center; padding: 2rem; color: #64748b; font-size: .9rem; }
+
+  /* ROW ACTIONS */
+  .row-actions { display: flex; gap: .35rem; justify-content: flex-end; }
+  .btn-sm { font: inherit; font-size: .75rem; padding: .25rem .5rem; border-radius: 6px; cursor: pointer; border: 1px solid #cbd5e1; background: #fff; color: #334155; }
+  .btn-sm:hover { background: #f8fafc; }
+  .btn-del { border-color: #fecaca; color: #b91c1c; }
+  .btn-del:hover { background: #fee2e2; }
+
+  /* BUDGET MODAL FORM */
+  .budget-modal { border: 0; border-radius: 14px; padding: 0; width: min(600px, 94vw); box-shadow: 0 25px 60px rgba(15,23,42,0.3); background: #fff; }
+  .budget-modal::backdrop { background: rgba(15,23,42,0.55); backdrop-filter: blur(2px); }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.15rem 1.4rem; border-bottom: 1px solid #e2e8f0; }
+  .modal-header h3 { margin: 0; font-size: 1.1rem; color: #0f172a; }
+  .btn-close { background: none; border: 0; font-size: 1.1rem; color: #64748b; cursor: pointer; padding: .2rem .5rem; border-radius: 6px; }
+  .btn-close:hover { background: #f1f5f9; color: #0f172a; }
+
+  .form-body { padding: 1.4rem; display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: .35rem; }
+  .form-group label { font-size: .8rem; font-weight: 600; color: #334155; }
+  .form-group .req { color: #dc2626; }
+  .form-group input, .form-group select { font: inherit; padding: .55rem .75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: .88rem; background: #fff; }
+  .form-group input:focus, .form-group select:focus { outline: none; border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2,132,199,0.15); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .form-preview-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: .85rem 1rem; }
+  .preview-lbl { display: block; font-size: .75rem; font-weight: 600; color: #64748b; margin-bottom: .35rem; }
+  .preview-metrics { display: flex; justify-content: space-between; font-size: .85rem; color: #334155; }
+
+  .modal-footer { display: flex; justify-content: flex-end; gap: .75rem; padding: 1.15rem 1.4rem; border-top: 1px solid #e2e8f0; background: #fafbfc; border-radius: 0 0 14px 14px; }
+
+  .toast { position: fixed; bottom: 2rem; right: 2rem; background: #0f172a; color: #fff; padding: .75rem 1.25rem; border-radius: 8px; transform: translateY(100px); opacity: 0; transition: all .25s; }
+  .toast.show { transform: none; opacity: 1; }
+</style>

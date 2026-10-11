@@ -1,0 +1,431 @@
+{
+  ".astro/content-assets.mjs": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".astro/content-modules.mjs": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".astro/content.d.ts": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".astro/data-store.json": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".astro/settings.json": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".astro/types.d.ts": {
+    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  },
+  ".ngodingpakeaiignore": {
+    "summary": "Berkas modul .ngodingpakeaiignore mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "AGENTS.md": {
+    "summary": "Berkas modul AGENTS.md mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "astro.config.mjs": {
+    "summary": "Berkas modul astro.config.mjs mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "migrate.ts": {
+    "summary": "Berkas modul migrate.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "package-lock.json": {
+    "summary": "Berkas modul package-lock.json mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "package.json": {
+    "summary": "Berkas modul package.json mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/ContentGaps.astro": {
+    "summary": "Berkas modul src/components/ContentGaps.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/IdeaRecommendations.astro": {
+    "summary": "Berkas modul src/components/IdeaRecommendations.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/NewsStream.astro": {
+    "summary": "Berkas modul src/components/NewsStream.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/PeriodComparison.astro": {
+    "summary": "Berkas modul src/components/PeriodComparison.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/RoleMatrixTable.astro": {
+    "summary": "Komponen tabel matriks pembagian hak akses pengguna berdasarkan peran dan modul operasional lembaga."
+  },
+  "src/components/RoleNavigation.astro": {
+    "summary": "Komponen navigasi header adaptif yang menyaring menu berdasarkan tingkat otorisasi peran pengguna (RBAC)."
+  },
+  "src/components/SavedIdeas.astro": {
+    "summary": "Berkas modul src/components/SavedIdeas.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/components/TrendingTopics.astro": {
+    "summary": "Berkas modul src/components/TrendingTopics.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockBudget.ts": {
+    "summary": "Berkas modul src/data/mockBudget.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockContent.ts": {
+    "summary": "Berkas modul src/data/mockContent.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockInsights.ts": {
+    "summary": "Berkas modul src/data/mockInsights.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockKnowledge.ts": {
+    "summary": "Berkas modul src/data/mockKnowledge.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockMetrics.ts": {
+    "summary": "Berkas modul src/data/mockMetrics.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockNews.ts": {
+    "summary": "Berkas modul src/data/mockNews.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockProjects.ts": {
+    "summary": "Berkas modul src/data/mockProjects.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockReport.ts": {
+    "summary": "Berkas modul src/data/mockReport.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/data/mockSettings.ts": {
+    "summary": "Data tiruan profil organisasi, akun personil tim, matriks izin, integrasi DAM/Cloud, dan audit log."
+  },
+  "src/lib/auditService.ts": {
+    "summary": "Service terpusat untuk mencatat dan membaca jejak audit aktivitas penting ke basis data."
+  },
+  "src/lib/auth.ts": {
+    "summary": "Modul utilitas otentikasi peran pengguna dan validasi hak akses RBAC (Least Privilege)."
+  },
+  "src/lib/damHealthService.ts": {
+    "summary": "Service pemantauan kesehatan konektivitas server DAM NAS lokal, latency, dan panduan galat."
+  },
+  "src/lib/db.ts": {
+    "summary": "Inisialisasi SQLite database, migrasi tabel, dan penyemaian data awal dasbor humas media."
+  },
+  "src/lib/exportService.ts": {
+    "summary": "Berkas modul src/lib/exportService.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/format.ts": {
+    "summary": "Berkas modul src/lib/format.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/googleSyncService.ts": {
+    "summary": "Service sinkronisasi agenda kalender konten ke Google Calendar dan rekap anggaran ke Google Sheets."
+  },
+  "src/lib/newsFetcher.ts": {
+    "summary": "Berkas modul src/lib/newsFetcher.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/newsScheduler.ts": {
+    "summary": "Berkas modul src/lib/newsScheduler.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/reminderService.ts": {
+    "summary": "Berkas modul src/lib/reminderService.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/seedMetrics.ts": {
+    "summary": "Berkas modul src/lib/seedMetrics.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/lib/telegramFetcher.ts": {
+    "summary": "Berkas modul src/lib/telegramFetcher.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/middleware.ts": {
+    "summary": "Astro middleware untuk pembatasan akses rute halaman dan API berdasarkan prinsip least privilege."
+  },
+  "src/pages/api/audit/logs.ts": {
+    "summary": "Endpoint pengambilan dan pencatatan jejak audit aktivitas sistem untuk akuntabilitas operasional."
+  },
+  "src/pages/api/auth/login.ts": {
+    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+  },
+  "src/pages/api/auth/logout.ts": {
+    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+  },
+  "src/pages/api/auth/session.ts": {
+    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+  },
+  "src/pages/api/content/index.ts": {
+    "summary": "Berkas modul src/pages/api/content/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/content/summary/pillars.ts": {
+    "summary": "Berkas modul src/pages/api/content/summary/pillars.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/content/[id]/assign.ts": {
+    "summary": "Berkas modul src/pages/api/content/[id]/assign.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/content/[id]/reschedule.ts": {
+    "summary": "Berkas modul src/pages/api/content/[id]/reschedule.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/content/[id].ts": {
+    "summary": "Berkas modul src/pages/api/content/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/gaps/index.ts": {
+    "summary": "Berkas modul src/pages/api/insights/gaps/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/gaps/[id]/adopt.ts": {
+    "summary": "Berkas modul src/pages/api/insights/gaps/[id]/adopt.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/ideas/index.ts": {
+    "summary": "Berkas modul src/pages/api/insights/ideas/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/ideas/saved/index.ts": {
+    "summary": "Berkas modul src/pages/api/insights/ideas/saved/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/ideas/saved/[id]/to-calendar.ts": {
+    "summary": "Berkas modul src/pages/api/insights/ideas/saved/[id]/to-calendar.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/ideas/saved/[id].ts": {
+    "summary": "Berkas modul src/pages/api/insights/ideas/saved/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/trends/index.ts": {
+    "summary": "Berkas modul src/pages/api/insights/trends/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/insights/trends/refresh.ts": {
+    "summary": "Berkas modul src/pages/api/insights/trends/refresh.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/integrations/dam/config.ts": {
+    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+  },
+  "src/pages/api/integrations/dam/health.ts": {
+    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+  },
+  "src/pages/api/integrations/dam/test.ts": {
+    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+  },
+  "src/pages/api/integrations/google/callback.ts": {
+    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+  },
+  "src/pages/api/integrations/google/connect.ts": {
+    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+  },
+  "src/pages/api/integrations/google/disconnect.ts": {
+    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+  },
+  "src/pages/api/integrations/google/sync.ts": {
+    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+  },
+  "src/pages/api/integrations/status/index.ts": {
+    "summary": "Endpoint pemantauan status koneksi layanan eksternal serta panduan langkah perbaikan konektivitas."
+  },
+  "src/pages/api/knowledge/docs/index.ts": {
+    "summary": "Berkas modul src/pages/api/knowledge/docs/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/knowledge/docs/[id].ts": {
+    "summary": "Berkas modul src/pages/api/knowledge/docs/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/knowledge/proposals/index.ts": {
+    "summary": "Berkas modul src/pages/api/knowledge/proposals/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/knowledge/proposals/[id].ts": {
+    "summary": "Berkas modul src/pages/api/knowledge/proposals/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/knowledge/search.ts": {
+    "summary": "Berkas modul src/pages/api/knowledge/search.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/donations.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/donations.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/highlights.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/highlights.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/index.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/meta-ads.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/meta-ads.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/seed.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/seed.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/social.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/social.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/metrics/website.ts": {
+    "summary": "Berkas modul src/pages/api/metrics/website.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/bookmark/index.ts": {
+    "summary": "Berkas modul src/pages/api/news/bookmark/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/reference/index.ts": {
+    "summary": "Berkas modul src/pages/api/news/reference/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/scheduler/index.ts": {
+    "summary": "Berkas modul src/pages/api/news/scheduler/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/sources/index.ts": {
+    "summary": "Berkas modul src/pages/api/news/sources/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/sources/sync.ts": {
+    "summary": "Berkas modul src/pages/api/news/sources/sync.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/sources/[id].ts": {
+    "summary": "Berkas modul src/pages/api/news/sources/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/stream/index.ts": {
+    "summary": "Berkas modul src/pages/api/news/stream/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/news/telegram/sync.ts": {
+    "summary": "Berkas modul src/pages/api/news/telegram/sync.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/pillars/index.ts": {
+    "summary": "Berkas modul src/pages/api/pillars/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/pillars/[id].ts": {
+    "summary": "Berkas modul src/pages/api/pillars/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/index.ts": {
+    "summary": "Berkas modul src/pages/api/projects/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/overview.ts": {
+    "summary": "Berkas modul src/pages/api/projects/overview.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/people.ts": {
+    "summary": "Berkas modul src/pages/api/projects/people.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/index.ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/reorder.ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/reorder.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/[id]/assignee.ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/assignee.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/[id]/due-date.ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/due-date.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/[id]/stage.ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/stage.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/tasks/[id].ts": {
+    "summary": "Berkas modul src/pages/api/projects/tasks/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/projects/[id].ts": {
+    "summary": "Berkas modul src/pages/api/projects/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reminders/index.ts": {
+    "summary": "Berkas modul src/pages/api/reminders/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reminders/process.ts": {
+    "summary": "Berkas modul src/pages/api/reminders/process.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reminders/[id]/sent.ts": {
+    "summary": "Berkas modul src/pages/api/reminders/[id]/sent.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reminders/[id].ts": {
+    "summary": "Berkas modul src/pages/api/reminders/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/annual/index.ts": {
+    "summary": "Berkas modul src/pages/api/reports/annual/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/budget/index.ts": {
+    "summary": "Berkas modul src/pages/api/reports/budget/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/budget/[id].ts": {
+    "summary": "Berkas modul src/pages/api/reports/budget/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/export.ts": {
+    "summary": "Berkas modul src/pages/api/reports/export.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/performance/aggregate.ts": {
+    "summary": "Berkas modul src/pages/api/reports/performance/aggregate.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/performance/index.ts": {
+    "summary": "Berkas modul src/pages/api/reports/performance/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/performance/notes/index.ts": {
+    "summary": "Berkas modul src/pages/api/reports/performance/notes/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/performance/notes/[id].ts": {
+    "summary": "Berkas modul src/pages/api/reports/performance/notes/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/reports/share.ts": {
+    "summary": "Berkas modul src/pages/api/reports/share.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/team/index.ts": {
+    "summary": "Berkas modul src/pages/api/team/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/team/workload.ts": {
+    "summary": "Berkas modul src/pages/api/team/workload.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/themes/index.ts": {
+    "summary": "Berkas modul src/pages/api/themes/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/themes/[id].ts": {
+    "summary": "Berkas modul src/pages/api/themes/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/api/user/change-password.ts": {
+    "summary": "Endpoint data profil pribadi pengguna dan penggantian kata sandi akun terverifikasi."
+  },
+  "src/pages/api/user/profile.ts": {
+    "summary": "Endpoint data profil pribadi pengguna dan penggantian kata sandi akun terverifikasi."
+  },
+  "src/pages/api/users/index.ts": {
+    "summary": "Endpoint manajemen akun personil, penugasan peran RBAC, dan pembaruan hak akses sistem."
+  },
+  "src/pages/api/users/[id].ts": {
+    "summary": "Endpoint manajemen akun personil, penugasan peran RBAC, dan pembaruan hak akses sistem."
+  },
+  "src/pages/bagikan-cetak.astro": {
+    "summary": "Berkas modul src/pages/bagikan-cetak.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/basis-pengetahuan/status-usulan.astro": {
+    "summary": "Berkas modul src/pages/basis-pengetahuan/status-usulan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/basis-pengetahuan/[id].astro": {
+    "summary": "Berkas modul src/pages/basis-pengetahuan/[id].astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/basis-pengetahuan.astro": {
+    "summary": "Berkas modul src/pages/basis-pengetahuan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/daftar-rab-lra.astro": {
+    "summary": "Berkas modul src/pages/daftar-rab-lra.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/dasbor-metrik.astro": {
+    "summary": "Berkas modul src/pages/dasbor-metrik.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/index.astro": {
+    "summary": "Berkas modul src/pages/index.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/insight-konten.astro": {
+    "summary": "Berkas modul src/pages/insight-konten.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/integrasi-google.astro": {
+    "summary": "Halaman pemantauan dan pengelolaan koneksi Google Workspace Calendar, Drive, dan Sheets."
+  },
+  "src/pages/jejak-audit.astro": {
+    "summary": "Halaman jejak audit keamanan dan tata kelola sistem dengan pencarian, filter status, dan ekspor CSV."
+  },
+  "src/pages/kalender-konten.astro": {
+    "summary": "Berkas modul src/pages/kalender-konten.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/laporan-anggaran.astro": {
+    "summary": "Berkas modul src/pages/laporan-anggaran.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/laporan-kinerja.astro": {
+    "summary": "Berkas modul src/pages/laporan-kinerja.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/laporan-tahunan.astro": {
+    "summary": "Berkas modul src/pages/laporan-tahunan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/manajemen-akun.astro": {
+    "summary": "Halaman manajemen personil tim humas, alokasi peran pengguna, serta pembekuan akun."
+  },
+  "src/pages/masuk.astro": {
+    "summary": "Halaman login autentikasi pengguna dengan email, kata sandi, dan sakelar cepat peran demo."
+  },
+  "src/pages/pantauan-berita/sumber.astro": {
+    "summary": "Berkas modul src/pages/pantauan-berita/sumber.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/pantauan-berita/tersimpan.astro": {
+    "summary": "Berkas modul src/pages/pantauan-berita/tersimpan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/pantauan-berita.astro": {
+    "summary": "Berkas modul src/pages/pantauan-berita.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/papan-proyek.astro": {
+    "summary": "Berkas modul src/pages/papan-proyek.astro mendukung fungsionalitas aplikasi dasbor humas media."
+  },
+  "src/pages/pengaturan-dam.astro": {
+    "summary": "Halaman antarmuka pusat pengaturan lembaga, manajemen peran pengguna, integrasi sistem, dan log audit."
+  },
+  "src/pages/pengaturan.astro": {
+    "summary": "Halaman antarmuka pusat pengaturan lembaga, manajemen peran pengguna, integrasi sistem, dan log audit."
+  },
+  "src/pages/profil-akun.astro": {
+    "summary": "Halaman profil akun pribadi, perubahan kata sandi, dan preferensi notifikasi kerja pengguna."
+  }
+}
