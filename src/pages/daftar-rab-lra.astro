@@ -7,6 +7,7 @@ import {
   budgetYears,
 } from '../lib/clientDataFetcher';
 import { formatRupiah, formatPercent } from '../lib/format';
+import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
 <!doctype html>
@@ -17,26 +18,7 @@ import { formatRupiah, formatPercent } from '../lib/format';
     <title>Daftar RAB & LRA — Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI -->
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Staf</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/laporan-anggaran" />
 
     <main>
       <!-- HEADER HALAMAN -->

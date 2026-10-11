@@ -6,6 +6,7 @@ import {
   mockIntegrations,
   mockAuditLogs
 } from '../lib/clientDataFetcher';
+import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
 <!doctype html>
@@ -16,28 +17,7 @@ import {
     <title>Pengaturan & Integrasi Sistem (Settings) - Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI DASBOR -->
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran">Laporan & Anggaran</a>
-        <a href="/basis-pengetahuan">Basis Pengetahuan & SOP</a>
-        <a href="/pengaturan" class="active">Pengaturan & Integrasi</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang (Akses Penuh)</option>
-          <option value="admin">Admin (Teknis & Sistem)</option>
-          <option value="staff">Staf (Konten Saja)</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/pengaturan" />
 
     <main>
       <!-- HEADER HALAMAN -->

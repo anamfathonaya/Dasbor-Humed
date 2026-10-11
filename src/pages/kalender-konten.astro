@@ -5,6 +5,7 @@ import {
   mockStatusLabels as statusLabels,
   mockReminderOptions as reminderOptions,
 } from '../lib/clientDataFetcher';
+import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
 <!doctype html>
@@ -15,15 +16,7 @@ import {
     <title>Kalender Konten — Dasbor Humas Media</title>
   </head>
   <body>
-    <header class="top">
-      <h1>Dasbor Humas Media</h1>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten" class="active">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-      </nav>
-    </header>
+    <RoleNavigation currentPath="/kalender-konten" />
 
     <main>
       <section class="toolbar">

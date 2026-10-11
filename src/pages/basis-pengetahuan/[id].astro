@@ -1,5 +1,6 @@
 ---
 import { mockKnowledgeDocs } from '../../lib/clientDataFetcher';
+import RoleNavigation from '../../components/RoleNavigation.astro';
 
 const { id } = Astro.params;
 const docId = Number(id);
@@ -77,27 +78,7 @@ const steps = doc.steps || [
     <title>{doc.code}: {doc.title} — Basis Pengetahuan Dasbor Humas</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI DASBOR -->
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran">Laporan & Anggaran</a>
-        <a href="/basis-pengetahuan" class="active">Basis Pengetahuan & SOP</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Staf</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/basis-pengetahuan" />
 
     <main>
       <!-- BREADCRUMB NAVIGASI -->

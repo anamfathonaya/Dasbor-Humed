@@ -1,5 +1,6 @@
 ---
 import { mockCuratedSources as curatedSources } from '../../lib/clientDataFetcher';
+import RoleNavigation from '../../components/RoleNavigation.astro';
 
 const sourceCategories = ['Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Kesehatan', 'Regulasi'];
 ---
@@ -12,22 +13,7 @@ const sourceCategories = ['Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Kesehatan
     <title>Kelola Langganan Sumber — Pusat Pantauan Berita</title>
   </head>
   <body>
-    <!-- TOP HEADER -->
-    <header class="top">
-      <div class="brand">
-        <span class="brand-icon">🌐</span>
-        <h1>Dasbor Humas Media</h1>
-      </div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita" class="active">Pantauan Berita</a>
-      </nav>
-      <div class="user-role-badge">
-        <a href="/pantauan-berita" class="back-link">← Kembali ke Aliran Berita</a>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/pantauan-berita" />
 
     <main>
       <div class="head">

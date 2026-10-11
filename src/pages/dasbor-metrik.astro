@@ -7,6 +7,7 @@ import {
   mockDonationCampaigns as donationCampaigns,
   mockAdCampaigns as adCampaigns,
 } from '../lib/clientDataFetcher';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString('id-ID') : n.toLocaleString('id-ID', { maximumFractionDigits: 1 }));
 ---
@@ -19,23 +20,7 @@ const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString('id-ID') : n.
     <title>Dasbor Metrik — Dasbor Humas Media</title>
   </head>
   <body>
-    <header class="top">
-      <h1>Dasbor Humas Media</h1>
-      <nav>
-        <a href="/dasbor-metrik" class="active">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-      </nav>
-      <div class="user-role-badge">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang (Akses Penuh)</option>
-          <option value="admin">Admin (Metrik & Operasional)</option>
-          <option value="staff">Staf (Hanya Konten & Publik)</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/dasbor-metrik" />
 
     <main>
       <div class="head">
@@ -300,34 +285,37 @@ const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString('id-ID') : n.
       periodEl.addEventListener('change', applyFilters);
       channelEl.addEventListener('change', applyFilters);
 
-      const userRoleEl = document.getElementById('user-role');
-      function applyRoleRestrictions() {
-        const role = userRoleEl.value; // 'head', 'admin', 'staff'
+      const userRoleEl = (document.getElementById('global-role-switcher') || document.getElementById('user-role')) as HTMLSelectElement | null;
+      function applyRoleRestrictions(explicitRole?: string) {
+        const role = explicitRole || (userRoleEl ? userRoleEl.value : (localStorage.getItem('user_role') || 'head')); // 'head', 'admin', 'staff'
         const donasiCard = document.getElementById('donasi');
         const metaCard = document.getElementById('meta');
         const hlCards = document.querySelectorAll('.hl-card');
 
         if (role === 'staff') {
           // Staf: least privilege - batasi akses metrik finansial & anggaran (donasi & iklan meta)
-          if (donasiCard) donasiCard.style.display = 'none';
-          if (metaCard) metaCard.style.display = 'none';
+          if (donasiCard) (donasiCard as HTMLElement).style.display = 'none';
+          if (metaCard) (metaCard as HTMLElement).style.display = 'none';
           // Sembunyikan sorotan finansial
-          if (hlCards[0]) hlCards[0].style.display = 'none';
-          if (hlCards[2]) hlCards[2].style.display = 'none';
+          if (hlCards[0]) (hlCards[0] as HTMLElement).style.display = 'none';
+          if (hlCards[2]) (hlCards[2] as HTMLElement).style.display = 'none';
         } else if (role === 'admin') {
           // Admin: operasional & teknis (terbuka), tapi sorotan tetap transparan
-          if (donasiCard) donasiCard.style.display = '';
-          if (metaCard) metaCard.style.display = '';
-          hlCards.forEach(c => c.style.display = '');
+          if (donasiCard) (donasiCard as HTMLElement).style.display = '';
+          if (metaCard) (metaCard as HTMLElement).style.display = '';
+          hlCards.forEach(c => (c as HTMLElement).style.display = '');
         } else {
           // Head (Ketua Bidang): semua fitur terbuka penuh
-          if (donasiCard) donasiCard.style.display = '';
-          if (metaCard) metaCard.style.display = '';
-          hlCards.forEach(c => c.style.display = '');
+          if (donasiCard) (donasiCard as HTMLElement).style.display = '';
+          if (metaCard) (metaCard as HTMLElement).style.display = '';
+          hlCards.forEach(c => (c as HTMLElement).style.display = '');
         }
       }
 
-      userRoleEl.addEventListener('change', applyRoleRestrictions);
+      userRoleEl?.addEventListener('change', () => applyRoleRestrictions());
+      window.addEventListener('roleChanged', (e: any) => {
+        applyRoleRestrictions(e.detail?.role);
+      });
       applyFilters();
       applyRoleRestrictions();
 

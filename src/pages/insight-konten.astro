@@ -11,6 +11,7 @@ import TrendingTopics from '../components/TrendingTopics.astro';
 import ContentGaps from '../components/ContentGaps.astro';
 import IdeaRecommendations from '../components/IdeaRecommendations.astro';
 import SavedIdeas from '../components/SavedIdeas.astro';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const channels = ['Semua Saluran', 'Instagram', 'TikTok', 'YouTube', 'Website', 'Facebook'];
 const verdicts = ['Semua Status', 'Sangat Efektif', 'Stabil', 'Perlu Optimasi'];
@@ -24,28 +25,7 @@ const verdicts = ['Semua Status', 'Sangat Efektif', 'Stabil', 'Perlu Optimasi'];
     <title>Insight Konten Terbaru — Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI -->
-    <header class="top">
-      <div class="brand">
-        <span class="brand-icon">🌐</span>
-        <h1>Dasbor Humas Media</h1>
-      </div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten" class="active">Insight Konten</a>
-      </nav>
-      <div class="user-role-badge">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang (Akses Penuh)</option>
-          <option value="admin">Admin (Metrik & Operasional)</option>
-          <option value="staff">Staf (Hanya Konten & Publik)</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/insight-konten" />
 
     <main>
       <!-- HEADER HALAMAN -->
@@ -341,7 +321,7 @@ const verdicts = ['Semua Status', 'Sangat Efektif', 'Stabil', 'Perlu Optimasi'];
       });
 
       // Logika least privilege sesuai role pengguna (head, admin, staff)
-      const userRoleSelect = document.getElementById('user-role');
+      const userRoleSelect = (document.getElementById('global-role-switcher') || document.getElementById('user-role')) as HTMLSelectElement | null;
       let currentRole = 'head';
       try {
         const savedRole = localStorage.getItem('user_role');
@@ -360,9 +340,16 @@ const verdicts = ['Semua Status', 'Sangat Efektif', 'Stabil', 'Perlu Optimasi'];
 
         // Tampilkan atau sembunyikan kotak metrik konversi dalam kartu insight
         document.querySelectorAll('.metric-conversion-box').forEach(box => {
-          box.style.display = isStaff ? 'none' : 'block';
+          (box as HTMLElement).style.display = isStaff ? 'none' : 'block';
         });
       }
+
+      window.addEventListener('roleChanged', (e: any) => {
+        if (e.detail?.role) {
+          currentRole = e.detail.role;
+          applyRoleVisibility();
+        }
+      });
 
       if (userRoleSelect) {
         userRoleSelect.addEventListener('change', (e) => {

@@ -4,6 +4,7 @@ import {
   mockAnnualPlan,
 } from '../lib/clientDataFetcher';
 import PeriodComparison from '../components/PeriodComparison.astro';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID');
 const totalRab = mockBudgetLines.reduce((s, l) => s + l.rab, 0);
@@ -23,26 +24,7 @@ const rows = mockBudgetLines.map((l) => {
     <title>Laporan & Anggaran — Dasbor Humas Media</title>
   </head>
   <body>
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
-        <a href="/basis-pengetahuan">Basis Pengetahuan</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Staf</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/laporan-anggaran" />
 
     <main>
       <div class="head">
@@ -119,23 +101,29 @@ const rows = mockBudgetLines.map((l) => {
     <div class="toast" id="toast"></div>
 
     <script>
-      const sel = document.getElementById('user-role') as HTMLSelectElement;
+      const sel = (document.getElementById('global-role-switcher') || document.getElementById('user-role')) as HTMLSelectElement | null;
       const content = document.getElementById('content')!;
       const restricted = document.getElementById('restricted')!;
       const toast = document.getElementById('toast')!;
       let role = 'head';
       try { role = localStorage.getItem('user_role') || 'head'; } catch {}
-      sel.value = role;
+      if (sel) sel.value = role;
 
       function apply() {
         const staff = role === 'staff';
         content.hidden = staff;
         restricted.hidden = !staff;
       }
-      sel.addEventListener('change', () => {
+      sel?.addEventListener('change', () => {
         role = sel.value;
         try { localStorage.setItem('user_role', role); } catch {}
         apply();
+      });
+      window.addEventListener('roleChanged', (e: any) => {
+        if (e.detail?.role) {
+          role = e.detail.role;
+          apply();
+        }
       });
       document.getElementById('gen-btn')!.addEventListener('click', () => {
         toast.textContent = 'Penyusunan laporan tahunan akan tersedia setelah backend terhubung.';

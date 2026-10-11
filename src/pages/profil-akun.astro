@@ -1,4 +1,5 @@
 ---
+import RoleNavigation from '../components/RoleNavigation.astro';
 // Halaman Profil Akun Pribadi & Pengaturan Kata Sandi
 ---
 
@@ -10,28 +11,7 @@
     <title>Akun Pribadi & Kata Sandi - Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI DASBOR -->
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran">Laporan & Anggaran</a>
-        <a href="/basis-pengetahuan">Basis Pengetahuan & SOP</a>
-        <a href="/pengaturan">Pengaturan & Integrasi</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang</option>
-          <option value="admin">Admin Teknis</option>
-          <option value="staff">Staf Konten</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/profil-akun" />
 
     <main>
       <!-- HEADER HALAMAN -->

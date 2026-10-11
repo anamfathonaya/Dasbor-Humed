@@ -4,6 +4,7 @@ import {
   reportChannels,
   reportPeriods,
 } from '../lib/clientDataFetcher';
+import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
 <!doctype html>
@@ -14,17 +15,7 @@ import {
     <title>Laporan Kinerja — Dasbor Humas Media</title>
   </head>
   <body>
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
-      </nav>
-    </header>
+    <RoleNavigation currentPath="/laporan-anggaran" />
 
     <main>
       <div class="head">

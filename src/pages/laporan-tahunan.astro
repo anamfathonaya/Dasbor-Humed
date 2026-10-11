@@ -4,6 +4,7 @@ import {
   mockBudgetLines,
 } from '../lib/clientDataFetcher';
 import { formatRupiah, formatNumber } from '../lib/format';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const availableYears = Object.keys(mockAnnualReportsByYear).sort((a, b) => Number(b) - Number(a));
 ---
@@ -16,26 +17,7 @@ const availableYears = Object.keys(mockAnnualReportsByYear).sort((a, b) => Numbe
     <title>Laporan Tahunan Program — Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI -->
-    <header class="top">
-      <div class="brand"><span>🌐</span><h1>Dasbor Humas Media</h1></div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-        <a href="/insight-konten">Insight Konten</a>
-        <a href="/laporan-anggaran" class="active">Laporan & Anggaran</a>
-      </nav>
-      <div class="role">
-        <span>Peran Aktif:</span>
-        <select id="user-role">
-          <option value="head">Ketua Bidang</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Staf</option>
-        </select>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/laporan-anggaran" />
 
     <main>
       <!-- HEADER HALAMAN -->

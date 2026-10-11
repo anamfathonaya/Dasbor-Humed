@@ -4,6 +4,7 @@ import {
   mockCuratedSources as curatedSources,
 } from '../lib/clientDataFetcher';
 import NewsStream from '../components/NewsStream.astro';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const categories = ['Semua', 'Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Kesehatan', 'Regulasi'];
 ---
@@ -16,22 +17,7 @@ const categories = ['Semua', 'Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Keseha
     <title>Pusat Pantauan Berita — Dasbor Humas Media</title>
   </head>
   <body>
-    <!-- HEADER NAVIGASI -->
-    <header class="top">
-      <div class="brand">
-        <span class="brand-icon">🌐</span>
-        <h1>Dasbor Humas Media</h1>
-      </div>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek">Papan Proyek</a>
-        <a href="/pantauan-berita" class="active">Pantauan Berita</a>
-      </nav>
-      <div class="user-role-badge">
-        <span class="role-pill">Monitoring: Akun Telegram Lembaga Aktif</span>
-      </div>
-    </header>
+    <RoleNavigation currentPath="/pantauan-berita" />
 
     <main>
       <!-- HEADER HALAMAN -->

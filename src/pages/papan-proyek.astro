@@ -3,6 +3,7 @@ import {
   mockProjects,
   mockStageLabels as stageLabels,
 } from '../lib/clientDataFetcher';
+import RoleNavigation from '../components/RoleNavigation.astro';
 
 const stages = ['todo', 'in_progress', 'review', 'done'] as const;
 ---
@@ -15,15 +16,7 @@ const stages = ['todo', 'in_progress', 'review', 'done'] as const;
     <title>Papan Proyek — Dasbor Humas Media</title>
   </head>
   <body>
-    <header class="top">
-      <h1>Dasbor Humas Media</h1>
-      <nav>
-        <a href="/dasbor-metrik">Dasbor Metrik</a>
-        <a href="/kalender-konten">Kalender Konten</a>
-        <a href="/papan-proyek" class="active">Papan Proyek</a>
-        <a href="/pantauan-berita">Pantauan Berita</a>
-      </nav>
-    </header>
+    <RoleNavigation currentPath="/papan-proyek" />
 
     <main>
       <div class="head">

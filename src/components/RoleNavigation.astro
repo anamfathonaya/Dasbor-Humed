@@ -104,7 +104,7 @@ const menuItems: MenuItem[] = [
   <div class="nav-user-controls">
     <div class="role-selector-wrap">
       <label for="global-role-switcher" class="role-label">Peran:</label>
-      <select id="global-role-switcher" class="role-select">
+      <select id="global-role-switcher" name="user-role" class="role-select">
         <option value="head">Ketua Bidang</option>
         <option value="admin">Admin Teknis</option>
         <option value="staff">Staf Konten</option>
@@ -286,14 +286,35 @@ const menuItems: MenuItem[] = [
     }
     applyRoleVisibility(currentRole);
 
-    roleSwitcher?.addEventListener('change', () => {
-      const selected = roleSwitcher.value;
+    function onRoleChanged(newRole: string) {
       try {
-        localStorage.setItem('user_role', selected);
-        document.cookie = `user_role=${selected}; path=/; max-age=2592000`;
+        localStorage.setItem('user_role', newRole);
+        document.cookie = `user_role=${newRole}; path=/; max-age=2592000`;
       } catch {}
-      applyRoleVisibility(selected);
-      window.dispatchEvent(new CustomEvent('roleChanged', { detail: { role: selected } }));
+      if (roleSwitcher && roleSwitcher.value !== newRole) {
+        roleSwitcher.value = newRole;
+      }
+      applyRoleVisibility(newRole);
+      window.dispatchEvent(new CustomEvent('roleChanged', { detail: { role: newRole } }));
+      
+      // Sinkronkan ke elemen legacy jika ada
+      const legacyRole = document.getElementById('user-role') as HTMLSelectElement | null;
+      if (legacyRole && legacyRole !== roleSwitcher && legacyRole.value !== newRole) {
+        legacyRole.value = newRole;
+        legacyRole.dispatchEvent(new Event('change'));
+      }
+    }
+
+    roleSwitcher?.addEventListener('change', () => {
+      onRoleChanged(roleSwitcher.value);
     });
+
+    const legacySelect = document.getElementById('user-role') as HTMLSelectElement | null;
+    if (legacySelect && legacySelect !== roleSwitcher) {
+      legacySelect.value = currentRole;
+      legacySelect.addEventListener('change', () => {
+        onRoleChanged(legacySelect.value);
+      });
+    }
   });
 </script>
