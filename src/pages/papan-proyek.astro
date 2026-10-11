@@ -1,5 +1,8 @@
 ---
-import { mockProjects, stageLabels } from '../data/mockProjects';
+import {
+  mockProjects,
+  mockStageLabels as stageLabels,
+} from '../lib/clientDataFetcher';
 
 const stages = ['todo', 'in_progress', 'review', 'done'] as const;
 ---
@@ -469,6 +472,27 @@ const stages = ['todo', 'in_progress', 'review', 'done'] as const;
       };
 
       updateAllViews();
+
+      // Sinkronisasi dinamis proyek & tugas dari API /api/projects
+      async function syncProjectsFromApi() {
+        try {
+          const res = await fetch('/api/projects');
+          if (!res.ok) return;
+          const json = await res.json();
+          if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
+            // Perbarui array mockProjects dengan data aktual jika tersedia
+            json.data.forEach((p) => {
+              const existing = mockProjects.find((x) => x.id === p.id);
+              if (existing) {
+                existing.name = p.name || existing.name;
+                existing.progress = p.progress ?? existing.progress;
+              }
+            });
+            updateAllViews();
+          }
+        } catch (_) {}
+      }
+      syncProjectsFromApi();
     </script>
   </body>
 </html>
