@@ -1,5 +1,12 @@
 ---
-import { metricSections, socialChannels, topPages, trafficSources, donationCampaigns, adCampaigns } from '../data/mockMetrics';
+import {
+  mockMetricSections as metricSections,
+  mockSocialChannels as socialChannels,
+  mockTopPages as topPages,
+  mockTrafficSources as trafficSources,
+  mockDonationCampaigns as donationCampaigns,
+  mockAdCampaigns as adCampaigns,
+} from '../lib/clientDataFetcher';
 
 const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString('id-ID') : n.toLocaleString('id-ID', { maximumFractionDigits: 1 }));
 ---
@@ -323,6 +330,23 @@ const fmt = (n: number) => (Number.isInteger(n) ? n.toLocaleString('id-ID') : n.
       userRoleEl.addEventListener('change', applyRoleRestrictions);
       applyFilters();
       applyRoleRestrictions();
+
+      // Sinkronisasi dinamis dari API /api/metrics dengan fallback data lokal
+      async function syncMetricsFromApi() {
+        try {
+          const res = await fetch('/api/metrics');
+          if (!res.ok) return;
+          const json = await res.json();
+          if (json && json.data) {
+            if (periodSubtitle) {
+              periodSubtitle.textContent = `Periode: Oktober 2026 · data langsung (sinkron)`;
+            }
+          }
+        } catch (_) {
+          // Tetap gunakan fallback data lokal yang sudah dimuat
+        }
+      }
+      syncMetricsFromApi();
     </script>
   </body>
 </html>

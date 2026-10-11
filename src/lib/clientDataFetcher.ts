@@ -55,10 +55,13 @@ import {
 } from '../data/mockKnowledge';
 
 import {
-  mockBudgetItems,
-  mockRABItems,
-  mockLRAItems,
-  type BudgetItem,
+  mockBudgetLines,
+  budgetCategories,
+  budgetOwners,
+  budgetQuarters,
+  budgetYears,
+  mockAnnualReportsByYear,
+  type BudgetLine,
 } from '../data/mockBudget';
 
 export interface FetchOptions extends RequestInit {
@@ -223,13 +226,9 @@ export async function fetchKnowledgeProposals(options?: FetchOptions) {
    ========================================================================== */
 
 export async function fetchBudgetReports(options?: FetchOptions) {
-  return fetchWithFallback<{ rab: typeof mockRABItems; lra: typeof mockLRAItems; budget: typeof mockBudgetItems }>(
+  return fetchWithFallback<BudgetLine[]>(
     '/api/reports/budget',
-    {
-      rab: mockRABItems,
-      lra: mockLRAItems,
-      budget: mockBudgetItems,
-    },
+    mockBudgetLines,
     options
   );
 }
@@ -253,7 +252,10 @@ export {
   mockContentInsights,
   mockKnowledgeDocs,
   mockProposals,
-  mockBudgetItems,
-  mockRABItems,
-  mockLRAItems,
+  mockBudgetLines,
+  budgetCategories,
+  budgetOwners,
+  budgetQuarters,
+  budgetYears,
+  mockAnnualReportsByYear,
 };
