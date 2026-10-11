@@ -17,45 +17,27 @@ import {
   donationCampaigns as mockDonationCampaigns,
   adCampaigns as mockAdCampaigns,
   type MetricSection,
-} from '../data/mockMetrics';
-
-import {
   contentItems as mockContentItems,
   pillars as mockPillars,
   statusLabels as mockStatusLabels,
   reminderOptions as mockReminderOptions,
   type ContentItem,
   type ContentPillar,
-} from '../data/mockContent';
-
-import {
   mockProjects,
   stageLabels as mockStageLabels,
   type Project,
   type ProjectTask,
-} from '../data/mockProjects';
-
-import {
   mockNewsItems,
   curatedSources as mockCuratedSources,
   type NewsItem,
   type CuratedSource,
-} from '../data/mockNews';
-
-import {
   mockContentInsights,
   type ContentInsightItem,
-} from '../data/mockInsights';
-
-import {
   mockKnowledgeDocs,
   mockProposals,
   knowledgeCategories,
   type KnowledgeDoc,
   type DocumentProposal,
-} from '../data/mockKnowledge';
-
-import {
   mockBudgetLines,
   budgetCategories,
   budgetOwners,
@@ -64,16 +46,10 @@ import {
   mockAnnualReportsByYear,
   mockAnnualPlan,
   type BudgetLine,
-} from '../data/mockBudget';
-
-import {
   mockPerformance,
   reportChannels,
   reportPeriods,
   type PerfRow,
-} from '../data/mockReport';
-
-import {
   mockOrgProfile,
   mockUsers,
   mockPermissions,
@@ -84,9 +60,6 @@ import {
   type RolePermission,
   type IntegrationService,
   type AuditLogItem,
-} from '../data/mockSettings';
-
-import {
   mockPillarPerformance,
   mockBestTimings,
   mockTrendingTopics,
@@ -97,7 +70,7 @@ import {
   type TrendingTopicItem,
   type ContentGapItem,
   type IdeaRecommendationItem,
-} from '../data/mockInsights';
+} from './defaultData';
 
 export interface FetchOptions extends RequestInit {
   timeoutMs?: number;
