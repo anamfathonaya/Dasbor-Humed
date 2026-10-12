@@ -1,10 +1,10 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import {
   mockBudgetLines,
   mockAnnualPlan,
 } from '../lib/clientDataFetcher';
 import PeriodComparison from '../components/PeriodComparison.astro';
-import RoleNavigation from '../components/RoleNavigation.astro';
 
 const fmt = (n: number) => 'Rp ' + n.toLocaleString('id-ID');
 const totalRab = mockBudgetLines.reduce((s, l) => s + l.rab, 0);
@@ -16,164 +16,152 @@ const rows = mockBudgetLines.map((l) => {
 });
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Laporan & Anggaran — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/laporan-anggaran" />
+<HumasLayout
+  title="Laporan & Anggaran — Humas Internal Peduli Negeri"
+  pageTitle="Laporan & Anggaran Humas"
+  pageSubtitle="RAB, LRA, realisasi anggaran belanja kanal, dan rencana kerja program tahunan"
+  currentPath="/laporan-anggaran"
+  pageContentId="laporan"
+>
+  <main class="lap" data-node-id="laporan.anggaran">
+    <!-- Sub-Navigasi Modul Laporan Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/laporan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Ringkasan Semua Laporan
+      </a>
+      <a href="/laporan-kinerja" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Kinerja Kanal
+      </a>
+      <a href="/laporan-anggaran" class="lap__mini" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;padding:6px 14px;border-radius:8px;text-decoration:none;">
+        Laporan Anggaran
+      </a>
+      <a href="/daftar-rab-lra" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Daftar RAB & LRA
+      </a>
+      <a href="/laporan-tahunan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Tahunan
+      </a>
+      <a href="/bagikan-cetak" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Bagikan & Cetak
+      </a>
+    </div>
 
-    <main>
-      <div class="head">
-        <div>
-          <h2>Laporan & Anggaran</h2>
-          <p class="muted">RAB, LRA, dan rencana program tahunan untuk laporan tahunan lembaga</p>
+    <!-- Peringatan Akses Terbatas Peran -->
+    <div id="restricted-notice" class="lap__card" style="padding:16px;border-left:4px solid #ef4444;display:none;margin-bottom:16px;">
+      <p style="margin:0;font-size:13px;color:#ef4444;font-weight:600;">
+        🔒 Data akuntabilitas anggaran hanya dapat diakses oleh Administrator Teknis dan Ketua Bidang Humas.
+      </p>
+    </div>
+
+    <div id="budget-content">
+      <!-- 4 KPI Cards Anggaran -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:20px;">
+        <div class="lap__card" style="padding:16px;">
+          <span style="font-size:12px;color:var(--color-muted,#5a6875);display:block;margin-bottom:4px;">Total Plafon RAB</span>
+          <strong style="font-size:20px;color:var(--color-text,#16202b);">{fmt(totalRab)}</strong>
         </div>
-        <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
-          <a class="btn" href="/daftar-rab-lra" style="text-decoration:none;">📑 Daftar RAB & LRA</a>
-          <a class="btn" href="/laporan-kinerja" style="text-decoration:none;">📊 Laporan Kinerja</a>
-          <a class="btn" href="/laporan-tahunan" style="text-decoration:none;">📄 Laporan Tahunan</a>
-          <a class="btn" href="/bagikan-cetak" style="text-decoration:none;">🖨️ Cetak Resmi</a>
+        <div class="lap__card" style="padding:16px;">
+          <span style="font-size:12px;color:var(--color-muted,#5a6875);display:block;margin-bottom:4px;">Total Realisasi (LRA)</span>
+          <strong style="font-size:20px;color:var(--color-primary,#1d5c94);">{fmt(totalLra)}</strong>
+        </div>
+        <div class="lap__card" style="padding:16px;">
+          <span style="font-size:12px;color:var(--color-muted,#5a6875);display:block;margin-bottom:4px;">Sisa Saldo Anggaran</span>
+          <strong style="font-size:20px;color:#10b981;">{fmt(totalRab - totalLra)}</strong>
+        </div>
+        <div class="lap__card" style="padding:16px;">
+          <span style="font-size:12px;color:var(--color-muted,#5a6875);display:block;margin-bottom:4px;">Daya Serap Total</span>
+          <strong style="font-size:20px;color:var(--color-primary,#1d5c94);">{absorption}%</strong>
         </div>
       </div>
 
-      <section id="restricted" class="notice" hidden>
-        🔒 Data anggaran hanya dapat dilihat oleh Admin dan Ketua Bidang.
+      <!-- Tabel RAB vs LRA -->
+      <section class="lap__card" style="margin-bottom:20px;">
+        <div class="lap__toolbar">
+          <div>
+            <h2 style="font-size:15px;margin:0;">RAB vs Realisasi (LRA) per Mata Anggaran</h2>
+            <p style="font-size:12px;color:var(--color-muted,#5a6875);margin:2px 0 0;">Evaluasi ketaatan anggaran operasional dan peliputan lapangan</p>
+          </div>
+        </div>
+
+        <div class="lap__table-wrap">
+          <table class="lap__table">
+            <thead>
+              <tr>
+                <th>Program / Mata Anggaran</th>
+                <th>Kategori</th>
+                <th>Penanggung Jawab</th>
+                <th style="text-align:right">RAB Disetujui</th>
+                <th style="text-align:right">Realisasi (LRA)</th>
+                <th>Daya Serap</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr>
+                  <td><strong>{r.program}</strong></td>
+                  <td><span class="lap__badge lap__badge--draf">{r.category}</span></td>
+                  <td>{r.owner}</td>
+                  <td style="text-align:right">{fmt(r.rab)}</td>
+                  <td style="text-align:right"><strong>{fmt(r.lra)}</strong></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                      <div style="flex:1;height:6px;background:var(--color-border,#ebecee);border-radius:4px;overflow:hidden;">
+                        <div style={`height:100%;background:${r.over ? '#ef4444' : 'var(--color-primary,#1d5c94)'};width:${Math.min(r.pct, 100)}%`}></div>
+                      </div>
+                      <span style={`font-size:11px;font-weight:600;color:${r.over ? '#ef4444' : 'var(--color-text,#16202b)'}`}>
+                        {r.pct}%{r.over ? ' (!)' : ''}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      <div id="content">
-        <section class="stats">
-          <div class="card"><span class="lbl">Total RAB</span><strong>{fmt(totalRab)}</strong></div>
-          <div class="card"><span class="lbl">Total Realisasi (LRA)</span><strong>{fmt(totalLra)}</strong></div>
-          <div class="card"><span class="lbl">Sisa Anggaran</span><strong>{fmt(totalRab - totalLra)}</strong></div>
-          <div class="card hl"><span class="lbl">Daya Serap</span><strong>{absorption}%</strong></div>
-        </section>
-
-        <section class="stats">
-          <PeriodComparison label="Realisasi Bulan Ini" current={totalLra / 6} previous={totalLra / 7} prefix="Rp " invert />
-          <PeriodComparison label="Donasi Terhimpun" current={860} previous={745} />
-        </section>
-
-        <section class="box">
-          <h3>RAB vs LRA per Program</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr><th>Program</th><th>Kategori</th><th>PJ</th><th class="r">RAB</th><th class="r">LRA</th><th>Serapan</th></tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr>
-                    <td>{r.program}</td>
-                    <td><span class="tag">{r.category}</span></td>
-                    <td>{r.owner}</td>
-                    <td class="r">{fmt(r.rab)}</td>
-                    <td class="r">{fmt(r.lra)}</td>
-                    <td>
-                      <div class="bar"><div class:list={['fill', { over: r.over }]} style={`width:${Math.min(r.pct, 100)}%`}></div></div>
-                      <small class:list={{ overtext: r.over }}>{r.pct}%{r.over ? ' — melebihi RAB' : ''}</small>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <!-- Rencana Program Tahunan -->
+      <section class="lap__card">
+        <div class="lap__toolbar">
+          <div>
+            <h2 style="font-size:15px;margin:0;">Rencana Program Tahunan & Progres Triwulan</h2>
+            <p style="font-size:12px;color:var(--color-muted,#5a6875);margin:2px 0 0;">Capaian output fisik dan jadwal kerja strategis</p>
           </div>
-        </section>
+        </div>
 
-        <section class="box">
-          <h3>Rencana Program Tahunan</h3>
-          <div class="plan">
-            {mockAnnualPlan.map((p) => (
-              <div class="plan-item">
-                <div class="plan-top"><strong>{p.quarter}</strong><span>{p.progress}%</span></div>
-                <p>{p.target}</p>
-                <div class="bar"><div class="fill" style={`width:${p.progress}%`}></div></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-top:16px;">
+          {mockAnnualPlan.map((p) => (
+            <div style="padding:16px;border-radius:8px;border:1px solid var(--color-border,#ebecee);background:var(--color-canvas,#f8f9fa);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <strong style="font-size:13px;color:var(--color-primary,#1d5c94);">{p.quarter}</strong>
+                <span class="lap__badge lap__badge--final">{p.progress}% Selesai</span>
               </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </main>
+              <p style="margin:0 0 12px;font-size:12px;color:var(--color-text,#16202b);line-height:1.4;">{p.target}</p>
+              <div style="height:6px;background:var(--color-border,#ebecee);border-radius:4px;overflow:hidden;">
+                <div style={`height:100%;background:var(--color-primary,#1d5c94);width:${p.progress}%`}></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </main>
 
-    <div class="toast" id="toast"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const content = document.getElementById('budget-content');
+      const notice = document.getElementById('restricted-notice');
 
-    <script>
-      const sel = (document.getElementById('global-role-switcher') || document.getElementById('user-role')) as HTMLSelectElement | null;
-      const content = document.getElementById('content')!;
-      const restricted = document.getElementById('restricted')!;
-      const toast = document.getElementById('toast')!;
-      let role = 'head';
-      try { role = localStorage.getItem('user_role') || 'head'; } catch {}
-      if (sel) sel.value = role;
-
-      function apply() {
-        const staff = role === 'staff';
-        content.hidden = staff;
-        restricted.hidden = !staff;
+      function checkRole() {
+        let role = 'head';
+        try { role = localStorage.getItem('user_role') || 'head'; } catch {}
+        const isStaff = role === 'staff';
+        if (content) content.style.display = isStaff ? 'none' : 'block';
+        if (notice) notice.style.display = isStaff ? 'block' : 'none';
       }
-      sel?.addEventListener('change', () => {
-        role = sel.value;
-        try { localStorage.setItem('user_role', role); } catch {}
-        apply();
-      });
-      window.addEventListener('roleChanged', (e: any) => {
-        if (e.detail?.role) {
-          role = e.detail.role;
-          apply();
-        }
-      });
-      document.getElementById('gen-btn')!.addEventListener('click', () => {
-        toast.textContent = 'Penyusunan laporan tahunan akan tersedia setelah backend terhubung.';
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-      });
-      apply();
-    </script>
-  </body>
-</html>
 
-<style is:global>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
-  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
-  .brand { display: flex; align-items: center; gap: .6rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  .role { display: flex; gap: .5rem; align-items: center; font-size: .8rem; }
-  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-  .head h2 { margin: 0 0 .25rem; }
-  .muted { margin: 0; color: #64748b; font-size: .9rem; }
-  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .55rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  .btn:hover { background: #0369a1; }
-  .notice { background: #fef3c7; border: 1px solid #fcd34d; color: #92400e; padding: 1rem; border-radius: 10px; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
-  .card.hl { border-left: 4px solid #0284c7; }
-  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
-  .card strong { font-size: 1.25rem; }
-  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
-  .box h3 { margin: 0 0 1rem; font-size: 1.05rem; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-  th { color: #64748b; font-size: .75rem; text-transform: uppercase; }
-  .r { text-align: right; white-space: nowrap; }
-  .tag { background: #f1f5f9; padding: .15rem .45rem; border-radius: 4px; font-size: .75rem; }
-  .bar { background: #e2e8f0; height: 8px; border-radius: 99px; overflow: hidden; min-width: 120px; }
-  .fill { background: #0284c7; height: 100%; }
-  .fill.over { background: #dc2626; }
-  .overtext { color: #b91c1c; }
-  small { color: #64748b; font-size: .75rem; }
-  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-  .plan-item { border: 1px solid #e2e8f0; border-radius: 10px; padding: .9rem; }
-  .plan-item p { margin: .4rem 0 .7rem; font-size: .85rem; color: #475569; }
-  .plan-top { display: flex; justify-content: space-between; }
-  .toast { position: fixed; bottom: 2rem; right: 2rem; background: #0f172a; color: #fff; padding: .75rem 1.25rem; border-radius: 8px; transform: translateY(100px); opacity: 0; transition: all .25s; }
-  .toast.show { transform: none; opacity: 1; }
-</style>
+      window.addEventListener('roleChanged', checkRole);
+      checkRole();
+    });
+  </script>
+</HumasLayout>

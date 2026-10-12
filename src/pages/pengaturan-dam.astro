@@ -1,7 +1,6 @@
 ---
-import RoleNavigation from '../components/RoleNavigation.astro';
+import HumasLayout from '../layouts/HumasLayout.astro';
 
-// Halaman Pengaturan Tautan Aset Digital Asset Management (DAM) & NAS Server Lokal
 interface DamFolderShare {
   id: string;
   name: string;
@@ -57,493 +56,137 @@ const damShares: DamFolderShare[] = [
 ];
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pengaturan Tautan Aset DAM NAS Lokal - Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/pengaturan" />
+<HumasLayout
+  title="Koneksi DAM NAS Synology — Humas Internal Peduli Negeri"
+  pageTitle="Pengaturan DAM NAS Lokal"
+  pageSubtitle="Konfigurasi server SMB/NFS Synology, pemetaan folder arsip foto resolusi tinggi dan master video"
+  currentPath="/pengaturan-dam"
+  pageContentId="pengaturan"
+>
+  <main class="cfg" data-node-id="dam.main">
+    <!-- Sub Navigasi Pengaturan & Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/pengaturan" class="cfg__btn">
+        <iconify-icon icon="lucide:plug-zap" aria-hidden="true"></iconify-icon>Pusat Pengaturan
+      </a>
+      <a href="/pengaturan-dam" class="cfg__btn" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;">
+        <iconify-icon icon="lucide:hard-drive" aria-hidden="true"></iconify-icon>Koneksi DAM NAS
+      </a>
+      <a href="/integrasi-google" class="cfg__btn">
+        <iconify-icon icon="logos:google-icon" aria-hidden="true"></iconify-icon>Akun Google (SSO & AI Pro)
+      </a>
+      <a href="/manajemen-akun" class="cfg__btn">
+        <iconify-icon icon="lucide:users" aria-hidden="true"></iconify-icon>Akun & Hak Akses
+      </a>
+      <a href="/jejak-audit" class="cfg__btn">
+        <iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon>Jejak Audit
+      </a>
+    </div>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
+    <!-- Top Bar -->
+    <div class="cfg__bar">
+      <p class="cfg__bar-text">
+        <b>Server NAS Synology (192.168.1.200):</b> Terhubung normal, 4 folder share aktif terindeks, 14.590 total aset media.
+      </p>
+      <div class="cfg__bar-actions">
+        <a href="/pengaturan" class="cfg__btn">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon>Kembali ke Pengaturan
+        </a>
+        <button class="cfg__btn cfg__btn--primary" type="button" id="btn-rescan-nas">
+          <iconify-icon icon="lucide:refresh-cw" aria-hidden="true"></iconify-icon>Pindai Ulang Folder Share
+        </button>
+      </div>
+    </div>
+
+    <!-- Konfigurasi Server NAS -->
+    <div class="cfg__card" style="margin-bottom:20px;">
+      <div class="cfg__card-head">
         <div>
-          <div class="breadcrumb">
-            <a href="/pengaturan">Pengaturan</a>
-            <span>/</span>
-            <span>Penyimpanan Aset</span>
-          </div>
-          <h2>Pengaturan Tautan Aset DAM (Server NAS Lokal)</h2>
-          <p class="muted">
-            Konfigurasi alamat server jaringan lokal (SMB/NFS), pemetaan direktori arsip media foto dan video, serta kredensial akun agen perayap metadata.
-          </p>
+          <h2 class="cfg__card-title">Parameter Koneksi Server NAS</h2>
+          <p class="cfg__card-sub">SMB v3 File Sharing di Jaringan Kantor Pusat</p>
         </div>
-        <div class="actions">
-          <a href="/pengaturan" class="btn btn-secondary">
-            ← Kembali ke Pengaturan
-          </a>
-          <button class="btn" id="btn-rescan-nas">
-            ⚡ Pindai Ulang Seluruh Share NAS
-          </button>
+        <span class="cfg__badge cfg__badge--green">Online (Latensi: 2ms)</span>
+      </div>
+
+      <form class="cfg__form-grid" id="form-nas-config">
+        <div class="cfg__field">
+          <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;">Host / Alamat IP NAS</label>
+          <input type="text" class="kb__select" style="width:100%;" value="192.168.1.200" required />
+        </div>
+        <div class="cfg__field">
+          <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;">Protokol Jaringan Berkas</label>
+          <select class="kb__select" style="width:100%;">
+            <option value="smb3" selected>SMB v3 (Windows File Sharing - Disarankan)</option>
+            <option value="nfs">NFS v4.1 (Linux High Performance)</option>
+            <option value="webdav">WebDAV over HTTPS (Port 5006)</option>
+          </select>
+        </div>
+        <div class="cfg__field">
+          <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;">Akun Layanan (Service Account)</label>
+          <input type="text" class="kb__select" style="width:100%;" value="dam-agent-srv" required />
+        </div>
+        <div class="cfg__field">
+          <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;">Kata Sandi Akun Layanan</label>
+          <input type="password" class="kb__select" style="width:100%;" value="••••••••••••••••" required />
+        </div>
+        <div style="grid-column: 1 / -1; display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="cfg__btn" id="btn-test-nas">Uji Ping SMB</button>
+          <button type="submit" class="cfg__btn cfg__btn--primary">Simpan Parameter NAS</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Daftar Folder Share Terpetakan -->
+    <section class="cfg__card">
+      <div class="cfg__card-head">
+        <div>
+          <h2 class="cfg__card-title">Daftar Folder Share yang Dipantau</h2>
+          <p class="cfg__card-sub">Folder arsip penyimpanan yang diindeks otomatis oleh sistem</p>
         </div>
       </div>
 
-      <!-- NOTIFIKASI -->
-      <div id="dam-alert" class="alert-box" hidden>
-        <span id="dam-alert-text">Pengaturan koneksi DAM NAS berhasil diperbarui.</span>
-        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
-      </div>
-
-      <!-- KARTU STATUS KONEKSI SERVER NAS -->
-      <div class="card nas-overview-card">
-        <div class="nas-header">
-          <div class="nas-logo-box">
-            <span class="nas-icon">🖧</span>
-            <div>
-              <h3>Server Synology NAS Tim Humas (RackStation 2419+)</h3>
-              <span class="muted-sm">Penyimpanan Utama Berkas Media Lembaga di Jaringan Kantor Pusat</span>
+      <div class="cfg__grid">
+        {damShares.map(share => (
+          <article class="cfg__service">
+            <div class="cfg__service-head">
+              <h3 class="cfg__service-title">
+                <iconify-icon icon="lucide:folder" style="color:var(--color-primary,#1d5c94);font-size:18px;" aria-hidden="true"></iconify-icon>
+                {share.name}
+              </h3>
+              <span class="cfg__badge cfg__badge--blue">{share.totalSize}</span>
             </div>
-          </div>
-          <div class="connection-pill connected">
-            <span class="pill-dot"></span>
-            <span>Online (Latency: 2ms)</span>
-          </div>
-        </div>
-
-        <form id="form-nas-config" class="nas-form-grid">
-          <div class="form-group">
-            <label for="nas-host">Host / Alamat IP NAS Lokal</label>
-            <input type="text" id="nas-host" value="192.168.1.200" required />
-          </div>
-
-          <div class="form-group">
-            <label for="nas-protocol">Protokol Jaringan Berkas</label>
-            <select id="nas-protocol">
-              <option value="smb3" selected>SMB v3 (Windows File Sharing - Disarankan)</option>
-              <option value="nfs">NFS v4.1 (Linux High Performance)</option>
-              <option value="webdav">WebDAV over HTTPS (Port 5006)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="nas-user">Akun Layanan (Service Account)</label>
-            <input type="text" id="nas-user" value="dam-agent-srv" required />
-          </div>
-
-          <div class="form-group">
-            <label for="nas-password">Kata Sandi Akun Layanan</label>
-            <input type="password" id="nas-password" value="••••••••••••••••" required />
-          </div>
-
-          <div class="form-group full">
-            <label for="nas-root-path">Direktori Induk Berbagi (Root Share Path)</label>
-            <input type="text" id="nas-root-path" value="smb://192.168.1.200/dam-humas" required class="mono" />
-          </div>
-
-          <div class="form-actions full">
-            <button type="button" class="btn btn-secondary" id="btn-ping-nas">
-              🔌 Uji Ping & Jabat Tangan SMB
-            </button>
-            <button type="submit" class="btn">
-              Simpan Konfigurasi Server
-            </button>
-          </div>
-        </form>
+            <div class="cfg__service-meta">
+              <span>{share.description}</span>
+              <div>Path: <code>{share.smbPath}</code></div>
+              <div style="color:var(--color-muted,#7a8794);font-size:11px;">
+                {share.totalAssets.toLocaleString('id-ID')} berkas terindeks • {share.lastIndexed}
+              </div>
+            </div>
+            <div class="cfg__service-actions">
+              <button class="cfg__btn" type="button" onclick={`alert('Memindai folder ${share.name}...')`}>
+                <iconify-icon icon="lucide:refresh-cw" aria-hidden="true"></iconify-icon>Pindai Folder
+              </button>
+            </div>
+          </article>
+        ))}
       </div>
+    </section>
+  </main>
 
-      <!-- KARTU DIREKTORI FOLDER BERBAGI (SHARE FOLDERS) -->
-      <div class="card" style="margin-top: 1.5rem;">
-        <div class="card-header flex-between">
-          <div>
-            <h3>Pemetaan Folder & Direktori Aset Media</h3>
-            <p class="muted">Folder khusus yang dipindai otomatis oleh dasbor untuk pratinjau thumbnail dan metadata EXIF.</p>
-          </div>
-          <button class="btn btn-secondary btn-sm" id="btn-add-share">
-            ➕ Tambah Pemetaan Folder Baru
-          </button>
-        </div>
-
-        <div class="table-wrap">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Nama Bagian Aset</th>
-                <th>Jalur Direktori SMB Jaringan</th>
-                <th>Kapasitas & Jumlah Berkas</th>
-                <th>Indeks Terakhir</th>
-                <th>Akses Peran</th>
-                <th style="text-align: right;">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {damShares.map((share) => (
-                <tr>
-                  <td>
-                    <strong>{share.name}</strong>
-                    <span class="muted-sm">{share.description}</span>
-                  </td>
-                  <td>
-                    <span class="mono code-pill" title={share.smbPath}>{share.smbPath}</span>
-                  </td>
-                  <td>
-                    <strong>{share.totalAssets.toLocaleString('id-ID')} berkas</strong>
-                    <span class="muted-sm">Ukuran: {share.totalSize}</span>
-                  </td>
-                  <td class="muted-sm">{share.lastIndexed}</td>
-                  <td>
-                    <div class="role-tags">
-                      {share.allowedRoles.map((r) => (
-                        <span class="badge badge-role">{r}</span>
-                      ))}
-                    </div>
-                  </td>
-                  <td style="text-align: right;">
-                    <button class="btn-action btn-copy-path" data-path={share.smbPath}>Salin Jalur</button>
-                    <button class="btn-action btn-sync-share" data-name={share.name}>Pindai</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- PETUNJUK AKSES TIM HUMAS -->
-      <div class="card" style="margin-top: 1.5rem; background: #f8fafc;">
-        <div class="card-header">
-          <h3>Panduan Akses Cepat Aset DAM untuk Tim Peliput</h3>
-          <p class="muted">Tata cara menghubungkan laptop kerja reporter dan fotografer ke server DAM NAS lokal saat di kantor pusat.</p>
-        </div>
-        <div class="guidance-grid">
-          <div class="guide-box">
-            <h4>🖥️ Akses Melalui Windows File Explorer</h4>
-            <p>Tekan tombol <code>Win + R</code>, lalu ketik <code>\\192.168.1.200\dam-humas</code> dan tekan Enter. Masukkan kredensial akun domain Anda.</p>
-          </div>
-          <div class="guide-box">
-            <h4>🍎 Akses Melalui macOS Finder</h4>
-            <p>Buka Finder, tekan <code>Cmd + K</code> (Connect to Server), ketik <code>smb://192.168.1.200/dam-humas</code>, lalu klik Connect.</p>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-      }
-
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 1.75rem;
-        background: #0f172a;
-        color: #fff;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .brand { display: flex; align-items: center; gap: 0.6rem; }
-      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-      .top nav a.active, .top nav a:hover { color: #38bdf8; }
-      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
-
-      main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-      .head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
-      .breadcrumb {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-bottom: 0.25rem;
-        display: flex;
-        gap: 0.4rem;
-        align-items: center;
-      }
-      .breadcrumb a { color: #0284c7; text-decoration: none; }
-      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
-      .muted-sm { display: block; font-size: 0.78rem; color: #64748b; margin-top: 0.15rem; }
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-
-      .actions { display: flex; gap: 0.6rem; }
-      .btn {
-        font: inherit;
-        background: #0284c7;
-        color: #fff;
-        border: 0;
-        padding: 0.55rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.15s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.88rem;
-      }
-      .btn:hover { background: #0369a1; }
-      .btn-secondary {
-        background: #fff;
-        border: 1px solid #cbd5e1;
-        color: #334155;
-      }
-      .btn-secondary:hover { background: #f1f5f9; }
-      .btn-sm { padding: 0.4rem 0.75rem; font-size: 0.8rem; }
-
-      /* Alert */
-      .alert-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        margin-bottom: 1.5rem;
-      }
-      .btn-alert-close { background: none; border: none; font-size: 1rem; color: inherit; cursor: pointer; }
-
-      /* Card styles */
-      .card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.5rem;
-      }
-      .card-header { margin-bottom: 1.25rem; }
-      .card-header h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: #0f172a; }
-      .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
-
-      .nas-overview-card {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-      }
-      .nas-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        padding-bottom: 1rem;
-      }
-      .nas-logo-box {
-        display: flex;
-        align-items: center;
-        gap: 0.85rem;
-      }
-      .nas-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 10px;
-        background: #e0f2fe;
-        color: #0284c7;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-      }
-      .nas-logo-box h3 { margin: 0; font-size: 1.2rem; color: #0f172a; }
-
-      .connection-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        padding: 0.35rem 0.85rem;
-        border-radius: 999px;
-        font-size: 0.82rem;
-        font-weight: 600;
-      }
-      .connection-pill.connected { background: #dcfce7; color: #166534; }
-      .pill-dot { width: 8px; height: 8px; border-radius: 50%; background: #16a34a; }
-
-      /* Form Grid */
-      .nas-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-      }
-      @media (max-width: 768px) {
-        .nas-form-grid { grid-template-columns: 1fr; }
-      }
-      .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-      .form-group.full { grid-column: 1 / -1; }
-      .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; }
-      .form-group input, .form-group select {
-        font: inherit;
-        padding: 0.55rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-      .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.6rem;
-        padding-top: 1rem;
-        border-top: 1px solid #f1f5f9;
-      }
-
-      /* Table */
-      .table-wrap { overflow-x: auto; }
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.88rem;
-      }
-      .data-table th {
-        background: #f8fafc;
-        padding: 0.75rem 1rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: #475569;
-        border-bottom: 1px solid #e2e8f0;
-        font-weight: 700;
-      }
-      .data-table td {
-        padding: 0.85rem 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        vertical-align: middle;
-      }
-      .data-table tr:hover td { background: #f8fafc; }
-
-      .code-pill {
-        display: inline-block;
-        background: #f1f5f9;
-        padding: 0.25rem 0.5rem;
-        border-radius: 6px;
-        font-size: 0.78rem;
-        color: #334155;
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .role-tags { display: flex; gap: 0.3rem; }
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.15rem 0.45rem;
-        border-radius: 999px;
-        font-size: 0.72rem;
-        font-weight: 600;
-      }
-      .badge-role { background: #e0f2fe; color: #0369a1; text-transform: uppercase; }
-
-      .btn-action {
-        font: inherit;
-        background: none;
-        border: none;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #0284c7;
-        cursor: pointer;
-        padding: 0.2rem 0.4rem;
-      }
-      .btn-action:hover { text-decoration: underline; }
-
-      /* Guidance */
-      .guidance-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
-        .guidance-grid { grid-template-columns: 1fr; }
-      }
-      .guide-box {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1rem;
-      }
-      .guide-box h4 { margin: 0 0 0.4rem; font-size: 0.92rem; color: #0f172a; }
-      .guide-box p { margin: 0; font-size: 0.82rem; color: #475569; line-height: 1.45; }
-      .guide-box code {
-        background: #f1f5f9;
-        padding: 0.15rem 0.35rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-        color: #0f172a;
-      }
-    </style>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const alertBox = document.getElementById('dam-alert');
-        const alertText = document.getElementById('dam-alert-text');
-        const btnCloseAlert = document.getElementById('btn-close-alert');
-
-        function notify(msg: string) {
-          if (alertBox && alertText) {
-            alertText.textContent = msg;
-            alertBox.hidden = false;
-            setTimeout(() => { alertBox.hidden = true; }, 3500);
-          }
-        }
-
-        btnCloseAlert?.addEventListener('click', () => {
-          if (alertBox) alertBox.hidden = true;
-        });
-
-        // Ping NAS
-        document.getElementById('btn-ping-nas')?.addEventListener('click', () => {
-          notify('Ping sukses ke 192.168.1.200 (Waktu tanggap: 1.8ms, SMBv3 Handshake OK).');
-        });
-
-        // Save Config
-        document.getElementById('form-nas-config')?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          notify('Konfigurasi server DAM NAS lokal berhasil disimpan.');
-        });
-
-        // Rescan all
-        document.getElementById('btn-rescan-nas')?.addEventListener('click', () => {
-          notify('Pemindaian menyeluruh 4 direktori aset DAM NAS dimulai di latar belakang.');
-        });
-
-        // Copy path buttons
-        document.querySelectorAll('.btn-copy-path').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const path = (e.currentTarget as HTMLElement).getAttribute('data-path') || '';
-            navigator.clipboard?.writeText(path);
-            notify(`Jalur jaringan disalin ke papan klip: ${path}`);
-          });
-        });
-
-        // Single share sync
-        document.querySelectorAll('.btn-sync-share').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const name = (e.currentTarget as HTMLElement).getAttribute('data-name');
-            notify(`Indeks berkas diperbarui untuk: ${name}`);
-          });
-        });
-
-        document.getElementById('btn-add-share')?.addEventListener('click', () => {
-          notify('Formulir pemetaan folder baru dibuka.');
-        });
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-test-nas')?.addEventListener('click', () => {
+        alert('Uji koneksi ke 192.168.1.200 port SMB 445: Berhasil (Latensi 2ms).');
       });
-    </script>
-  </body>
-</html>
+
+      document.getElementById('btn-rescan-nas')?.addEventListener('click', () => {
+        alert('Memulai pemindaian ulang latar belakang untuk seluruh share NAS Synology.');
+      });
+
+      document.getElementById('form-nas-config')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Parameter koneksi NAS Synology berhasil diperbarui.');
+      });
+    });
+  </script>
+</HumasLayout>

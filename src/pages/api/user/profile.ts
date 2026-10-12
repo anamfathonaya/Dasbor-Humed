@@ -10,17 +10,18 @@ export const GET: APIRoute = async ({ request, url }) => {
     const role = getUserRole(request, url);
 
     const user = db.prepare(`
-      SELECT u.id, u.name, u.email, u.role_id, r.name as role_name
+      SELECT u.id, u.name, u.email, u.role_id, u.avatar_url, r.name as role_name
       FROM users u
       LEFT JOIN roles r ON u.role_id = r.id
       WHERE r.name = ?
       LIMIT 1
-    `).get(role) as { id: number; name: string; email: string; role_id: number; role_name: string } | undefined;
+    `).get(role) as { id: number; name: string; email: string; role_id: number; role_name: string; avatar_url?: string | null } | undefined;
 
     const profileData = {
       id: user?.id || 1,
-      name: user?.name || 'Rani Maulida, M.I.Kom',
-      email: user?.email || 'rani.head@pedulinegeri.org',
+      name: user?.name || (role === 'head' ? 'Rani Maulida, M.I.Kom' : role === 'admin' ? 'Budi Santoso' : 'Dewi Lestari'),
+      email: user?.email || (role === 'head' ? 'rani.head@pedulinegeri.org' : role === 'admin' ? 'budi.admin@pedulinegeri.org' : 'dewi.staff@pedulinegeri.org'),
+      avatarUrl: user?.avatar_url || null,
       role: role,
       roleLabel: role === 'head' ? 'Ketua Bidang Humas' : role === 'admin' ? 'Administrator Teknis' : 'Staf Konten & Kreatif',
       phone: '+62 812-9876-5432',
@@ -41,12 +42,12 @@ export const GET: APIRoute = async ({ request, url }) => {
   }
 };
 
-// PUT: Perbarui data nama, kontak, dan departemen profil pengguna
+// PUT: Perbarui data nama, kontak, departemen, atau avatar profil pengguna
 export const PUT: APIRoute = async ({ request, url }) => {
   try {
     const role = getUserRole(request, url);
     const body = await request.json().catch(() => ({}));
-    const { name, phone, department } = body;
+    const { name, phone, department, avatarUrl } = body;
 
     if (!name || String(name).trim().length < 3) {
       return new Response(
@@ -55,12 +56,12 @@ export const PUT: APIRoute = async ({ request, url }) => {
       );
     }
 
-    // Perbarui nama di tabel users
+    // Perbarui nama dan avatar_url di tabel users
     db.prepare(`
       UPDATE users
-      SET name = ?
+      SET name = ?, avatar_url = COALESCE(?, avatar_url)
       WHERE role_id = (SELECT id FROM roles WHERE name = ?)
-    `).run(String(name).trim(), role);
+    `).run(String(name).trim(), avatarUrl !== undefined ? avatarUrl : null, role);
 
     // Catat log audit
     try {
@@ -74,7 +75,7 @@ export const PUT: APIRoute = async ({ request, url }) => {
         'Data Identitas & Kontak',
         request.headers.get('x-forwarded-for') || '127.0.0.1',
         'success',
-        JSON.stringify({ phone, department })
+        JSON.stringify({ phone, department, hasAvatar: Boolean(avatarUrl) })
       );
     } catch {}
 
@@ -82,7 +83,7 @@ export const PUT: APIRoute = async ({ request, url }) => {
       JSON.stringify({
         success: true,
         message: 'Profil pribadi berhasil diperbarui.',
-        updated: { name, phone, department }
+        updated: { name, phone, department, avatarUrl }
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );

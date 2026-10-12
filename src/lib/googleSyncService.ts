@@ -51,11 +51,11 @@ export async function syncContentToGoogleCalendar(): Promise<{
     INSERT INTO integration_sync_jobs (service_key, target_object, status, items_processed, details, triggered_by, finished_at)
     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   `).run(
-    'google_workspace',
-    'Google Calendar (ID: c_humas_pedulinegeri@group.calendar.google.com)',
+    'google_account',
+    'Google Calendar (Akun Google Pengguna - Google AI Pro)',
     'success',
     itemsProcessed,
-    `Sinkronisasi ${itemsProcessed} agenda publikasi ke Google Calendar berhasil dieksekusi`,
+    `Sinkronisasi ${itemsProcessed} agenda publikasi ke Google Calendar akun pengguna berhasil dieksekusi`,
     'sync_service'
   );
 
@@ -66,7 +66,7 @@ export async function syncContentToGoogleCalendar(): Promise<{
       last_sync_at = CURRENT_TIMESTAMP,
       last_status_message = 'Sinkronisasi kalender berhasil (' || ? || ' acara diselaraskan)',
       updated_at = CURRENT_TIMESTAMP
-    WHERE service_key = 'google_workspace'
+    WHERE service_key = 'google_workspace' OR service_key = 'google_account'
   `).run(itemsProcessed);
 
   return {
@@ -115,11 +115,11 @@ export async function syncBudgetToGoogleSheet(): Promise<{
     INSERT INTO integration_sync_jobs (service_key, target_object, status, items_processed, details, triggered_by, finished_at)
     VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   `).run(
-    'google_workspace',
-    `Google Sheets (Spreadsheet: ${mockSpreadsheetId})`,
+    'google_account',
+    `Google Sheets (Akun Google Pengguna: ${mockSpreadsheetId})`,
     'success',
     rowCount,
-    `Pembaruan ${rowCount} baris rekapitulasi RAB/LRA ke Google Sheets berhasil`,
+    `Pembaruan ${rowCount} baris rekapitulasi RAB/LRA ke Google Sheets berhasil diselaraskan`,
     'sync_service'
   );
 

@@ -4,24 +4,27 @@ import { getUserRole } from '../../../../lib/auth';
 
 initDatabase();
 
-// GET: Inisiasi alur redirect otorisasi OAuth2 Google
+// GET: Inisiasi alur redirect otorisasi OAuth2 Google SSO (Akun Google AI Pro)
 export const GET: APIRoute = async ({ request, url }) => {
   try {
     const role = getUserRole(request, url);
 
     if (role !== 'head' && role !== 'admin') {
       return new Response(
-        JSON.stringify({ success: false, message: 'Akses ditolak: Hanya Ketua Bidang dan Admin yang dapat menghubungkan Google Workspace.' }),
+        JSON.stringify({ success: false, message: 'Akses ditolak: Hanya Ketua Bidang dan Admin yang dapat menghubungkan Akun Google.' }),
         { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const stateToken = 'gw_state_' + Math.random().toString(36).substring(2, 15);
+    const stateToken = 'google_sso_' + Math.random().toString(36).substring(2, 15);
     const clientId = '681940285912-humasmediamock.apps.googleusercontent.com';
     const redirectUri = `${url.origin}/api/integrations/google/callback`;
     const scopes = [
+      'openid',
+      'email',
+      'profile',
       'https://www.googleapis.com/auth/calendar',
-      'https://www.googleapis.com/auth/drive',
+      'https://www.googleapis.com/auth/drive.file',
       'https://www.googleapis.com/auth/spreadsheets'
     ].join(' ');
 
@@ -29,7 +32,7 @@ export const GET: APIRoute = async ({ request, url }) => {
       redirectUri
     )}&response_type=code&scope=${encodeURIComponent(scopes)}&access_type=offline&prompt=consent&state=${stateToken}`;
 
-    // Catat log audit inisiasi OAuth
+    // Catat log audit inisiasi OAuth SSO
     try {
       db.prepare(`
         INSERT INTO audit_logs (user_name, user_role, action, target, ip_address, status, details)
@@ -37,11 +40,11 @@ export const GET: APIRoute = async ({ request, url }) => {
       `).run(
         'Admin/Head Aktif',
         role,
-        'Inisiasi Sambungan OAuth2 Google',
-        'Google Workspace API Scope',
+        'Inisiasi Sambungan Google SSO OAuth2',
+        'Akun Google (Google AI Pro & Cloud Sync)',
         request.headers.get('x-forwarded-for') || '127.0.0.1',
         'success',
-        JSON.stringify({ scopes, redirectUri, state: stateToken })
+        JSON.stringify({ scopes, redirectUri, state: stateToken, type: 'google_sso_oauth2' })
       );
     } catch {}
 
@@ -50,13 +53,14 @@ export const GET: APIRoute = async ({ request, url }) => {
         success: true,
         authUrl,
         state: stateToken,
-        message: 'Tautan otorisasi Google OAuth berhasil digenerate.'
+        accountType: 'Personal / Pro (Google AI Pro)',
+        message: 'Tautan otorisasi Google SSO OAuth2 berhasil dibuat.'
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, message: 'Gagal menginisiasi OAuth.', error: String(error) }),
+      JSON.stringify({ success: false, message: 'Gagal menginisiasi Google OAuth SSO.', error: String(error) }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }

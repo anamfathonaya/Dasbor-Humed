@@ -4,7 +4,7 @@ import { getUserRole } from '../../../../lib/auth';
 
 initDatabase();
 
-// POST: Putuskan sambungan dan cabut token Google Workspace
+// POST: Putuskan sambungan dan cabut token Google SSO
 export const POST: APIRoute = async ({ request, url }) => {
   try {
     const role = getUserRole(request, url);
@@ -22,9 +22,9 @@ export const POST: APIRoute = async ({ request, url }) => {
       SET
         status = 'disconnected',
         config_json = NULL,
-        last_status_message = 'Koneksi diputus oleh administrator pada ' || CURRENT_TIMESTAMP,
+        last_status_message = 'Koneksi akun Google SSO diputus oleh administrator pada ' || CURRENT_TIMESTAMP,
         updated_at = CURRENT_TIMESTAMP
-      WHERE service_key = 'google_workspace'
+      WHERE service_key = 'google_workspace' OR service_key = 'google_account'
     `).run();
 
     // Catat log audit pemutusan sambungan
@@ -35,18 +35,18 @@ export const POST: APIRoute = async ({ request, url }) => {
       `).run(
         'Admin/Head Aktif',
         role,
-        'Pemutusan Integrasi Google Workspace',
-        'Pencabutan Kunci Akses & Token OAuth2',
+        'Pemutusan Integrasi Akun Google SSO',
+        'Pencabutan Token SSO & Google AI Pro',
         request.headers.get('x-forwarded-for') || '127.0.0.1',
         'warning',
-        'Sinkronisasi kalender dan drive otomatis dihentikan sementara'
+        'Sesi Google SSO dan sinkronisasi otomatis Google Drive/Calendar dihentikan sementara'
       );
     } catch {}
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Sambungan Google Workspace berhasil diputuskan dan token dicabut.'
+        message: 'Sambungan Akun Google SSO berhasil diputuskan dan token dicabut.'
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );

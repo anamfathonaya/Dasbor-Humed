@@ -27,6 +27,7 @@ export function initDatabase() {
       email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
       role_id INTEGER,
+      avatar_url TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL
     );
@@ -555,6 +556,7 @@ export function initDatabase() {
   try { db.exec("ALTER TABLE reminders ADD COLUMN created_at DATETIME DEFAULT CURRENT_TIMESTAMP"); } catch {}
   try { db.exec("ALTER TABLE project_tasks ADD COLUMN position INTEGER DEFAULT 0"); } catch {}
   try { db.exec("ALTER TABLE knowledge_docs ADD COLUMN category_id INTEGER"); } catch {}
+  try { db.exec("ALTER TABLE users ADD COLUMN avatar_url TEXT"); } catch {}
   try {
     db.exec(`
       UPDATE knowledge_docs
@@ -1570,13 +1572,13 @@ export function initDatabase() {
 
     insertIntegration.run(
       'google_workspace',
-      'Google Workspace (Drive, Calendar & Sheets)',
+      'Akun Google (SSO, AI Pro, Drive & Calendar)',
       'cloud',
       'connected',
       'https://www.googleapis.com/drive/v3/files',
-      JSON.stringify({ serviceAccount: 'gsuite-humas-sync@pedulinegeri.iam.gserviceaccount.com', domain: 'pedulinegeri.org' }),
+      JSON.stringify({ accountEmail: 'humas.pedulinegeri@gmail.com', plan: 'Google AI Pro (Gemini Advanced & 2TB Drive)', authMethod: 'Google SSO OAuth2' }),
       '2026-10-11 20:44:00',
-      'Sinkronisasi 2 arah aktif'
+      'Terhubung via Google SSO (Paket Google AI Pro Aktif)'
     );
 
     insertIntegration.run(
@@ -1610,7 +1612,7 @@ export function initDatabase() {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
-    insertAudit.run(2, 'Budi Santoso', 'admin', 'Perbaruan Konfigurasi Integrasi', 'Google Workspace Service Account Token', '192.168.1.45', 'success', 'Token diperbarui otomatis melalui konsol');
+    insertAudit.run(2, 'Budi Santoso', 'admin', 'Perbaruan Konfigurasi Integrasi', 'Akun Google SSO Token (Google AI Pro)', '192.168.1.45', 'success', 'Token SSO diperbarui otomatis via login akun Google');
     insertAudit.run(1, 'Rani Maulida', 'head', 'Pengesahan Revisi SOP Humas', 'SOP-HUM-01 (Kanal Krisis Bencana)', '180.252.16.89', 'success', 'Revisi disahkan per rapat pimpinan');
     insertAudit.run(null, 'Sistem Otomatis DAM', 'service_agent', 'Sinkronisasi Folder SMB', '48 Berkas Foto Dokumentasi Baru Dipindai', '192.168.1.200', 'success', 'Penambahan metadata EXIF');
     insertAudit.run(null, 'Percobaan Masuk Tamu', 'anonymous', 'Gagal Autentikasi Pengguna', 'admin.backup@pedulinegeri.org (Salah Sandi)', '114.124.201.33', 'failed', '3x percobaan salah sandi berurutan');

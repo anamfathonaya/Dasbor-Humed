@@ -1,9 +1,9 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import {
   mockKnowledgeDocs,
   knowledgeCategories,
 } from '../lib/clientDataFetcher';
-import RoleNavigation from '../components/RoleNavigation.astro';
 
 const totalDocs = mockKnowledgeDocs.length;
 const sopCount = mockKnowledgeDocs.filter(d => d.category === 'SOP').length;
@@ -11,863 +11,306 @@ const guidelineCount = mockKnowledgeDocs.filter(d => d.category === 'Pedoman Bra
 const workflowCount = mockKnowledgeDocs.filter(d => d.category === 'Alur Kerja' || d.category === 'Template').length;
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Basis Pengetahuan & SOP Lembaga (Knowledge Base) — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/basis-pengetahuan" />
-
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
-        <div>
-          <h2>Basis Pengetahuan & Prosedur Operasional Standar (SOP)</h2>
-          <p class="muted">
-            Repositori resmi pedoman peliputan bencana, etika redaksi, komunikasi krisis, alur kerja omnichannel, dan template kerja lembaga.
-          </p>
-        </div>
-        <div class="actions">
-          <a href="/basis-pengetahuan/status-usulan" class="btn btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
-            📋 Status Usulan & Tinjauan
-          </a>
-          <button class="btn" id="btn-request-doc">➕ Ajukan Revisi / Dokumen Baru</button>
-        </div>
+<HumasLayout
+  title="Basis Pengetahuan & SOP — Humas Internal Peduli Negeri"
+  pageTitle="Basis Pengetahuan & SOP"
+  pageSubtitle="Repositori SOP resmi, panduan krisis, etika peliputan bencana & alur kerja lembaga"
+  currentPath="/basis-pengetahuan"
+  pageContentId="basis-pengetahuan"
+>
+  <main class="kb" data-node-id="basis-pengetahuan.main">
+    <!-- Top Bar -->
+    <div class="kb__bar">
+      <p class="kb__bar-text">
+        <b>Katalog Dokumen Resmi:</b> {totalDocs} Prosedur SOP, Pedoman Brand, dan Alur Kerja Lembaga telah diverifikasi.
+      </p>
+      <div class="kb__bar-actions">
+        <a href="/sop" class="kb__btn">
+          <iconify-icon icon="lucide:workflow" aria-hidden="true"></iconify-icon>Papan Visual SOP
+        </a>
+        <a href="/basis-pengetahuan/status-usulan" class="kb__btn">
+          <iconify-icon icon="lucide:clipboard-list" aria-hidden="true"></iconify-icon>Status Usulan
+        </a>
+        <button class="kb__btn kb__btn--primary" type="button" id="btn-open-kb-modal">
+          <iconify-icon icon="lucide:plus" aria-hidden="true"></iconify-icon>Ajukan Dokumen / SOP Baru
+        </button>
       </div>
+    </div>
 
-      <!-- KARTU STATISTIK DOKUMENTASI -->
-      <section class="stats">
-        <div class="card hl">
-          <span class="lbl">Total Dokumen Aktif</span>
-          <strong>{totalDocs} Dokumen</strong>
-        </div>
-        <div class="card">
-          <span class="lbl">SOP Prosedur Lapangan</span>
-          <strong>{sopCount} Prosedur</strong>
-        </div>
-        <div class="card">
-          <span class="lbl">Pedoman Brand & Teknis</span>
-          <strong>{guidelineCount} Pedoman</strong>
-        </div>
-        <div class="card">
-          <span class="lbl">Alur Kerja & Template</span>
-          <strong>{workflowCount} Modul</strong>
-        </div>
-      </section>
+    <!-- 4 KPI Cards -->
+    <div class="kb__kpis">
+      <div class="kb__kpi-card">
+        <div class="kb__kpi-head"><span>Total Dokumen Aktif</span><span class="kb__badge kb__badge--blue">Resmi v2.3</span></div>
+        <div class="kb__kpi-val">{totalDocs} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">berkas</span></div>
+      </div>
+      <div class="kb__kpi-card">
+        <div class="kb__kpi-head"><span>SOP Lapangan & Krisis</span><span class="kb__badge kb__badge--green">Tersertifikasi</span></div>
+        <div class="kb__kpi-val">{sopCount} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">prosedur</span></div>
+      </div>
+      <div class="kb__kpi-card">
+        <div class="kb__kpi-head"><span>Pedoman Brand & Teknis</span><span class="kb__badge kb__badge--blue">Standar</span></div>
+        <div class="kb__kpi-val">{guidelineCount} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">pedoman</span></div>
+      </div>
+      <div class="kb__kpi-card">
+        <div class="kb__kpi-head"><span>Alur Kerja & Template</span><span class="kb__badge kb__badge--amber">Aktif</span></div>
+        <div class="kb__kpi-val">{workflowCount} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">modul</span></div>
+      </div>
+    </div>
 
-      <!-- FILTER & PENCARIAN -->
-      <section class="filter-card">
-        <div class="filter-grid">
-          <div class="search-box">
-            <label for="filter-search">Pencarian Dokumen</label>
-            <input type="text" id="filter-search" placeholder="Cari kode dokumen, judul SOP, kata kunci panduan..." />
-          </div>
+    <!-- Layout Utama -->
+    <div class="kb__layout">
+      <!-- Kolom Daftar Dokumen -->
+      <section class="kb__card">
+        <div class="kb__card-head">
           <div>
-            <label for="filter-category">Kategori Dokumen</label>
-            <select id="filter-category">
-              {knowledgeCategories.map(c => <option value={c}>{c}</option>)}
-            </select>
+            <h2 class="kb__card-title">Daftar Prosedur Operasional & Pedoman Lembaga</h2>
+            <p class="kb__card-sub">Cari, unduh template, dan baca pedoman keselamatan maupun etika liputan</p>
           </div>
-          <div>
-            <label for="filter-access">Tingkat Akses Dokumen</label>
-            <select id="filter-access">
-              <option value="all">Semua Dokumen Terbuka</option>
-              <option value="admin">Termasuk Akses Khusus Admin</option>
-              <option value="head">Semua Tingkat Akses (Termasuk Ketua Bidang)</option>
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <!-- DAFTAR DOKUMEN -->
-      <section class="box">
-        <div class="box-head">
-          <h3>Daftar Dokumen Resmi & Prosedur Kerja</h3>
-          <span id="doc-counter" class="count-badge">{totalDocs} dokumen ditampilkan</span>
+          <span class="kb__badge kb__badge--blue" id="kb-counter">{totalDocs} Dokumen Tampil</span>
         </div>
 
-        <div class="doc-list" id="docs-container"></div>
-
-        <div id="empty-state" class="empty-box" hidden>
-          <span class="empty-icon">📂</span>
-          <h4>Tidak Ada Dokumen yang Cocok</h4>
-          <p class="muted">Silakan periksa kata kunci pencarian atau sesuaikan pilihan kategori dokumen.</p>
+        <!-- Filter Row -->
+        <div class="kb__filter-row">
+          <div class="kb__search">
+            <iconify-icon icon="lucide:search" aria-hidden="true"></iconify-icon>
+            <input type="search" id="kb-search" placeholder="Cari kode dokumen, judul SOP, etika liputan..." aria-label="Cari dokumen">
+          </div>
+          <select class="kb__select" id="kb-category" aria-label="Pilih kategori dokumen">
+            <option value="all">Semua Kategori</option>
+            {knowledgeCategories.filter(c => c !== 'Semua Kategori').map(cat => (
+              <option value={cat}>{cat}</option>
+            ))}
+          </select>
+          <select class="kb__select" id="kb-role" aria-label="Pilih akses peran">
+            <option value="all">Semua Akses</option>
+            <option value="admin">Akses Administrator</option>
+            <option value="head">Kepala Bagian</option>
+          </select>
         </div>
-      </section>
-    </main>
 
-    <!-- MODAL AJUKAN REVISI / DOKUMEN BARU -->
-    <dialog id="request-dialog" class="custom-dialog">
-      <form id="request-form" method="dialog">
-        <div class="dialog-header">
-          <h3 id="dialog-heading">Formulir Usulan Dokumen & SOP Lembaga</h3>
-          <button type="button" class="btn-close" id="btn-close-dialog">✕</button>
-        </div>
-        <div class="dialog-body">
-          <div class="form-type-row">
-            <label class="radio-label">
-              <input type="radio" name="req-type" value="baru" checked id="radio-type-new" />
-              <span>➕ Tambah Dokumen / SOP Baru</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="req-type" value="revisi" id="radio-type-revision" />
-              <span>🔄 Usulkan Revisi Dokumen yang Ada</span>
-            </label>
-          </div>
-
-          <div id="target-doc-wrapper" class="form-group-item" hidden>
-            <label for="req-target-doc">Pilih Dokumen yang Ingin Diperbarui</label>
-            <select id="req-target-doc">
-              {mockKnowledgeDocs.map(d => (
-                <option value={d.code}>{d.code} - {d.title} ({d.version})</option>
-              ))}
-            </select>
-          </div>
-
-          <div class="form-group-item">
-            <label for="req-title">
-              Judul Usulan Dokumen / SOP <span class="req">*</span>
-            </label>
-            <input type="text" id="req-title" required placeholder="Contoh: SOP Liputan Tanggap Darurat Konflik dan Kerusuhan" />
-          </div>
-
-          <div class="form-row-2">
-            <div class="form-group-item">
-              <label for="req-category">Kategori Dokumen <span class="req">*</span></label>
-              <select id="req-category" required>
-                <option value="SOP">SOP (Standar Operasional)</option>
-                <option value="Panduan Teknis">Panduan Teknis</option>
-                <option value="Pedoman Brand">Pedoman Brand</option>
-                <option value="Alur Kerja">Alur Kerja</option>
-                <option value="Template">Template Format Kerja</option>
-              </select>
-            </div>
-            <div class="form-group-item">
-              <label for="req-urgency">Tingkat Urgensi Kebutuhan</label>
-              <select id="req-urgency">
-                <option value="Biasa">Biasa (Siklus Rapat Bulanan)</option>
-                <option value="Mendesak">Mendesak (Respons Bencana Aktif)</option>
-                <option value="Rutin">Penyesuaian Rutin Tahunan</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group-item">
-            <label for="req-author">Nama Pengusul & Unit Kerja <span class="req">*</span></label>
-            <input type="text" id="req-author" required placeholder="Contoh: Rian - Tim Liputan Bencana Wilayah Barat" />
-          </div>
-
-          <div class="form-group-item">
-            <label for="req-notes">
-              Uraian Latar Belakang & Rincian Poin Perubahan <span class="req">*</span>
-            </label>
-            <textarea id="req-notes" rows="4" required placeholder="Jelaskan kendala di lapangan, perubahan regulasi, atau draf langkah kerja baru yang diusulkan..."></textarea>
-          </div>
-        </div>
-        <div class="dialog-footer">
-          <button type="button" class="btn-ghost" id="btn-cancel-dialog">Batal</button>
-          <button type="submit" class="btn" id="btn-submit-req">📨 Kirim Usulan ke Redaksi Humas</button>
-        </div>
-      </form>
-    </dialog>
-
-    <div id="toast" class="toast"></div>
-
-    <script define:vars={{ initialDocs: mockKnowledgeDocs }}>
-      const roleSel = document.getElementById('user-role');
-      const searchEl = document.getElementById('filter-search');
-      const catEl = document.getElementById('filter-category');
-      const accessEl = document.getElementById('filter-access');
-      const containerEl = document.getElementById('docs-container');
-      const counterEl = document.getElementById('doc-counter');
-      const emptyEl = document.getElementById('empty-state');
-      const toast = document.getElementById('toast');
-
-      let currentRole = 'head';
-      try { currentRole = localStorage.getItem('user_role') || 'head'; } catch {}
-      if (roleSel) roleSel.value = currentRole;
-
-      function getCategoryBadgeClass(category) {
-        switch (category) {
-          case 'SOP': return 'badge-sop';
-          case 'Pedoman Brand': return 'badge-brand';
-          case 'Panduan Teknis': return 'badge-tech';
-          case 'Alur Kerja': return 'badge-workflow';
-          default: return 'badge-template';
-        }
-      }
-
-      function renderDocs() {
-        const query = (searchEl?.value || '').toLowerCase().trim();
-        const selectedCat = catEl?.value || 'Semua Kategori';
-        const selectedAccess = accessEl?.value || 'all';
-
-        const filtered = initialDocs.map(doc => {
-          // Cari di kode, judul, dan deskripsi utama
-          let matchScore = 0;
-          let matchedSnippet = '';
-
-          if (!query) {
-            matchScore = 1;
-          } else {
-            if (doc.code.toLowerCase().includes(query)) matchScore += 10;
-            if (doc.title.toLowerCase().includes(query)) matchScore += 5;
-            if (doc.description.toLowerCase().includes(query)) {
-              matchScore += 3;
-              matchedSnippet = doc.description;
-            }
-
-            // Pencarian mendalam di setiap section & bab
-            if (doc.sections) {
-              for (const sec of doc.sections) {
-                if (sec.heading.toLowerCase().includes(query) || sec.content.toLowerCase().includes(query)) {
-                  matchScore += 4;
-                  if (!matchedSnippet) matchedSnippet = `${sec.heading}: ${sec.content}`;
-                }
-                if (sec.checklist) {
-                  for (const chk of sec.checklist) {
-                    if (chk.toLowerCase().includes(query)) {
-                      matchScore += 3;
-                      if (!matchedSnippet) matchedSnippet = `Daftar Periksa: ${chk}`;
-                    }
-                  }
-                }
-                if (sec.notes && sec.notes.toLowerCase().includes(query)) {
-                  matchScore += 2;
-                  if (!matchedSnippet) matchedSnippet = `Catatan: ${sec.notes}`;
-                }
-              }
-            }
-
-            // Pencarian di tahapan langkah berurutan (SOP Steps)
-            if (doc.steps) {
-              for (const st of doc.steps) {
-                if (
-                  st.title.toLowerCase().includes(query) ||
-                  st.action.toLowerCase().includes(query) ||
-                  st.output.toLowerCase().includes(query)
-                ) {
-                  matchScore += 4;
-                  if (!matchedSnippet) matchedSnippet = `Langkah ${st.stepNumber} (${st.title}): ${st.action}`;
-                }
-              }
-            }
-          }
-
-          // Filter kategori
-          const matchCat = selectedCat === 'Semua Kategori' || doc.category === selectedCat;
-
-          // Filter akses role
-          let matchAccess = true;
-          if (doc.accessRole === 'admin' && currentRole === 'staff') {
-            matchAccess = false;
-          }
-          if (doc.accessRole === 'head' && (currentRole === 'staff' || currentRole === 'admin')) {
-            matchAccess = false;
-          }
-
-          return {
-            doc,
-            isMatch: matchScore > 0 && matchCat && matchAccess,
-            matchedSnippet
-          };
-        }).filter(item => item.isMatch);
-
-        if (counterEl) {
-          const suffix = query ? `untuk kata kunci "${query}"` : '';
-          counterEl.textContent = `${filtered.length} dokumen ditemukan ${suffix}`;
-        }
-
-        if (emptyEl) {
-          emptyEl.hidden = filtered.length > 0;
-        }
-
-        if (containerEl) {
-          containerEl.innerHTML = filtered.map(({ doc, matchedSnippet }) => {
-            const isRestricted = doc.accessRole !== 'all';
-            return `
-              <article class="doc-card">
-                <div class="doc-top">
-                  <div class="doc-meta-header">
-                    <span class="doc-code">${doc.code}</span>
-                    <span class="badge ${getCategoryBadgeClass(doc.category)}">${doc.category}</span>
-                    <span class="doc-ver">${doc.version}</span>
-                    ${isRestricted ? `<span class="badge-role">Akses: ${doc.accessRole.toUpperCase()}</span>` : ''}
+        <!-- List Dokumen Dinamis -->
+        <div class="kb__docs" id="kb-list">
+          {mockKnowledgeDocs.map(doc => {
+            const isSOP = doc.category === 'SOP';
+            const badgeClass = isSOP ? 'kb__badge--green' : doc.category === 'Pedoman Brand' ? 'kb__badge--blue' : 'kb__badge--amber';
+            const detailUrl = isSOP ? '/sop' : `/basis-pengetahuan/${doc.code.toLowerCase()}`;
+            return (
+              <article class="kb__doc-item" data-category={doc.category} data-code={doc.code} data-access={doc.accessRole || 'all'}>
+                <div class="kb__doc-head">
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <span class="kb__doc-code">{doc.code}</span>
+                    <span class={`kb__badge ${badgeClass}`}>{doc.category}</span>
                   </div>
-                  <span class="read-time">⏱️ ${doc.readTime} baca</span>
+                  <span class="kb__badge kb__badge--blue">{doc.version} ({doc.updatedAt})</span>
                 </div>
-
-                <h4 class="doc-card-title">${doc.title}</h4>
-                <p class="doc-desc">${doc.description}</p>
-
-                ${matchedSnippet && query ? `
-                  <div class="match-snippet-box">
-                    <span class="snippet-label">🔍 Potongan Isi yang Cocok:</span>
-                    <p class="snippet-text">"${matchedSnippet.slice(0, 160)}${matchedSnippet.length > 160 ? '...' : ''}"</p>
-                  </div>
-                ` : ''}
-
-                <div class="doc-footer">
-                  <div class="doc-by">
-                    <span>Oleh: <strong>${doc.author}</strong></span>
-                    <small>Pembaruan Terakhir: ${doc.lastUpdated}</small>
-                  </div>
-                  <div class="doc-actions">
-                    <a href="/basis-pengetahuan/${doc.id}" class="btn-read">Buka Dokumen</a>
-                    <button class="btn-download" data-id="${doc.id}" title="Unduh Salinan PDF">📥 Unduh</button>
-                  </div>
+                <h3 class="kb__doc-title">{doc.title}</h3>
+                <p class="kb__doc-desc">{doc.description}</p>
+                <div class="kb__doc-meta">
+                  <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> {doc.author}</span>
+                  <span><iconify-icon icon="lucide:clock" aria-hidden="true"></iconify-icon> Waktu baca {doc.readTime || '5 menit'}</span>
+                  <span><iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon> Akses: {doc.accessRole === 'all' ? 'Semua Staf' : doc.accessRole === 'admin' ? 'Admin & Pimpinan' : 'Khusus Kepala'}</span>
+                </div>
+                <div class="kb__doc-actions">
+                  <a href={detailUrl} class="kb__btn">
+                    <iconify-icon icon="lucide:eye" aria-hidden="true"></iconify-icon>Baca Dokumen
+                  </a>
+                  <button class="kb__btn btn-download-doc" type="button" data-title={doc.title} data-code={doc.code}>
+                    <iconify-icon icon="lucide:download" aria-hidden="true"></iconify-icon>Unduh PDF
+                  </button>
                 </div>
               </article>
-            `;
-          }).join('');
+            );
+          })}
+        </div>
+
+        <div id="kb-empty" class="kb__card" style="text-align:center;padding:32px;display:none;background:var(--color-surface,#fff);margin-top:16px;">
+          <iconify-icon icon="lucide:folder-search" style="font-size:36px;color:var(--color-muted,#5a6875);display:block;margin:0 auto 12px;"></iconify-icon>
+          <h4 style="margin:0 0 6px;color:var(--color-text,#16202b);">Tidak Ada Dokumen yang Cocok</h4>
+          <p style="margin:0;font-size:13px;color:var(--color-muted,#5a6875);">Silakan periksa kata kunci pencarian atau sesuaikan pilihan kategori dokumen.</p>
+        </div>
+      </section>
+
+      <!-- Kolom Samping -->
+      <aside style="display:flex;flex-direction:column;gap:16px;">
+        <!-- Panel Langkah Pengajuan -->
+        <div class="kb__card">
+          <h2 class="kb__card-title">Alur Pengajuan SOP Baru</h2>
+          <p class="kb__card-sub">Mekanisme standardisasi dokumen internal</p>
+          <div class="kb__quick-guide">
+            <div class="kb__guide-step">
+              <div class="kb__step-num">1</div>
+              <div class="kb__step-body">
+                <strong>Pengajuan Draf Online</strong>
+                <p>Isi formulir usulan dokumen dengan menyertakan urgensi dan naskah awal.</p>
+              </div>
+            </div>
+            <div class="kb__guide-step">
+              <div class="kb__step-num">2</div>
+              <div class="kb__step-body">
+                <strong>Tinjauan Komite Humas</strong>
+                <p>Evaluasi keselarasan etika dan aspek hukum oleh Tim Editor (1-3 hari kerja).</p>
+              </div>
+            </div>
+            <div class="kb__guide-step">
+              <div class="kb__step-num">3</div>
+              <div class="kb__step-body">
+                <strong>Pengesahan Kepala Bidang</strong>
+                <p>Penomoran SK resmi dan pendistribusian dokumen ke dashboard staf.</p>
+              </div>
+            </div>
+          </div>
+          <button class="kb__btn kb__btn--primary btn-open-modal-trigger" type="button" style="width:100%;margin-top:4px;">
+            Mulai Usulkan Dokumen
+          </button>
+        </div>
+
+        <!-- Panel Kontak Bantuan & Redaksi -->
+        <div class="kb__card">
+          <h2 class="kb__card-title">Kontak Bantuan & Redaksi</h2>
+          <p class="kb__card-sub">Hubungi jika ada keraguan operasional lapangan</p>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">
+            <div style="padding:10px;border-radius:10px;background:var(--color-canvas,#f8f9fa);border:1px solid var(--color-border,#ebecee);">
+              <strong style="color:var(--color-text,#16202b)">Koordinator Siaga Krisis:</strong>
+              <div style="color:var(--color-muted,#5a6875);margin-top:2px;">Hotline 24 Jam: 0811-9928-112</div>
+              <div style="color:var(--color-muted,#5a6875);">krisis@pedulinegeri.org</div>
+            </div>
+            <div style="padding:10px;border-radius:10px;background:var(--color-canvas,#f8f9fa);border:1px solid var(--color-border,#ebecee);">
+              <strong style="color:var(--color-text,#16202b)">Dukungan Server DAM & IT:</strong>
+              <div style="color:var(--color-muted,#5a6875);margin-top:2px;">IP NAS: 192.168.1.200</div>
+              <div style="color:var(--color-muted,#5a6875);">sysadmin@pedulinegeri.org</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Modal Form Usulan -->
+    <div class="kb__modal" id="kb-modal" hidden>
+      <div class="kb__dialog">
+        <div class="kb__dialog-head">
+          <h3 style="margin:0;font-size:16px;color:var(--color-text,#16202b);">Ajukan Dokumen / Revisi SOP</h3>
+          <button type="button" class="kb__dialog-close" id="btn-close-kb-modal">✕</button>
+        </div>
+        <form id="kb-usulan-form">
+          <div class="kb__form-group">
+            <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;color:var(--color-text,#16202b);">Jenis Usulan</label>
+            <select id="modal-req-type" class="kb__select" style="width:100%;" required>
+              <option value="baru">Tambah Dokumen / SOP Baru</option>
+              <option value="revisi">Revisi Dokumen yang Sudah Ada</option>
+            </select>
+          </div>
+          <div class="kb__form-group">
+            <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;color:var(--color-text,#16202b);">Judul Dokumen / SOP</label>
+            <input type="text" id="modal-req-title" class="kb__select" style="width:100%;" required placeholder="Contoh: SOP Liputan Tanggap Darurat Konflik">
+          </div>
+          <div class="kb__form-group">
+            <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;color:var(--color-text,#16202b);">Kategori</label>
+            <select id="modal-req-category" class="kb__select" style="width:100%;" required>
+              <option value="SOP">SOP (Standar Operasional)</option>
+              <option value="Panduan Teknis">Panduan Teknis</option>
+              <option value="Pedoman Brand">Pedoman Brand</option>
+              <option value="Alur Kerja">Alur Kerja</option>
+              <option value="Template">Template Format Kerja</option>
+            </select>
+          </div>
+          <div class="kb__form-group">
+            <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;color:var(--color-text,#16202b);">Nama Pengusul & Unit Kerja</label>
+            <input type="text" id="modal-req-author" class="kb__select" style="width:100%;" required placeholder="Nama Anda - Unit Kerja">
+          </div>
+          <div class="kb__form-group">
+            <label style="display:block;margin-bottom:4px;font-size:12px;font-weight:600;color:var(--color-text,#16202b);">Ringkasan Latar Belakang / Urgensi</label>
+            <textarea id="modal-req-notes" rows="3" class="kb__select" style="width:100%;height:auto;padding:8px;" required placeholder="Jelaskan mengapa SOP atau dokumen ini dibutuhkan..."></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+            <button type="button" class="kb__btn" id="btn-cancel-kb-modal">Batal</button>
+            <button type="submit" class="kb__btn kb__btn--primary">Kirimkan Usulan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('kb-search') as HTMLInputElement | null;
+      const categorySelect = document.getElementById('kb-category') as HTMLSelectElement | null;
+      const roleSelect = document.getElementById('kb-role') as HTMLSelectElement | null;
+      const counterEl = document.getElementById('kb-counter');
+      const emptyEl = document.getElementById('kb-empty');
+      const docItems = document.querySelectorAll('.kb__doc-item');
+
+      function filterDocs() {
+        const query = (searchInput?.value || '').toLowerCase().trim();
+        const cat = categorySelect?.value || 'all';
+        const role = roleSelect?.value || 'all';
+        let visibleCount = 0;
+
+        docItems.forEach(el => {
+          const item = el as HTMLElement;
+          const text = item.textContent?.toLowerCase() || '';
+          const itemCat = item.dataset.category || '';
+          const itemAccess = item.dataset.access || 'all';
+
+          const matchQuery = !query || text.includes(query);
+          const matchCat = cat === 'all' || itemCat === cat;
+          const matchRole = role === 'all' || itemAccess === 'all' || itemAccess === role || role === 'head';
+
+          if (matchQuery && matchCat && matchRole) {
+            item.style.display = 'flex';
+            visibleCount++;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+
+        if (counterEl) {
+          counterEl.textContent = `${visibleCount} Dokumen Tampil`;
+        }
+        if (emptyEl) {
+          emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
         }
       }
 
-      // Event listener pencarian dan filter
-      if (searchEl) searchEl.addEventListener('input', renderDocs);
-      if (catEl) catEl.addEventListener('change', renderDocs);
-      if (accessEl) accessEl.addEventListener('change', renderDocs);
+      searchInput?.addEventListener('input', filterDocs);
+      categorySelect?.addEventListener('change', filterDocs);
+      roleSelect?.addEventListener('change', filterDocs);
 
-      if (roleSel) {
-        roleSel.addEventListener('change', (e) => {
-          currentRole = e.target.value;
-          try { localStorage.setItem('user_role', currentRole); } catch {}
-          renderDocs();
-          showToast(`Peran pengguna dialihkan ke: ${currentRole.toUpperCase()}`);
-        });
+      // Modal handling
+      const modal = document.getElementById('kb-modal');
+      const openBtn = document.getElementById('btn-open-kb-modal');
+      const closeBtn = document.getElementById('btn-close-kb-modal');
+      const cancelBtn = document.getElementById('btn-cancel-kb-modal');
+      const openTriggers = document.querySelectorAll('.btn-open-modal-trigger');
+      const form = document.getElementById('kb-usulan-form');
+
+      function showModal() {
+        if (modal) modal.hidden = false;
+      }
+      function hideModal() {
+        if (modal) modal.hidden = true;
       }
 
-      // Interaksi tombol dokumen
-      if (containerEl) {
-        containerEl.addEventListener('click', (e) => {
-          const btnRead = e.target.closest('.btn-read');
-          const btnDownload = e.target.closest('.btn-download');
+      openBtn?.addEventListener('click', showModal);
+      openTriggers.forEach(t => t.addEventListener('click', showModal));
+      closeBtn?.addEventListener('click', hideModal);
+      cancelBtn?.addEventListener('click', hideModal);
 
-          if (btnRead) {
-            const id = Number(btnRead.dataset.id);
-            const doc = initialDocs.find(d => d.id === id);
-            if (doc) {
-              showToast(`Membuka rincian: ${doc.code} (${doc.title})`);
-            }
-          }
-
-          if (btnDownload) {
-            const id = Number(btnDownload.dataset.id);
-            const doc = initialDocs.find(d => d.id === id);
-            if (doc) {
-              showToast(`Mengunduh salinan resmi: ${doc.code}.pdf`);
-            }
-          }
-        });
-      }
-
-      // Dialog pengajuan revisi
-      const reqDialog = document.getElementById('request-dialog');
-      const btnReq = document.getElementById('btn-request-doc');
-      const btnCloseDialog = document.getElementById('btn-close-dialog');
-      const btnCancelDialog = document.getElementById('btn-cancel-dialog');
-      const reqForm = document.getElementById('request-form');
-      const radioNew = document.getElementById('radio-type-new');
-      const radioRev = document.getElementById('radio-type-revision');
-      const targetDocWrapper = document.getElementById('target-doc-wrapper');
-      const targetDocSelect = document.getElementById('req-target-doc');
-      const reqTitleInput = document.getElementById('req-title');
-      const reqCategorySelect = document.getElementById('req-category');
-      const reqAuthorInput = document.getElementById('req-author');
-      const reqNotesTextarea = document.getElementById('req-notes');
-
-      function toggleFormType() {
-        const isRevision = radioRev?.checked;
-        if (targetDocWrapper) targetDocWrapper.hidden = !isRevision;
-        if (isRevision && targetDocSelect && reqTitleInput) {
-          const selectedCode = targetDocSelect.value;
-          const found = initialDocs.find(d => d.code === selectedCode);
-          if (found) {
-            reqTitleInput.value = `Revisi: ${found.title}`;
-            if (reqCategorySelect) reqCategorySelect.value = found.category;
-          }
-        }
-      }
-
-      if (radioNew) radioNew.addEventListener('change', toggleFormType);
-      if (radioRev) radioRev.addEventListener('change', toggleFormType);
-      if (targetDocSelect) targetDocSelect.addEventListener('change', toggleFormType);
-
-      if (btnReq) {
-        btnReq.addEventListener('click', () => {
-          if (radioNew) radioNew.checked = true;
-          toggleFormType();
-          reqDialog?.showModal();
-        });
-      }
-
-      [btnCloseDialog, btnCancelDialog].forEach(btn => {
-        if (btn) btn.addEventListener('click', () => reqDialog?.close());
+      form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Usulan berhasil dikirimkan ke antrean kurasi Kepala Bidang Humas!');
+        hideModal();
+        if (form instanceof HTMLFormElement) form.reset();
       });
 
-      if (reqForm) {
-        reqForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const title = reqTitleInput?.value.trim() || 'Dokumen Usulan';
-          const cat = reqCategorySelect?.value || 'SOP';
-          const author = reqAuthorInput?.value.trim() || 'Staf Humas';
-          const notes = reqNotesTextarea?.value.trim() || '';
-          const isRevision = radioRev?.checked;
-
-          if (isRevision) {
-            const targetCode = targetDocSelect?.value;
-            const existingDoc = initialDocs.find(d => d.code === targetCode);
-            if (existingDoc) {
-              existingDoc.lastUpdated = 'Hari ini (Diusulkan)';
-              existingDoc.version = `${existingDoc.version}-rev`;
-              existingDoc.description = `${existingDoc.description} [Catatan Revisi Diajukan: ${notes.slice(0, 80)}...]`;
-            }
-            showToast(`Usulan revisi untuk "${targetCode}" berhasil diajukan ke Dewan Redaksi!`);
-          } else {
-            const nextId = initialDocs.length ? Math.max(...initialDocs.map(d => d.id)) + 1 : 1;
-            const newCode = `USUL-${cat.slice(0, 3).toUpperCase()}-0${nextId}`;
-            const newDoc = {
-              id: nextId,
-              code: newCode,
-              title: title,
-              category: cat,
-              description: notes || 'Usulan dokumen operasional baru yang diajukan oleh staf divisi.',
-              lastUpdated: 'Hari ini',
-              author: author,
-              version: 'v1.0-draft',
-              accessRole: 'all',
-              readTime: '5 menit',
-              sections: [
-                {
-                  heading: '1. Latar Belakang Kebutuhan Operasional',
-                  content: notes || 'Dokumen ini diajukan untuk melengkapi kebutuhan standarisasi kerja di lapangan.'
-                }
-              ]
-            };
-            initialDocs.unshift(newDoc);
-            showToast(`Usulan dokumen baru "${title}" (${newCode}) berhasil didaftarkan!`);
-          }
-
-          reqDialog?.close();
-          reqForm.reset();
-          renderDocs();
+      // Download buttons
+      document.querySelectorAll('.btn-download-doc').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const title = target.dataset.title || 'Dokumen';
+          const code = target.dataset.code || 'DOC';
+          alert(`Mengunduh paket berkas resmi ${code}: ${title} (PDF).`);
         });
-      }
-
-      function showToast(msg) {
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-      }
-
-      // Render awal
-      renderDocs();
-    </script>
-  </body>
-</html>
-
-<style is:global>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f8fafc;
-    color: #1e293b;
-  }
-
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1.75rem;
-    background: #0f172a;
-    color: #fff;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .brand { display: flex; align-items: center; gap: 0.6rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-  .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-  .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
-
-  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
-  .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
-  .actions { display: flex; gap: 0.6rem; }
-
-  .btn {
-    font: inherit;
-    background: #0284c7;
-    color: #fff;
-    border: 0;
-    padding: 0.55rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.15s;
-  }
-  .btn:hover { background: #0369a1; }
-  .btn-ghost {
-    font: inherit;
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    color: #334155;
-    padding: 0.55rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .btn-ghost:hover { background: #f1f5f9; }
-
-  /* STATS CARDS */
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.15rem;
-  }
-  .card.hl { border-left: 4px solid #0284c7; }
-  .card .lbl { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 0.3rem; }
-  .card strong { font-size: 1.25rem; color: #0f172a; }
-
-  /* FILTER CARD */
-  .filter-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-  }
-  .filter-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
-    align-items: flex-end;
-  }
-  @media (max-width: 860px) {
-    .filter-grid { grid-template-columns: 1fr; }
-  }
-  .filter-grid label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 0.35rem;
-  }
-  .filter-grid input, .filter-grid select {
-    width: 100%;
-    font: inherit;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 0.88rem;
-    background: #fff;
-  }
-  .filter-grid input:focus, .filter-grid select:focus {
-    outline: none;
-    border-color: #0284c7;
-    box-shadow: 0 0 0 3px rgba(2,132,199,0.15);
-  }
-
-  /* BOX & LIST */
-  .box {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.35rem;
-  }
-  .box-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .box-head h3 { margin: 0; font-size: 1.05rem; color: #0f172a; }
-  .count-badge {
-    background: #f1f5f9;
-    color: #475569;
-    font-size: 0.78rem;
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
-    font-weight: 600;
-  }
-
-  .doc-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 1.25rem;
-  }
-  @media (max-width: 600px) {
-    .doc-list { grid-template-columns: 1fr; }
-  }
-
-  .doc-card {
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 1.2rem;
-    background: #fafbfc;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.15s, border-color 0.15s;
-  }
-  .doc-card:hover {
-    border-color: #cbd5e1;
-    background: #fff;
-    transform: translateY(-2px);
-  }
-
-  .doc-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-  .doc-meta-header {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .doc-code {
-    font-size: 0.75rem;
-    font-family: ui-monospace, "Segoe UI Mono", monospace;
-    font-weight: 700;
-    background: #0f172a;
-    color: #fff;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-  }
-  .doc-ver {
-    font-size: 0.72rem;
-    color: #64748b;
-    font-weight: 600;
-  }
-  .read-time {
-    font-size: 0.72rem;
-    color: #64748b;
-  }
-
-  .badge {
-    font-size: 0.72rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-  }
-  .badge-sop { background: #fee2e2; color: #b91c1c; }
-  .badge-brand { background: #eff6ff; color: #1d4ed8; }
-  .badge-tech { background: #f3e8ff; color: #7e22ce; }
-  .badge-workflow { background: #dcfce7; color: #15803d; }
-  .badge-template { background: #fef9c3; color: #854d0e; }
-  .badge-role {
-    font-size: 0.7rem;
-    font-weight: 700;
-    background: #f1f5f9;
-    color: #475569;
-    border: 1px solid #cbd5e1;
-    padding: 0.1rem 0.4rem;
-    border-radius: 4px;
-  }
-
-  .doc-card-title {
-    margin: 0 0 0.5rem;
-    font-size: 1rem;
-    color: #0f172a;
-    line-height: 1.4;
-  }
-  .doc-desc {
-    margin: 0 0 1rem;
-    font-size: 0.84rem;
-    color: #475569;
-    line-height: 1.5;
-    flex-grow: 1;
-  }
-
-  .match-snippet-box {
-    background: #fefce8;
-    border: 1px dashed #ca8a04;
-    border-radius: 6px;
-    padding: 0.65rem 0.85rem;
-    margin-bottom: 1rem;
-  }
-  .snippet-label {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: #854d0e;
-    text-transform: uppercase;
-    margin-bottom: 0.2rem;
-  }
-  .snippet-text {
-    margin: 0;
-    font-size: 0.82rem;
-    color: #713f12;
-    line-height: 1.45;
-    font-style: italic;
-  }
-
-  .doc-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding-top: 0.85rem;
-    border-top: 1px solid #e2e8f0;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .doc-by span {
-    display: block;
-    font-size: 0.78rem;
-    color: #334155;
-  }
-  .doc-by small {
-    display: block;
-    font-size: 0.72rem;
-    color: #94a3b8;
-    margin-top: 0.1rem;
-  }
-
-  .doc-actions {
-    display: flex;
-    gap: 0.4rem;
-  }
-  .btn-read {
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 0.35rem 0.75rem;
-    border-radius: 6px;
-    background: #0284c7;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-  .btn-read:hover { background: #0369a1; }
-  .btn-download {
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 0.35rem 0.65rem;
-    border-radius: 6px;
-    background: #fff;
-    color: #334155;
-    border: 1px solid #cbd5e1;
-    cursor: pointer;
-  }
-  .btn-download:hover { background: #f1f5f9; }
-
-  .empty-box {
-    text-align: center;
-    padding: 3rem 1.5rem;
-  }
-  .empty-icon { font-size: 2.2rem; display: block; margin-bottom: 0.5rem; }
-  .empty-box h4 { margin: 0 0 0.3rem; font-size: 1.05rem; color: #0f172a; }
-
-  /* DIALOG MODAL */
-  .custom-dialog {
-    border: 0;
-    border-radius: 12px;
-    padding: 0;
-    width: min(520px, 92vw);
-    box-shadow: 0 25px 60px rgba(15,23,42,0.3);
-    background: #fff;
-  }
-  .custom-dialog::backdrop {
-    background: rgba(15,23,42,0.5);
-    backdrop-filter: blur(2px);
-  }
-  .dialog-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.15rem 1.4rem;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  .dialog-header h3 { margin: 0; font-size: 1.1rem; color: #0f172a; }
-  .btn-close {
-    background: none;
-    border: 0;
-    font-size: 1.1rem;
-    color: #64748b;
-    cursor: pointer;
-    padding: 0.2rem 0.5rem;
-    border-radius: 6px;
-  }
-  .btn-close:hover { background: #f1f5f9; color: #0f172a; }
-
-  .dialog-body {
-    padding: 1.4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  .dialog-body label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #334155;
-  }
-  .dialog-body input, .dialog-body select, .dialog-body textarea {
-    display: block;
-    width: 100%;
-    margin-top: 0.35rem;
-    font: inherit;
-    padding: 0.55rem 0.75rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 0.88rem;
-  }
-
-  .dialog-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    padding: 1.15rem 1.4rem;
-    border-top: 1px solid #e2e8f0;
-    background: #fafbfc;
-    border-radius: 0 0 12px 12px;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: #0f172a;
-    color: #fff;
-    padding: 0.65rem 1.15rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.25s ease-out;
-    z-index: 999;
-  }
-  .toast.show {
-    transform: none;
-    opacity: 1;
-  }
-</style>
+      });
+    });
+  </script>
+</HumasLayout>

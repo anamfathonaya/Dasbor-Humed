@@ -1375,6 +1375,7 @@ export interface UserAccount {
   role: 'head' | 'admin' | 'staff' | 'reviewer';
   roleLabel: string;
   avatar: string;
+  avatarUrl?: string | null;
   status: 'active' | 'inactive';
   lastActive: string;
   department: string;
@@ -1556,15 +1557,15 @@ export const mockIntegrations: IntegrationService[] = [
   },
   {
     id: 'google_workspace',
-    name: 'Google Workspace (Drive & Calendar)',
+    name: 'Akun Google (SSO, AI Pro, Drive & Calendar)',
     category: 'cloud',
     categoryLabel: 'Layanan Dokumen & Kalender',
     status: 'connected',
     statusLabel: 'Terhubung Normal',
     lastSync: '5 menit yang lalu (Sinkron 8 Acara)',
     endpoint: 'https://www.googleapis.com/drive/v3/files',
-    details: 'Sinkronisasi agenda rilis pers ke Google Calendar Tim Humas dan arsip salinan pers di Google Drive.',
-    authMethod: 'OAuth2 Service Account (gsuite-humas-sync@pedulinegeri.iam.gserviceaccount.com)'
+    details: 'Sinkronisasi agenda rilis pers ke Google Calendar, arsip di Google Drive 2TB, dan asisten Gemini Pro.',
+    authMethod: 'Google SSO OAuth2 (humas.pedulinegeri@gmail.com — Google AI Pro)'
   },
   {
     id: 'meta_graph_api',
@@ -1599,7 +1600,7 @@ export const mockAuditLogs: AuditLogItem[] = [
     userName: 'Budi Santoso',
     userRole: 'Administrator Teknis',
     action: 'Perbaruan Konfigurasi Integrasi',
-    target: 'Google Workspace Service Account Token',
+    target: 'Akun Google SSO Token (Google AI Pro)',
     ipAddress: '192.168.1.45 (Jaringan Kantor)',
     status: 'success'
   },

@@ -1,0 +1,407 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+import RealtimeNewsFeed from '../components/react/RealtimeNewsFeed';
+import DashboardGrid from '../components/DashboardGrid';
+---
+
+<HumasLayout
+  title="Dasbor & Metrik — Humas Internal Peduli Negeri"
+  pageTitle="Dasbor & Metrik"
+  pageSubtitle="Ringkasan operasional humas, akuisisi, dan analitik performa kanal · 2026"
+  currentPath="/dasbor"
+  pageContentId="dasbor-utama"
+>
+  <div class="dasbor" data-node-id="dasbor.root">
+    <!-- Status Bar Operasional -->
+    <section class="dasbor__bar" aria-label="Status ringkas hari ini" data-node-id="dasbor.bar">
+      <p class="dasbor__bar-text">
+        Kalender konten bulan ini: <b>18 jadwal</b> terjadwal, <b>4</b> menunggu persetujuan redaksi.
+        Sinkronisasi Google Calendar & Sheets: <b>normal</b>.
+      </p>
+      <div class="dasbor__bar-actions">
+        <a class="dasbor__btn" href="/kalender-konten">
+          <iconify-icon icon="lucide:calendar-plus" aria-hidden="true"></iconify-icon> Tambah jadwal konten
+        </a>
+        <a class="dasbor__btn dasbor__btn--primary" href="/laporan">
+          <iconify-icon icon="lucide:download" aria-hidden="true"></iconify-icon> Unduh laporan bulanan
+        </a>
+      </div>
+    </section>
+
+    <!-- Realtime Multi-Platform Data Aggregator Island (TanStack Query Parallel Queries) -->
+    <DashboardGrid client:load />
+
+    <!-- Analytics & Metrik Grid Utama -->
+    <div class="dasbor__analytics-grid">
+      <!-- Grafik Tren Jangkauan & Interaksi -->
+      <article class="dasbor__card">
+        <div class="dasbor__card-head">
+          <div>
+            <h2>Tren jangkauan & interaksi</h2>
+            <p data-part="tren-subtitle">12 pekan terakhir · seluruh platform</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select class="dasbor__select" data-action="pilih-platform" aria-label="Pilih platform">
+              <option value="semua">Semua platform</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="youtube">YouTube</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="situs">Situs web</option>
+            </select>
+            <div class="dasbor__seg" role="group" aria-label="Rentang periode">
+              <button class="dasbor__seg-btn" type="button" data-action="periode" data-periode="4" aria-pressed="false">4P</button>
+              <button class="dasbor__seg-btn" type="button" data-action="periode" data-periode="12" aria-pressed="true">12P</button>
+              <button class="dasbor__seg-btn" type="button" data-action="periode" data-periode="26" aria-pressed="false">26P</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="dasbor__chart-body">
+          <svg viewBox="0 0 640 190" role="img" data-part="tren-svg" aria-label="Grafik tren jangkauan kanal">
+            <defs>
+              <linearGradient id="chartBlueArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#2f6ea8" stop-opacity=".22"></stop>
+                <stop offset="1" stop-color="#2f6ea8" stop-opacity="0"></stop>
+              </linearGradient>
+            </defs>
+            <g class="dasbor__plot-grid" data-part="grid">
+              <line x1="45" x2="625" y1="35" y2="35"></line>
+              <line x1="45" x2="625" y1="90" y2="90"></line>
+              <line x1="45" x2="625" y1="150" y2="150"></line>
+            </g>
+            <path data-part="area" fill="url(#chartBlueArea)" d=""></path>
+            <path data-part="line" fill="none" stroke="#2f6ea8" stroke-width="2.5" stroke-linejoin="round" d=""></path>
+            <g data-part="dots" fill="#2f6ea8" stroke="#fff" stroke-width="2"></g>
+          </svg>
+        </div>
+        <div class="dasbor__axis" data-part="axis-x">
+          <span>P1</span><span>P2</span><span>P3</span><span>P4</span><span>P5</span><span>P6</span><span>P7</span><span>P8</span><span>P9</span><span>P10</span><span>P11</span><span>P12</span>
+        </div>
+
+        <div class="dasbor__legend">
+          <span><i class="dasbor__swatch" style="background:#2f6ea8"></i> Jangkauan akun</span>
+          <span><i class="dasbor__swatch" style="background:#0f766e"></i> Interaksi keterlibatan</span>
+          <span style="margin-left:auto;color:#5a6875" data-part="catatan">Kenaikan bertahap dipicu video dokumentasi dan reels.</span>
+        </div>
+      </article>
+
+      <!-- Sebaran Per Platform & Konten Terbaik -->
+      <article class="dasbor__card">
+        <div class="dasbor__card-head">
+          <div>
+            <h2>Sebaran jangkauan per platform</h2>
+            <p>Porsi pembaca dan audiens aktif periode ini</p>
+          </div>
+        </div>
+
+        <div class="dasbor__channels">
+          <div class="dasbor__channel" style="--value:100%">
+            <span><iconify-icon icon="simple-icons:instagram" aria-hidden="true" style="color:#e1306c"></iconify-icon> Instagram</span>
+            <strong>1.024.300 (46%)</strong>
+          </div>
+          <div class="dasbor__channel" style="--value:71%">
+            <span><iconify-icon icon="simple-icons:facebook" aria-hidden="true" style="color:#1877f2"></iconify-icon> Facebook</span>
+            <strong>724.180 (32%)</strong>
+          </div>
+          <div class="dasbor__channel" style="--value:55%">
+            <span><iconify-icon icon="simple-icons:youtube" aria-hidden="true" style="color:#ff0000"></iconify-icon> YouTube</span>
+            <strong>561.420 (25%)</strong>
+          </div>
+          <div class="dasbor__channel" style="--value:33%">
+            <span><iconify-icon icon="simple-icons:whatsapp" aria-hidden="true" style="color:#25d366"></iconify-icon> WhatsApp Siaran</span>
+            <strong>338.900 (15%)</strong>
+          </div>
+          <div class="dasbor__channel" style="--value:19%">
+            <span><iconify-icon icon="lucide:globe" aria-hidden="true" style="color:#1d5c94"></iconify-icon> Situs Web Resmi</span>
+            <strong>194.600 (9%)</strong>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;border-top:1px solid var(--color-border, #e8e8ea);padding-top:12px">
+          <div class="dasbor__card-head" style="margin-bottom:8px">
+            <div>
+              <h3 style="font-size:13px;margin:0;">Konten terbaik periode ini</h3>
+            </div>
+          </div>
+          <div class="dasbor__top-list">
+            <div class="dasbor__top-item">
+              <strong>Dokumenter penyaluran air bersih</strong>
+              <span>YouTube · 412 rb tayangan · 28,4 rb interaksi</span>
+            </div>
+            <div class="dasbor__top-item">
+              <strong>Reels program beasiswa yatim</strong>
+              <span>Instagram · 268 rb tayangan · 19,1 rb interaksi</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Baris Modul Operasional: Tabel Performa Kanal & Berita Pantauan -->
+    <div class="dasbor__analytics-grid">
+      <!-- Tabel Performa Platform Lengkap -->
+      <article class="dasbor__card">
+        <div class="dasbor__card-head">
+          <div>
+            <h2>Performa tiap platform</h2>
+            <p>Rincian metrik keterlibatan dan pertumbuhan pengikut</p>
+          </div>
+        </div>
+        <div class="dasbor__table-wrap">
+          <table class="dasbor__table">
+            <thead>
+              <tr>
+                <th scope="col">Platform</th>
+                <th scope="col" style="text-align:right">Jangkauan</th>
+                <th scope="col" style="text-align:right">Interaksi</th>
+                <th scope="col" style="text-align:right">Engagement</th>
+                <th scope="col" style="text-align:right">Pertumbuhan</th>
+              </tr>
+            </thead>
+            <tbody data-part="tabel-baris">
+              <tr data-platform="instagram">
+                <td><strong>Instagram</strong></td>
+                <td class="num">1.024.300</td>
+                <td class="num">58.420</td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--flat">5,70%</span></td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--up">+12,4%</span></td>
+              </tr>
+              <tr data-platform="facebook">
+                <td><strong>Facebook</strong></td>
+                <td class="num">724.180</td>
+                <td class="num">31.960</td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--flat">4,41%</span></td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--up">+6,2%</span></td>
+              </tr>
+              <tr data-platform="youtube">
+                <td><strong>YouTube</strong></td>
+                <td class="num">561.420</td>
+                <td class="num">38.240</td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--flat">6,81%</span></td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--up">+18,9%</span></td>
+              </tr>
+              <tr data-platform="whatsapp">
+                <td><strong>WhatsApp</strong></td>
+                <td class="num">338.900</td>
+                <td class="num">12.880</td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--flat">3,80%</span></td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--up">+2,4%</span></td>
+              </tr>
+              <tr data-platform="situs">
+                <td><strong>Situs web</strong></td>
+                <td class="num">194.600</td>
+                <td class="num">4.780</td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--flat">2,46%</span></td>
+                <td class="num"><span class="dasbor__badge dasbor__badge--down">-1,1%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- Berita & Peringatan Terkini -->
+      <article class="dasbor__card">
+        <div class="dasbor__card-head">
+          <div>
+            <h2>Peringatan & tindak lanjut</h2>
+            <p><span data-alert-count>3</span> butir membutuhkan perhatian staf</p>
+          </div>
+          <a class="dasbor__mini-btn" href="/pengaturan" style="text-decoration:none;">Semua integrasi</a>
+        </div>
+        <div class="dasbor__alerts" data-alert-list>
+          <div class="dasbor__alert" data-level="danger" data-role-scope="admin editor head">
+            <div class="dasbor__alert-body">
+              <p class="dasbor__alert-title">Sinkronisasi Google Sheets terputus</p>
+              <p class="dasbor__alert-note">Otorisasi akun lembaga kedaluwarsa sejak kemarin.</p>
+              <div class="dasbor__alert-actions">
+                <a class="dasbor__mini-btn" href="/pengaturan" style="text-decoration:none;">Sambungkan kembali</a>
+                <button class="dasbor__mini-btn" type="button" data-action="dasbor:resolve">Selesai</button>
+              </div>
+            </div>
+          </div>
+          <div class="dasbor__alert" data-level="warning" data-role-scope="admin editor pimpinan head staff">
+            <div class="dasbor__alert-body">
+              <p class="dasbor__alert-title">4 jadwal konten menunggu persetujuan</p>
+              <p class="dasbor__alert-note">Tenggat terdekat publikasi Instagram besok pagi.</p>
+              <div class="dasbor__alert-actions">
+                <a class="dasbor__mini-btn" href="/kalender-konten" style="text-decoration:none;">Tinjau jadwal</a>
+                <button class="dasbor__mini-btn" type="button" data-action="dasbor:resolve">Selesai</button>
+              </div>
+            </div>
+          </div>
+          <div class="dasbor__alert" data-level="info" data-role-scope="admin analis head">
+            <div class="dasbor__alert-body">
+              <p class="dasbor__alert-title">Konektor Meta Ads perlu refresh token</p>
+              <p class="dasbor__alert-note">Data analitik belanja iklan bulan ini belum sinkron.</p>
+              <div class="dasbor__alert-actions">
+                <a class="dasbor__mini-btn" href="/pengaturan" style="text-decoration:none;">Perbarui token</a>
+                <button class="dasbor__mini-btn" type="button" data-action="dasbor:resolve">Selesai</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="dasbor__empty" data-alert-empty hidden style="text-align:center;padding:16px;color:#72747a">Semua peringatan telah diselesaikan.</p>
+      </article>
+    </div>
+
+    <!-- Jadwal Terdekat & Berita Pantauan -->
+    <div class="dasbor__analytics-grid">
+      <!-- Realtime News Feed Island (Auto Polling) -->
+      <RealtimeNewsFeed client:visible />
+
+      <article class="dasbor__card">
+        <div class="dasbor__card-head">
+          <div>
+            <h2>Jadwal konten terdekat</h2>
+            <p>Kalender publikasi 3 hari mendatang</p>
+          </div>
+          <a class="dasbor__mini-btn" href="/kalender-konten" style="text-decoration:none;">Buka Kalender</a>
+        </div>
+        <div class="dasbor__table-wrap">
+          <table class="dasbor__table">
+            <thead>
+              <tr>
+                <th scope="col">Tanggal</th>
+                <th scope="col">Konten</th>
+                <th scope="col">Kanal</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Besok</strong></td>
+                <td class="title-col">Siaran pers bakti sosial</td>
+                <td>Instagram</td>
+                <td><span class="dasbor__badge dasbor__badge--up">Siap terbit</span></td>
+              </tr>
+              <tr>
+                <td><strong>Lusa</strong></td>
+                <td class="title-col">Klarifikasi isu penanganan darurat</td>
+                <td>Situs web</td>
+                <td><span class="dasbor__badge dasbor__badge--flat">Menunggu review</span></td>
+              </tr>
+              <tr>
+                <td><strong>+3 Hari</strong></td>
+                <td class="title-col">Reels program beasiswa yatim</td>
+                <td>TikTok</td>
+                <td><span class="dasbor__badge dasbor__badge--flat">Menunggu review</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const dash = document.querySelector('[data-node-id="dasbor.root"]');
+      if (!dash) return;
+
+      const SERI = {
+        semua: { label: 'seluruh platform', nilai: [148, 162, 155, 171, 189, 205, 198, 224, 241, 258, 266, 284], catatan: 'Jangkauan naik bertahap sejak pekan ke-5 sejalan dengan frekuensi reels & video dokumenter.' },
+        instagram: { label: 'Instagram', nilai: [52, 57, 55, 61, 68, 74, 71, 82, 88, 94, 97, 104], catatan: 'Instagram menyumbang 46% audiens aktif; reels program beasiswa memberi rasio keterlibatan tertinggi.' },
+        facebook: { label: 'Facebook', nilai: [44, 47, 45, 49, 53, 57, 55, 60, 64, 68, 70, 73], catatan: 'Facebook stabil; unggahan album foto kegiatan menjaring interaksi konsisten.' },
+        youtube: { label: 'YouTube', nilai: [26, 29, 28, 32, 36, 41, 39, 46, 51, 55, 58, 62], catatan: 'YouTube tumbuh tercepat (+18,9%) berkat dokumenter penyaluran program.' },
+        whatsapp: { label: 'WhatsApp', nilai: [18, 19, 19, 21, 22, 24, 23, 25, 26, 28, 29, 30], catatan: 'Pesan siaran resmi menjangkau relawan dan jejaring pimpinan daerah.' },
+        situs: { label: 'Situs web', nilai: [12, 13, 13, 14, 15, 16, 15, 17, 18, 19, 20, 21], catatan: 'Kunjungan portal web stabil untuk rilis pers dan formulir donasi.' },
+      };
+
+      let platform = 'semua';
+      let pekan = 12;
+
+      const elLine = dash.querySelector('[data-part="line"]');
+      const elArea = dash.querySelector('[data-part="area"]');
+      const elDots = dash.querySelector('[data-part="dots"]');
+      const elAxisX = dash.querySelector('[data-part="axis-x"]');
+      const elSubtitle = dash.querySelector('[data-part="tren-subtitle"]');
+      const elCatatan = dash.querySelector('[data-part="catatan"]');
+      const elKpi = dash.querySelector('[data-part="kpi-jangkauan"]');
+      const tabelBaris = dash.querySelectorAll('[data-part="tabel-baris"] tr');
+
+      const P = { kiri: 45, kanan: 625, atas: 25, bawah: 165 };
+
+      const renderChart = () => {
+        const data = SERI[platform] || SERI.semua;
+        const nilai = data.nilai.slice(-pekan);
+        const count = nilai.length || 1;
+        const max = Math.max.apply(null, nilai) * 1.15 || 1;
+
+        const y = (v) => P.bawah - (v / max) * (P.bawah - P.atas);
+        const xAt = (i) => (count === 1 ? (P.kiri + P.kanan) / 2 : P.kiri + (i * (P.kanan - P.kiri)) / (count - 1));
+
+        const points = nilai.map((v, i) => [Math.round(xAt(i)), Math.round(y(v))]);
+        const pathD = 'M ' + points.map((pt) => pt.join(' ')).join(' L ');
+        if (elLine) elLine.setAttribute('d', pathD);
+        if (elArea) elArea.setAttribute('d', pathD + ' L ' + P.kanan + ' ' + P.bawah + ' L ' + P.kiri + ' ' + P.bawah + ' Z');
+
+        if (elDots) {
+          elDots.replaceChildren();
+          points.forEach((pt, idx) => {
+            const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            dot.setAttribute('cx', String(pt[0]));
+            dot.setAttribute('cy', String(pt[1]));
+            dot.setAttribute('r', idx === points.length - 1 ? '4.5' : '3');
+            elDots.append(dot);
+          });
+        }
+
+        if (elAxisX) {
+          elAxisX.replaceChildren();
+          points.forEach((pt, idx) => {
+            if (count > 6 && idx % 2 !== 0 && idx !== count - 1) return;
+            const span = document.createElement('span');
+            span.textContent = 'P' + (idx + 1);
+            elAxisX.append(span);
+          });
+        }
+
+        if (elSubtitle) elSubtitle.textContent = pekan + ' pekan terakhir · ' + data.label;
+        if (elCatatan) elCatatan.textContent = data.catatan;
+        if (elKpi && platform !== 'semua') {
+          const lastVal = (nilai[nilai.length - 1] * 1000).toLocaleString('id-ID');
+          elKpi.textContent = lastVal;
+        } else if (elKpi) {
+          elKpi.textContent = '412.860';
+        }
+
+        tabelBaris.forEach((row) => {
+          row.hidden = !(platform === 'semua' || row.dataset.platform === platform);
+        });
+      };
+
+      renderChart();
+
+      dash.addEventListener('click', (event) => {
+        const btnPeriode = event.target.closest('[data-action="periode"]');
+        if (btnPeriode && dash.contains(btnPeriode)) {
+          pekan = Number(btnPeriode.dataset.periode);
+          dash.querySelectorAll('[data-action="periode"]').forEach((b) => b.setAttribute('aria-pressed', String(b === btnPeriode)));
+          renderChart();
+        }
+
+        const btnResolve = event.target.closest('[data-action="dasbor:resolve"]');
+        if (btnResolve && dash.contains(btnResolve)) {
+          const alertItem = btnResolve.closest('.dasbor__alert');
+          if (alertItem) {
+            alertItem.remove();
+            const remaining = dash.querySelectorAll('.dasbor__alert').length;
+            const counter = dash.querySelector('[data-alert-count]');
+            if (counter) counter.textContent = String(remaining);
+            const empty = dash.querySelector('[data-alert-empty]');
+            if (empty) empty.hidden = remaining !== 0;
+          }
+        }
+      });
+
+      const selectPlatform = dash.querySelector('[data-action="pilih-platform"]');
+      if (selectPlatform) {
+        selectPlatform.addEventListener('change', () => {
+          platform = selectPlatform.value;
+          renderChart();
+        });
+      }
+    });
+  </script>
+</HumasLayout>

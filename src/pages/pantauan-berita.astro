@@ -1,915 +1,310 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import {
   mockNewsItems,
   mockCuratedSources as curatedSources,
 } from '../lib/clientDataFetcher';
-import NewsStream from '../components/NewsStream.astro';
-import RoleNavigation from '../components/RoleNavigation.astro';
 
-const categories = ['Semua', 'Bencana', 'Bantuan Kemanusiaan', 'Sosial', 'Kesehatan', 'Regulasi'];
+const tabParam = Astro.url.searchParams.get('tab') || 'feed';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pusat Pantauan Berita — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/pantauan-berita" />
+<HumasLayout
+  title="Pantauan Berita — Humas Internal Peduli Negeri"
+  pageTitle="Pantauan Berita"
+  pageSubtitle="Feed Telegram & RSS, daftar sumber terhubung, dan item tersimpan"
+  currentPath="/pantauan-berita"
+  pageContentId="pantauan-berita"
+>
+  <div class="berita" data-node-id="berita.root" data-loading="false">
+    <!-- Tab Navigasi Pantauan Berita -->
+    <div class="berita__tabs" role="tablist" aria-label="Bagian pantauan berita" data-node-id="berita.tabs">
+      <button class={`berita__tab ${tabParam === 'feed' ? 'active' : ''}`} type="button" role="tab" id="tab-feed" aria-controls="panel-feed" aria-selected={tabParam === 'feed' ? 'true' : 'false'} tabindex="0" data-tab="feed">
+        Feed <span class="berita__tab-count" data-count="feed">{mockNewsItems.length}</span>
+      </button>
+      <button class={`berita__tab ${tabParam === 'sumber' ? 'active' : ''}`} type="button" role="tab" id="tab-sumber" aria-controls="panel-sumber" aria-selected={tabParam === 'sumber' ? 'true' : 'false'} tabindex="-1" data-tab="sumber">
+        Sumber <span class="berita__tab-count" data-count="sumber">{curatedSources.length}</span>
+      </button>
+      <button class={`berita__tab ${tabParam === 'tersimpan' ? 'active' : ''}`} type="button" role="tab" id="tab-tersimpan" aria-controls="panel-tersimpan" aria-selected={tabParam === 'tersimpan' ? 'true' : 'false'} tabindex="-1" data-tab="tersimpan">
+        Tersimpan <span class="berita__tab-count" data-count="tersimpan">2</span>
+      </button>
+    </div>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
+    <!-- Toolbar Filter & Pencarian -->
+    <div class="berita__toolbar">
+      <span class="berita__field">
+        <label for="berita-sumber-filter">Sumber</label>
+        <select id="berita-sumber-filter" data-filter-source>
+          <option value="">Semua sumber</option>
+          <option value="telegram">Telegram</option>
+          <option value="rss">RSS</option>
+        </select>
+      </span>
+      <span class="berita__field">
+        <label for="berita-cari">Cari</label>
+        <input id="berita-cari" type="search" placeholder="Judul atau kata kunci..." data-filter-query />
+      </span>
+      <span class="berita__toolbar-meta" data-feed-meta>Menampilkan {mockNewsItems.length} item kabar</span>
+    </div>
+
+    <!-- Panel 1: Feed Berita Terkini -->
+    <section id="panel-feed" role="tabpanel" aria-labelledby="tab-feed" tabindex="0" class="berita__panel" data-panel="feed">
+      <ul class="berita__feed" data-feed-list>
+        {mockNewsItems.map((item, index) => {
+          const isTg = item.source.toLowerCase().includes('telegram') || item.sourceType === 'telegram';
+          return (
+            <li class="berita__item" data-saved={item.isBookmarked ? 'true' : 'false'} data-kind={isTg ? 'telegram' : 'rss'} data-search={item.title.toLowerCase()}>
+              <div class="berita__source">
+                <span class="berita__source-name">
+                  <iconify-icon icon={isTg ? 'lucide:send' : 'lucide:rss'} aria-hidden="true"></iconify-icon>
+                  {isTg ? ' Telegram' : ' RSS'}
+                </span>
+                <p class="berita__source-meta">{item.source}<br />{item.publishedAt}</p>
+              </div>
+              <div class="berita__body">
+                <h3 class="berita__title">{item.title}</h3>
+                <p class="berita__summary">{item.summary}</p>
+                <div class="berita__tags">
+                  <span class="berita__tag">{item.category}</span>
+                  {item.isImportant && <span class="berita__tag" style="background:#fee2e2;color:#991b1b;border-color:#fca5a5;">🚨 Darurat / Penting</span>}
+                </div>
+              </div>
+              <div class="berita__actions">
+                <button class="berita__btn" type="button" data-action="berita:save" aria-pressed={item.isBookmarked ? 'true' : 'false'}>
+                  <iconify-icon icon={item.isBookmarked ? 'lucide:bookmark-check' : 'lucide:bookmark'} aria-hidden="true"></iconify-icon>
+                  <span>{item.isBookmarked ? 'Tersimpan' : 'Simpan'}</span>
+                </button>
+                <button class="berita__btn" type="button" data-action="berita:adopt" data-title={item.title}>
+                  Adopsi ke kalender
+                </button>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div class="berita__empty" data-feed-empty hidden>
+        <h3>Tidak ada item yang cocok</h3>
+        <p>Coba ubah kata kunci pencarian atau pilih sumber lain. Item yang sudah disimpan tetap ada di tab Tersimpan.</p>
+      </div>
+    </section>
+
+    <!-- Panel 2: Sumber Terhubung -->
+    <section id="panel-sumber" role="tabpanel" aria-labelledby="tab-sumber" tabindex="0" class="berita__panel" data-panel="sumber" hidden>
+      <div class="berita__table-wrap">
+        <table>
+          <caption>Sumber feed RSS dan saluran Telegram yang terhubung ke sistem.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nama Sumber</th>
+              <th scope="col">Jenis</th>
+              <th scope="col">Kategori</th>
+              <th scope="col">Status</th>
+              <th scope="col">Interval</th>
+            </tr>
+          </thead>
+          <tbody>
+            {curatedSources.map((src) => (
+              <tr>
+                <td><strong>{src.name}</strong></td>
+                <td>{src.type.toUpperCase()}</td>
+                <td>{src.category}</td>
+                <td>
+                  <span class="berita__badge" data-tone={src.status === 'active' ? 'ok' : 'warn'}>
+                    {src.status === 'active' ? 'Aktif Normal' : 'Tertunda'}
+                  </span>
+                </td>
+                <td>15 menit</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Panel 3: Item Tersimpan -->
+    <section id="panel-tersimpan" role="tabpanel" aria-labelledby="tab-tersimpan" tabindex="0" class="berita__panel" data-panel="tersimpan" hidden>
+      <div class="berita__table-wrap">
+        <table>
+          <caption>Item yang disimpan untuk ditindaklanjuti sebagai rujukan konten lembaga.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Item Berita</th>
+              <th scope="col">Sumber</th>
+              <th scope="col">Status Adopsi</th>
+              <th scope="col">Aksi</th>
+            </tr>
+          </thead>
+          <tbody data-saved-body>
+            <tr>
+              <td class="col-title">
+                <strong>Rapat koordinasi evaluasi program komunikasi publik</strong>
+                <span>Kebijakan · Internal</span>
+              </td>
+              <td>Telegram Humas</td>
+              <td><span class="berita__badge" data-tone="wait">Belum diadopsi</span></td>
+              <td><button class="berita__btn" type="button" data-action="berita:adopt" data-title="Rapat koordinasi evaluasi program komunikasi publik">Adopsi ke kalender</button></td>
+            </tr>
+            <tr>
+              <td class="col-title">
+                <strong>Pemerintah daerah memperkuat mitigasi bencana</strong>
+                <span>Siaran Pers · Sosial</span>
+              </td>
+              <td>Antara News RSS</td>
+              <td><span class="berita__badge" data-tone="wait">Belum diadopsi</span></td>
+              <td><button class="berita__btn" type="button" data-action="berita:adopt" data-title="Pemerintah daerah memperkuat mitigasi bencana">Adopsi ke kalender</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <!-- Dialog Adopsi ke Kalender Konten -->
+  <dialog class="berita__dialog" id="adopt-dialog" data-node-id="berita.dialog" aria-labelledby="berita-dialog-title">
+    <div class="berita__dialog-head">
+      <div>
+        <h2 id="berita-dialog-title">Adopsi ke kalender konten</h2>
+        <p data-dialog-source id="dialog-source-text">Pilih jadwal rencana publikasi untuk item terpilih.</p>
+      </div>
+      <button class="berita__close" type="button" id="btn-close-dialog" aria-label="Tutup dialog">
+        <iconify-icon icon="lucide:x" aria-hidden="true"></iconify-icon>
+      </button>
+    </div>
+    <form method="dialog" id="adopt-form">
+      <div class="berita__dialog-body">
         <div>
-          <h2>Pusat Pantauan Berita & Rujukan Kemanusiaan</h2>
-          <p class="muted">Kurasi otomatis dari RSS feed media, Google News, dan saluran Telegram resmi lembaga</p>
+          <label class="berita__label" for="berita-dialog-date">Tanggal rencana tayang</label>
+          <input class="berita__input" id="berita-dialog-date" type="date" value="2026-06-18" required />
         </div>
-        <div class="actions">
-          <a href="/pantauan-berita/sumber" class="btn-refresh" style="text-decoration:none;">
-            ⚙️ Kelola Langganan Sumber
-          </a>
-          <button id="refresh-btn" class="btn-refresh" title="Segarkan data pantauan">
-            <span class="icon">🔄</span> Segarkan Pantauan
-          </button>
+        <div>
+          <label class="berita__label" for="berita-dialog-channel">Kanal publikasi</label>
+          <select class="berita__select" id="berita-dialog-channel">
+            <option>Instagram</option>
+            <option>Situs web</option>
+            <option>Facebook</option>
+            <option>WhatsApp Siaran</option>
+            <option>YouTube</option>
+          </select>
         </div>
+        <div>
+          <label class="berita__label" for="berita-dialog-owner">Penanggung jawab</label>
+          <select class="berita__select" id="berita-dialog-owner">
+            <option>Rani Maulida</option>
+            <option>Budi Santoso</option>
+            <option>Dewi Lestari</option>
+          </select>
+        </div>
+        <p class="berita__hint">Jadwal akan otomatis tercatat di Kalender Konten dan berstatus menunggu persetujuan.</p>
       </div>
-
-      <!-- BANNER STATISTIK RINGKASAN -->
-      <section class="overview-stats">
-        <div class="stat-card">
-          <span class="stat-icon">📰</span>
-          <div>
-            <b class="stat-value">{mockNewsItems.length}</b>
-            <span class="stat-label">Kabar Terpantau</span>
-          </div>
-        </div>
-        <div class="stat-card stat-alert">
-          <span class="stat-icon">🚨</span>
-          <div>
-            <b class="stat-value">{mockNewsItems.filter(n => n.isImportant).length}</b>
-            <span class="stat-label">Informasi Penting/Darurat</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">📡</span>
-          <div>
-            <b class="stat-value">{curatedSources.length}</b>
-            <span class="stat-label">Saluran & Feed Terkurasi</span>
-          </div>
-        </div>
-        <div class="stat-card stat-unread">
-          <span class="stat-icon">🔔</span>
-          <div>
-            <b class="stat-value" id="stat-unread-count">0</b>
-            <span class="stat-label">Belum Dibaca (Baru)</span>
-          </div>
-        </div>
-        <div class="stat-card stat-saved">
-          <span class="stat-icon">⭐</span>
-          <div>
-            <b class="stat-value" id="stat-saved-count">0</b>
-            <span class="stat-label">Berita Disimpan</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">⏱️</span>
-          <div>
-            <b class="stat-value">3 mnt lalu</b>
-            <span class="stat-label">Sinkronisasi Terakhir</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- FILTER & PENCARIAN -->
-      <section class="filter-section">
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="text" id="search-input" placeholder="Cari topik bencana, lokasi Cianjur, logistik pangan..." />
-        </div>
-
-        <div class="filter-toggles">
-          <div class="source-pills" role="tablist">
-            <button class="pill-btn active" data-type="all">Semua Sumber</button>
-            <button class="pill-btn" data-type="rss">🟠 RSS Media</button>
-            <button class="pill-btn" data-type="google_news">🔵 Google News</button>
-            <button class="pill-btn" data-type="telegram">🔷 Telegram</button>
-          </div>
-
-          <div class="filter-dropdowns">
-            <label>Kategori:
-              <select id="category-filter">
-                {categories.map(cat => <option value={cat}>{cat}</option>)}
-              </select>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="unread-only" />
-              <span>🔔 Belum Dibaca Saja</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="important-only" />
-              <span>🚨 Penting/Darurat</span>
-            </label>
-            <label class="checkbox-label">
-              <input type="checkbox" id="saved-only" />
-              <span>⭐ Berita Disimpan</span>
-            </label>
-            <button type="button" id="mark-all-read-btn" class="btn-subtle" title="Tandai semua berita sebagai sudah dibaca">
-              ✓ Tandai Semua Dibaca
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- DUA KOLOM: FEED BERITA & SIDEBAR SALURAN TERKURASI -->
-      <div class="layout-grid">
-        <!-- KOLOM UTAMA: FEED BERITA -->
-        <section class="news-stream" aria-label="Aliran Berita Terpantau">
-          <div class="stream-header">
-            <h3>Aliran Berita Terkini (<span id="news-count">{mockNewsItems.length}</span>)</h3>
-            <span class="stream-hint">Klik "Jadikan Rujukan" untuk menyimpan sebagai ide kalender konten</span>
-          </div>
-
-          <div id="news-list" class="news-list">
-            <!-- Diisi secara dinamis oleh JavaScript -->
-          </div>
-        </section>
-
-        <!-- KOLOM SAMPING: SALURAN TERKURASI & MONITORING -->
-        <aside class="curated-sidebar">
-          <div class="sidebar-card">
-            <h3>Saluran Terkurasi Tim ({curatedSources.length})</h3>
-            <p class="sidebar-desc">Daftar media dan channel Telegram yang telah divalidasi sebagai sumber terpercaya.</p>
-
-            <ul class="source-list">
-              {curatedSources.map(s => (
-                <li class="source-item">
-                  <div class="source-info">
-                    <span class={`type-dot type-${s.type}`}></span>
-                    <div>
-                      <b>{s.name}</b>
-                      <small class="muted">{s.category} · {s.lastSynced}</small>
-                    </div>
-                  </div>
-                  <span class="unread-pill">{s.unreadCount} baru</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div class="sidebar-card shared-account-box">
-            <h4>💡 Akun Telegram Bersama</h4>
-            <p>Akun <b>@ngo_media_monitor</b> otomatis mengumpulkan siaran dari channel relawan dan kebencanaan tanpa perlu bergabung dari akun pribadi tim.</p>
-          </div>
-        </aside>
+      <div class="berita__dialog-foot">
+        <button class="berita__btn" type="button" id="btn-cancel-dialog">Batal</button>
+        <button class="berita__btn berita__btn--primary" type="submit">Simpan ke Kalender</button>
       </div>
-    </main>
+    </form>
+  </dialog>
 
-    <!-- NOTIFIKASI TOAST -->
-    <div id="toast" class="toast">Rujukan berhasil disimpan ke ide kalender konten!</div>
+  <p class="berita__toast" role="status" aria-live="polite" id="berita-toast" hidden></p>
 
-    <script is:inline define:vars={{ newsItems: mockNewsItems }}>
-      let currentItems = [...newsItems];
-      let selectedType = 'all';
-      let selectedCategory = 'Semua';
-      let searchQuery = '';
-      let importantOnly = false;
-      let savedOnly = false;
-      let unreadOnly = false;
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.querySelector('[data-node-id="berita.root"]');
+      if (!root) return;
 
-      // Persistence via localStorage
-      let savedNewsIds = new Set();
-      let referredNewsIds = new Set();
-      let readNewsIds = new Set();
+      const tabs = root.querySelectorAll('[data-tab]');
+      const panels = root.querySelectorAll('[data-panel]');
+      const filterSource = root.querySelector('[data-filter-source]');
+      const filterQuery = root.querySelector('[data-filter-query]');
+      const feedItems = root.querySelectorAll('.berita__item');
+      const feedMeta = root.querySelector('[data-feed-meta]');
+      const feedEmpty = root.querySelector('[data-feed-empty]');
+      const dialog = document.getElementById('adopt-dialog');
+      const dialogSourceText = document.getElementById('dialog-source-text');
+      const toast = document.getElementById('berita-toast');
 
-      try {
-        const savedRaw = localStorage.getItem('pantauan_saved_ids');
-        if (savedRaw) savedNewsIds = new Set(JSON.parse(savedRaw));
-        const refRaw = localStorage.getItem('pantauan_ref_ids');
-        if (refRaw) referredNewsIds = new Set(JSON.parse(refRaw));
-        const readRaw = localStorage.getItem('pantauan_read_ids');
-        if (readRaw) readNewsIds = new Set(JSON.parse(readRaw));
-      } catch (e) {}
+      let currentTargetTitle = '';
 
-      const newsListEl = document.getElementById('news-list');
-      const newsCountEl = document.getElementById('news-count');
-      const searchInput = document.getElementById('search-input');
-      const categoryFilter = document.getElementById('category-filter');
-      const unreadOnlyCheckbox = document.getElementById('unread-only');
-      const importantOnlyCheckbox = document.getElementById('important-only');
-      const savedOnlyCheckbox = document.getElementById('saved-only');
-      const markAllReadBtn = document.getElementById('mark-all-read-btn');
-      const toastEl = document.getElementById('toast');
-      const refreshBtn = document.getElementById('refresh-btn');
-      const statSavedCountEl = document.getElementById('stat-saved-count');
-      const statUnreadCountEl = document.getElementById('stat-unread-count');
-
-      function showToast(message) {
-        toastEl.textContent = message;
-        toastEl.classList.add('show');
-        setTimeout(() => toastEl.classList.remove('show'), 3000);
+      function showToast(msg) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.hidden = false;
+        setTimeout(() => { toast.hidden = true; }, 2600);
       }
 
-      function updateCounters() {
-        if (statSavedCountEl) statSavedCountEl.textContent = String(savedNewsIds.size);
-        const unreadCount = currentItems.filter(item => !readNewsIds.has(item.id)).length;
-        if (statUnreadCountEl) statUnreadCountEl.textContent = String(unreadCount);
+      // Tab switching
+      function switchTab(targetTab) {
+        tabs.forEach((t) => {
+          const isSelected = t.getAttribute('data-tab') === targetTab;
+          t.setAttribute('aria-selected', String(isSelected));
+          t.classList.toggle('active', isSelected);
+        });
+        panels.forEach((p) => {
+          const match = p.getAttribute('data-panel') === targetTab;
+          p.hidden = !match;
+        });
       }
 
-      function getSourceBadge(type) {
-        if (type === 'rss') return '<span class="badge badge-rss">RSS Feed</span>';
-        if (type === 'google_news') return '<span class="badge badge-gnews">Google News</span>';
-        if (type === 'telegram') return '<span class="badge badge-telegram">Telegram</span>';
-        return '';
-      }
+      tabs.forEach((t) => {
+        t.addEventListener('click', () => {
+          switchTab(t.getAttribute('data-tab'));
+        });
+      });
 
-      function renderNews() {
-        updateCounters();
+      // Filter & Live Search
+      function applyFilters() {
+        const srcVal = filterSource ? filterSource.value.toLowerCase() : '';
+        const qVal = filterQuery ? filterQuery.value.toLowerCase().trim() : '';
+        let visible = 0;
 
-        const filtered = currentItems.filter(item => {
-          const matchType = selectedType === 'all' || item.sourceType === selectedType;
-          const matchCat = selectedCategory === 'Semua' || item.category === selectedCategory;
-          const matchImportant = !importantOnly || item.isImportant;
-          const matchSaved = !savedOnly || savedNewsIds.has(item.id);
-          const isUnread = !readNewsIds.has(item.id);
-          const matchUnread = !unreadOnly || isUnread;
-          const q = searchQuery.toLowerCase().trim();
-          const matchSearch = !q || item.title.toLowerCase().includes(q) || item.summary.toLowerCase().includes(q) || item.sourceName.toLowerCase().includes(q);
-          return matchType && matchCat && matchImportant && matchSaved && matchUnread && matchSearch;
+        feedItems.forEach((item) => {
+          const kind = item.getAttribute('data-kind') || '';
+          const search = item.getAttribute('data-search') || '';
+          const matchSrc = !srcVal || kind === srcVal;
+          const matchQ = !qVal || search.includes(qVal);
+          const show = matchSrc && matchQ;
+          item.hidden = !show;
+          if (show) visible++;
         });
 
-        newsCountEl.textContent = String(filtered.length);
+        if (feedMeta) feedMeta.textContent = `Menampilkan ${visible} item dari ${feedItems.length}`;
+        if (feedEmpty) feedEmpty.hidden = visible !== 0;
+      }
 
-        if (filtered.length === 0) {
-          newsListEl.innerHTML = `
-            <div class="empty-state">
-              <span class="empty-icon">📭</span>
-              <h4>Tidak ada berita ditemukan</h4>
-              <p>Coba sesuaikan kata kunci pencarian atau matikan filter berita tersimpan / penting / belum dibaca.</p>
-            </div>
-          `;
-          return;
+      filterSource?.addEventListener('change', applyFilters);
+      filterQuery?.addEventListener('input', applyFilters);
+
+      // Bookmark action
+      root.addEventListener('click', (e) => {
+        const saveBtn = e.target.closest('[data-action="berita:save"]');
+        if (saveBtn) {
+          const isSaved = saveBtn.getAttribute('aria-pressed') === 'true';
+          saveBtn.setAttribute('aria-pressed', String(!isSaved));
+          const icon = saveBtn.querySelector('iconify-icon');
+          const span = saveBtn.querySelector('span');
+          if (icon) icon.setAttribute('icon', !isSaved ? 'lucide:bookmark-check' : 'lucide:bookmark');
+          if (span) span.textContent = !isSaved ? 'Tersimpan' : 'Simpan';
+          showToast(!isSaved ? 'Kabar disimpan ke rujukan kerja' : 'Kabar dihapus dari simpanan');
         }
 
-        newsListEl.innerHTML = filtered.map(item => {
-          const isSaved = savedNewsIds.has(item.id);
-          const isReferred = referredNewsIds.has(item.id);
-          const isUnread = !readNewsIds.has(item.id);
-
-          return `
-            <article class="news-card ${isUnread ? 'card-unread' : 'card-read'} ${item.isImportant ? 'card-important' : ''} ${isSaved ? 'card-saved' : ''}" data-id="${item.id}">
-              <div class="card-meta">
-                <div class="meta-left">
-                  ${isUnread ? '<span class="badge-new-pill">✨ BARU</span>' : ''}
-                  ${getSourceBadge(item.sourceType)}
-                  <span class="source-name">${item.sourceName}</span>
-                  ${item.sourceType === 'telegram' && item.channelHandle ? `<span class="telegram-badge" title="Saluran dari shared account monitoring (@ngo_media_monitor)">📱 ${item.channelHandle}</span>` : ''}
-                  <span class="meta-dot">·</span>
-                  <span class="meta-time">📅 ${item.publishedAt}</span>
-                </div>
-                <div class="meta-right">
-                  <span class="cat-tag">${item.category}</span>
-                  ${isSaved ? '<span class="saved-badge">⭐ Disimpan</span>' : ''}
-                  ${isReferred ? '<span class="ref-badge">📌 Rujukan</span>' : ''}
-                  ${item.isImportant ? '<span class="important-badge">🚨 PENTING</span>' : ''}
-                </div>
-              </div>
-
-              <h4 class="card-title">
-                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="news-link-trigger" data-id="${item.id}">${item.title}</a>
-              </h4>
-
-              <p class="card-summary">${item.summary}</p>
-
-              <div class="card-footer">
-                <div class="action-buttons">
-                  <button class="btn-action btn-read-toggle ${isUnread ? 'is-unread-btn' : ''}" data-id="${item.id}" title="${isUnread ? 'Tandai sebagai sudah dibaca' : 'Tandai kembali sebagai belum dibaca'}">
-                    ${isUnread ? '👁️ Tandai Dibaca' : '↩️ Tandai Belum Dibaca'}
-                  </button>
-                  <button class="btn-action btn-save ${isSaved ? 'is-saved' : ''}" data-id="${item.id}" title="${isSaved ? 'Hapus dari simpanan' : 'Simpan berita ini'}">
-                    ${isSaved ? '★ Tersimpan' : '☆ Simpan'}
-                  </button>
-                  <button class="btn-action btn-refer ${isReferred ? 'is-referred' : ''}" data-id="${item.id}" title="${isReferred ? 'Batalkan rujukan' : 'Tandai sebagai rujukan ide konten'}">
-                    ${isReferred ? '✓ Rujukan Tim' : '📌 Jadikan Rujukan'}
-                  </button>
-                  <button class="btn-action btn-copy" data-url="${item.url}" title="Salin tautan berita">
-                    📋 Salin Tautan
-                  </button>
-                  <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn-action btn-link news-link-trigger" data-id="${item.id}">
-                    🔗 Buka Berita ↗
-                  </a>
-                </div>
-                ${item.channelHandle ? `<span class="handle-tag">${item.channelHandle}</span>` : ''}
-              </div>
-            </article>
-          `;
-        }).join('');
-
-        // Listeners klik link berita otomatis tandai dibaca
-        newsListEl.querySelectorAll('.news-link-trigger').forEach(link => {
-          link.addEventListener('click', (e) => {
-            const id = Number(e.currentTarget.dataset.id);
-            if (id && !readNewsIds.has(id)) {
-              readNewsIds.add(id);
-              try {
-                localStorage.setItem('pantauan_read_ids', JSON.stringify(Array.from(readNewsIds)));
-              } catch (err) {}
-              renderNews();
-            }
-          });
-        });
-
-        // Listeners toggle sudah dibaca / belum dibaca
-        newsListEl.querySelectorAll('.btn-read-toggle').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = Number(e.currentTarget.dataset.id);
-            if (readNewsIds.has(id)) {
-              readNewsIds.delete(id);
-              showToast('Berita ditandai kembali sebagai belum dibaca (baru).');
-            } else {
-              readNewsIds.add(id);
-              showToast('Berita ditandai sudah dibaca.');
-            }
-            try {
-              localStorage.setItem('pantauan_read_ids', JSON.stringify(Array.from(readNewsIds)));
-            } catch (err) {}
-            renderNews();
-          });
-        });
-
-        // Listeners simpan / bookmark berita
-        newsListEl.querySelectorAll('.btn-save').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = Number(e.currentTarget.dataset.id);
-            const item = currentItems.find(x => x.id === id);
-            if (savedNewsIds.has(id)) {
-              savedNewsIds.delete(id);
-              showToast(`Berita "${item?.title.substring(0, 30)}..." dihapus dari simpanan.`);
-            } else {
-              savedNewsIds.add(id);
-              showToast(`⭐ Berita "${item?.title.substring(0, 30)}..." berhasil disimpan!`);
-            }
-            try {
-              localStorage.setItem('pantauan_saved_ids', JSON.stringify(Array.from(savedNewsIds)));
-            } catch (err) {}
-            renderNews();
-          });
-        });
-
-        // Listeners tandai rujukan konten
-        newsListEl.querySelectorAll('.btn-refer').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const id = Number(e.currentTarget.dataset.id);
-            const item = currentItems.find(x => x.id === id);
-            if (referredNewsIds.has(id)) {
-              referredNewsIds.delete(id);
-              showToast(`Tanda rujukan dihapus untuk "${item?.title.substring(0, 30)}..."`);
-            } else {
-              referredNewsIds.add(id);
-              showToast(`📌 Berita "${item?.title.substring(0, 30)}..." ditandai sebagai rujukan resmi tim!`);
-            }
-            try {
-              localStorage.setItem('pantauan_ref_ids', JSON.stringify(Array.from(referredNewsIds)));
-            } catch (err) {}
-            renderNews();
-          });
-        });
-
-        // Listeners copy URL
-        newsListEl.querySelectorAll('.btn-copy').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const url = e.currentTarget.dataset.url;
-            navigator.clipboard?.writeText(url);
-            showToast('Tautan berita berhasil disalin ke papan klip!');
-          });
-        });
-      }
-
-      // Event listeners filter sumber
-      document.querySelectorAll('.pill-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
-          e.currentTarget.classList.add('active');
-          selectedType = e.currentTarget.dataset.type;
-          renderNews();
-        });
+        const adoptBtn = e.target.closest('[data-action="berita:adopt"]');
+        if (adoptBtn) {
+          currentTargetTitle = adoptBtn.getAttribute('data-title') || 'Agenda Konten';
+          if (dialogSourceText) dialogSourceText.textContent = `Rencana tayang: "${currentTargetTitle}"`;
+          if (dialog) dialog.showModal();
+        }
       });
 
-      // Filter input & dropdown
-      searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value;
-        renderNews();
+      document.getElementById('btn-close-dialog')?.addEventListener('click', () => {
+        if (dialog) dialog.close();
+      });
+      document.getElementById('btn-cancel-dialog')?.addEventListener('click', () => {
+        if (dialog) dialog.close();
       });
 
-      categoryFilter.addEventListener('change', (e) => {
-        selectedCategory = e.target.value;
-        renderNews();
+      document.getElementById('adopt-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (dialog) dialog.close();
+        showToast(`Ide berhasil diadopsi ke Kalender Konten: "${currentTargetTitle}"`);
       });
-
-      unreadOnlyCheckbox.addEventListener('change', (e) => {
-        unreadOnly = e.target.checked;
-        renderNews();
-      });
-
-      importantOnlyCheckbox.addEventListener('change', (e) => {
-        importantOnly = e.target.checked;
-        renderNews();
-      });
-
-      savedOnlyCheckbox.addEventListener('change', (e) => {
-        savedOnly = e.target.checked;
-        renderNews();
-      });
-
-      markAllReadBtn.addEventListener('click', () => {
-        currentItems.forEach(item => readNewsIds.add(item.id));
-        try {
-          localStorage.setItem('pantauan_read_ids', JSON.stringify(Array.from(readNewsIds)));
-        } catch (err) {}
-        showToast('Semua berita telah ditandai sebagai sudah dibaca.');
-        renderNews();
-      });
-
-      refreshBtn.addEventListener('click', async () => {
-        refreshBtn.classList.add('rotating');
-        try {
-          const res = await fetch('/api/news/stream');
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
-              const mapped = json.data.map(n => ({
-                id: n.id,
-                title: n.title,
-                sourceType: n.source_type || n.sourceType || 'rss',
-                sourceName: n.source_name || n.sourceName || 'Media Rujukan',
-                url: n.url || '#',
-                publishedAt: n.published_at || n.publishedAt || 'Baru saja',
-                summary: n.summary || '',
-                category: n.category || 'Bencana',
-                isCurated: true,
-                isImportant: !!n.is_important,
-              }));
-              allNews = mapped;
-            }
-          }
-        } catch (_) {}
-        setTimeout(() => {
-          refreshBtn.classList.remove('rotating');
-          showToast('Pantauan berita berhasil diperbarui!');
-          renderNews();
-        }, 400);
-      });
-
-      // Pemuatan awal dari API berita jika tersedia
-      async function initLiveNews() {
-        try {
-          const res = await fetch('/api/news/stream');
-          if (res.ok) {
-            const json = await res.json();
-            if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
-              allNews = json.data.map(n => ({
-                id: n.id,
-                title: n.title,
-                sourceType: n.source_type || n.sourceType || 'rss',
-                sourceName: n.source_name || n.sourceName || 'Media Rujukan',
-                url: n.url || '#',
-                publishedAt: n.published_at || n.publishedAt || 'Baru saja',
-                summary: n.summary || '',
-                category: n.category || 'Bencana',
-                isCurated: true,
-                isImportant: !!n.is_important,
-              }));
-              renderNews();
-            }
-          }
-        } catch (_) {}
-      }
-      initLiveNews();
-
-      renderNews();
-    </script>
-  </body>
-</html>
-
-<style is:global>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: #f8fafc;
-    color: #1e293b;
-  }
-
-  /* TOP HEADER */
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1.75rem;
-    background: #0f172a;
-    color: #fff;
-    border-bottom: 1px solid #1e293b;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .brand { display: flex; align-items: center; gap: 0.6rem; }
-  .brand-icon { font-size: 1.3rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; }
-  .top nav a {
-    color: #94a3b8;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.15s;
-  }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  .role-pill {
-    background: #1e293b;
-    color: #38bdf8;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    border: 1px solid #334155;
-  }
-
-  /* MAIN CONTENT */
-  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-
-  /* HEAD SECTION */
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-  }
-  .head h2 { margin: 0 0 0.25rem; font-size: 1.4rem; color: #0f172a; }
-  .muted { color: #64748b; font-size: 0.88rem; margin: 0; }
-  .btn-refresh {
-    font: inherit;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    padding: 0.5rem 0.9rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #334155;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    transition: all 0.2s;
-  }
-  .btn-refresh:hover { background: #f1f5f9; border-color: #94a3b8; }
-  .rotating .icon { display: inline-block; animation: spin 0.6s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
-
-  /* OVERVIEW STATS */
-  .overview-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .stat-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-  }
-  .stat-card.stat-alert { border-left: 4px solid #ef4444; }
-  .stat-card.stat-unread { border-left: 4px solid #0284c7; }
-  .stat-icon { font-size: 1.6rem; }
-  .stat-value { font-size: 1.25rem; color: #0f172a; display: block; line-height: 1.2; }
-  .stat-label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
-
-  /* FILTER SECTION */
-  .filter-section {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-  }
-  .search-box {
-    display: flex;
-    align-items: center;
-    background: #f8fafc;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    padding: 0.45rem 0.75rem;
-    gap: 0.5rem;
-  }
-  .search-icon { font-size: 0.95rem; color: #64748b; }
-  .search-box input {
-    border: none;
-    background: transparent;
-    font: inherit;
-    font-size: 0.9rem;
-    width: 100%;
-    outline: none;
-    color: #1e293b;
-  }
-  .filter-toggles {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .source-pills { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-  .pill-btn {
-    font: inherit;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 999px;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .pill-btn:hover { background: #e2e8f0; color: #1e293b; }
-  .pill-btn.active { background: #0284c7; color: #fff; border-color: #0284c7; }
-  .filter-dropdowns { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  .filter-dropdowns label { font-size: 0.82rem; color: #475569; font-weight: 500; display: inline-flex; align-items: center; gap: 0.35rem; }
-  .filter-dropdowns select {
-    font: inherit;
-    font-size: 0.82rem;
-    padding: 0.3rem 0.6rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background: #fff;
-  }
-  .checkbox-label { cursor: pointer; user-select: none; }
-  .btn-subtle {
-    font: inherit;
-    font-size: 0.76rem;
-    font-weight: 600;
-    padding: 0.3rem 0.65rem;
-    border-radius: 6px;
-    border: 1px solid #cbd5e1;
-    background: #f8fafc;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-subtle:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
-
-  /* CARDS UNREAD / READ STYLING */
-  .card-unread {
-    border-left: 4px solid #0284c7 !important;
-    background: #ffffff;
-  }
-  .card-read {
-    opacity: 0.88;
-    background: #fcfcfc;
-  }
-  .badge-new-pill {
-    background: #e0f2fe;
-    color: #0369a1;
-    font-size: 0.68rem;
-    font-weight: 800;
-    padding: 0.15rem 0.45rem;
-    border-radius: 999px;
-    letter-spacing: 0.03em;
-  }
-  .btn-read-toggle.is-unread-btn {
-    background: #f0f9ff;
-    color: #0284c7;
-    border-color: #bae6fd;
-  }
-
-  /* TWO-COLUMN LAYOUT */
-  .layout-grid {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 1.5rem;
-    align-items: start;
-  }
-  @media (max-width: 960px) {
-    .layout-grid { grid-template-columns: 1fr; }
-  }
-
-  /* NEWS STREAM */
-  .stream-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .stream-header h3 { margin: 0; font-size: 1.1rem; color: #0f172a; }
-  .stream-hint { font-size: 0.8rem; color: #64748b; }
-  .news-list { display: flex; flex-direction: column; gap: 1rem; }
-
-  /* NEWS CARD */
-  .news-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 1.15rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
-  .news-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  }
-  .news-card.card-important {
-    border-left: 4px solid #ef4444;
-    background: #fffafa;
-  }
-  .card-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.78rem;
-    margin-bottom: 0.6rem;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .meta-left { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; }
-  .badge {
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    text-transform: uppercase;
-  }
-  .badge-rss { background: #ffedd5; color: #c2410c; }
-  .badge-gnews { background: #dbeafe; color: #1d4ed8; }
-  .badge-telegram { background: #e0f2fe; color: #0369a1; }
-  .source-name { font-weight: 600; color: #334155; }
-  .meta-dot { color: #cbd5e1; }
-  .meta-time { color: #64748b; }
-  .meta-right { display: flex; align-items: center; gap: 0.4rem; }
-  .cat-tag {
-    background: #f1f5f9;
-    color: #475569;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-  }
-  .important-badge {
-    background: #fee2e2;
-    color: #b91c1c;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 700;
-  }
-  .card-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.05rem;
-    line-height: 1.4;
-  }
-  .card-title a {
-    color: #0f172a;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-  .card-title a:hover { color: #0284c7; }
-  .card-summary {
-    margin: 0 0 0.9rem;
-    font-size: 0.88rem;
-    color: #475569;
-    line-height: 1.5;
-  }
-  .card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid #f1f5f9;
-    padding-top: 0.75rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .action-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .btn-action {
-    font: inherit;
-    font-size: 0.78rem;
-    font-weight: 600;
-    padding: 0.35rem 0.65rem;
-    border-radius: 6px;
-    cursor: pointer;
-    border: 1px solid #cbd5e1;
-    background: #fff;
-    color: #334155;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    transition: all 0.15s;
-  }
-  .btn-action:hover { background: #f8fafc; border-color: #94a3b8; }
-  .btn-refer { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
-  .btn-refer:hover { background: #dcfce7; border-color: #86efac; }
-  .btn-refer.is-referred { background: #15803d; color: #fff; border-color: #15803d; }
-
-  .btn-save { background: #fefce8; border-color: #fef08a; color: #a16207; }
-  .btn-save:hover { background: #fef9c3; border-color: #fde047; }
-  .btn-save.is-saved { background: #eab308; color: #fff; border-color: #ca8a04; }
-
-  .card-saved { border-top: 2px solid #eab308; }
-  .saved-badge { background: #fef9c3; color: #a16207; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; }
-  .ref-badge { background: #dcfce7; color: #15803d; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; }
-  .handle-tag { font-size: 0.75rem; color: #0284c7; font-weight: 600; font-family: monospace; }
-  .telegram-badge {
-    background: #e0f2fe;
-    color: #0369a1;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-    border: 1px solid #bae6fd;
-    font-family: monospace;
-  }
-
-  /* SIDEBAR */
-  .sidebar-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-  }
-  .sidebar-card h3 { margin: 0 0 0.25rem; font-size: 1.05rem; color: #0f172a; }
-  .sidebar-desc { margin: 0 0 1rem; font-size: 0.8rem; color: #64748b; line-height: 1.4; }
-  .source-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.75rem; }
-  .source-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 0.65rem;
-    border-bottom: 1px solid #f1f5f9;
-  }
-  .source-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .source-info { display: flex; align-items: center; gap: 0.6rem; }
-  .type-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .type-dot.type-rss { background: #f97316; }
-  .type-dot.type-google_news { background: #3b82f6; }
-  .type-dot.type-telegram { background: #0ea5e9; }
-  .source-info b { font-size: 0.85rem; color: #1e293b; display: block; }
-  .source-info small { font-size: 0.72rem; }
-  .unread-pill {
-    background: #eff6ff;
-    color: #1d4ed8;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-  }
-  .shared-account-box { background: #f0fdfa; border-color: #ccfbf1; }
-  .shared-account-box h4 { margin: 0 0 0.35rem; color: #0f766e; font-size: 0.9rem; }
-  .shared-account-box p { margin: 0; font-size: 0.8rem; color: #115e59; line-height: 1.4; }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    background: #fff;
-    border: 1px dashed #cbd5e1;
-    border-radius: 12px;
-  }
-  .empty-icon { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
-  .empty-state h4 { margin: 0 0 0.35rem; font-size: 1.1rem; color: #1e293b; }
-  .empty-state p { margin: 0; font-size: 0.85rem; color: #64748b; }
-
-  /* TOAST NOTIFICATION */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: #0f172a;
-    color: #fff;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.25s ease-out;
-    z-index: 9999;
-  }
-  .toast.show {
-    transform: translateY(0);
-    opacity: 1;
-  }
-</style>
+    });
+  </script>
+</HumasLayout>

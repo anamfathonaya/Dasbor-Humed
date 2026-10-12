@@ -1,524 +1,432 @@
 ---
-import RoleNavigation from '../components/RoleNavigation.astro';
-// Halaman Profil Akun Pribadi & Pengaturan Kata Sandi
+import HumasLayout from '../layouts/HumasLayout.astro';
+import { db, initDatabase } from '../lib/db';
+import { getUserRole } from '../lib/auth';
+
+initDatabase();
+const currentRole = getUserRole(Astro.request, Astro.url);
+
+// Query user profil dari SQLite
+let user = db.prepare(`
+  SELECT u.id, u.name, u.email, u.role_id, u.avatar_url, r.name as role_name
+  FROM users u
+  LEFT JOIN roles r ON u.role_id = r.id
+  WHERE r.name = ?
+  LIMIT 1
+`).get(currentRole) as { id: number; name: string; email: string; role_id: number; role_name: string; avatar_url?: string | null } | undefined;
+
+const roleLabels: Record<string, string> = {
+  head: 'Kepala Bidang Humas',
+  admin: 'Administrator Teknis',
+  staff: 'Staf Konten & Media'
+};
+
+const defaultNames: Record<string, string> = {
+  head: 'Rani Maulida, M.I.Kom',
+  admin: 'Budi Santoso',
+  staff: 'Dewi Lestari'
+};
+
+const defaultEmails: Record<string, string> = {
+  head: 'rani.head@pedulinegeri.org',
+  admin: 'budi.admin@pedulinegeri.org',
+  staff: 'dewi.staff@pedulinegeri.org'
+};
+
+const userName = user?.name || defaultNames[currentRole] || 'Rani Salsabila, M.I.Kom';
+const userEmail = user?.email || defaultEmails[currentRole] || 'rani.admin@pedulinegeri.org';
+const userRoleLabel = roleLabels[currentRole] || 'Staf Humas & Media';
+const userAvatar = user?.avatar_url || null;
+
+const userInitials = userName
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map(w => w[0].toUpperCase())
+  .join('') || 'RS';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Akun Pribadi & Kata Sandi - Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/profil-akun" />
+<HumasLayout
+  title="Profil Akun & Keamanan — Humas Internal Peduli Negeri"
+  pageTitle="Profil Saya & Keamanan Akun"
+  pageSubtitle="Perbarui foto profil yang tersimpan di database, data identitas staf, dan kata sandi autentikasi"
+  currentPath="/profil-akun"
+  pageContentId="akun"
+>
+  <main class="akn" data-node-id="profile.main">
+    <!-- Sub Navigasi Pengaturan & Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/pengaturan" class="akn__btn">
+        <iconify-icon icon="lucide:plug-zap" aria-hidden="true"></iconify-icon>Pusat Pengaturan
+      </a>
+      <a href="/manajemen-akun" class="akn__btn">
+        <iconify-icon icon="lucide:users" aria-hidden="true"></iconify-icon>Akun & Hak Akses
+      </a>
+      <a href="/jejak-audit" class="akn__btn">
+        <iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon>Jejak Audit
+      </a>
+      <a href="/profil-akun" class="akn__btn" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;">
+        <iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon>Profil Saya
+      </a>
+    </div>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
-        <div>
-          <h2>Akun Pribadi & Pengaturan Keamanan</h2>
-          <p class="muted">
-            Perbarui data identitas profil Anda, preferensi pemberitahuan, dan perbarui kata sandi akun secara berkala.
-          </p>
-        </div>
-        <div class="actions">
-          <a href="/pengaturan" class="btn btn-secondary">
-            ⚙️ Kembali ke Pengaturan Sistem
-          </a>
-          <button id="btn-logout" class="btn btn-danger">
-            🚪 Keluar Sesi
+    <!-- Top Bar -->
+    <div class="akn__bar">
+      <p class="akn__bar-text">
+        <b>Sesi Aktif:</b> <span id="top-user-name">{userName}</span> ({userRoleLabel}) • Terhubung aman melalui database lokal SQLite.
+      </p>
+      <div class="akn__bar-actions">
+        <button id="btn-logout" class="akn__btn" style="color:#ef4444;" type="button">
+          <iconify-icon icon="lucide:log-out" aria-hidden="true"></iconify-icon>Keluar Sesi
+        </button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:20px;">
+      <!-- Kartu Profil Kiri + Fitur Ganti Foto Profil -->
+      <div class="akn__card" style="text-align:center;padding:24px;">
+        <!-- Avatar Wrapper dengan Badge Kamera -->
+        <div style="position:relative;width:96px;height:96px;margin:0 auto 16px;">
+          <div
+            id="avatar-display-container"
+            style="width:96px;height:96px;border-radius:50%;background:var(--color-primary,#1d5c94);color:#fff;font-size:32px;font-weight:700;display:grid;place-items:center;overflow:hidden;border:3px solid var(--color-surface,#fff);box-shadow:0 4px 12px rgba(0,0,0,0.12);"
+          >
+            {userAvatar ? (
+              <img id="avatar-img-preview" src={userAvatar} alt={userName} style="width:100%;height:100%;object-fit:cover;" />
+            ) : (
+              <span id="avatar-initials-preview">{userInitials}</span>
+            )}
+          </div>
+
+          <!-- Tombol Aksi Upload Cepat -->
+          <button
+            type="button"
+            id="btn-trigger-upload"
+            title="Pilih foto baru dari perangkat"
+            style="position:absolute;bottom:0;right:0;width:32px;height:32px;border-radius:50%;background:var(--color-primary,#1d5c94);color:#fff;border:2px solid #fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);"
+          >
+            <iconify-icon icon="lucide:camera" style="font-size:16px;" aria-hidden="true"></iconify-icon>
           </button>
         </div>
-      </div>
 
-      <!-- NOTIFIKASI SUKSES / ERROR -->
-      <div id="account-alert" class="alert-box" hidden>
-        <span id="account-alert-text">Perubahan data akun berhasil disimpan.</span>
-        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
-      </div>
+        <input type="file" id="avatar-file-input" accept="image/png, image/jpeg, image/webp" style="display:none;" />
 
-      <div class="account-grid">
-        <!-- KARTU RINGKASAN PROFIL USER -->
-        <div class="card user-summary-card">
-          <div class="avatar-large" id="profile-avatar">RM</div>
-          <h3 id="profile-display-name">Rani Maulida</h3>
-          <span class="user-role-badge" id="profile-role-badge">Ketua Bidang Humas (Head)</span>
-          <p class="muted-sm" id="profile-email-badge">rani.head@pedulinegeri.org</p>
+        <h2 id="card-user-name" style="font-size:18px;margin:0 0 4px;">{userName}</h2>
+        <span class="akn__badge akn__badge--blue" style="margin-bottom:8px;display:inline-block;">{userRoleLabel}</span>
+        <p id="card-user-email" style="font-size:12px;color:var(--color-muted,#5a6875);margin:0 0 16px;">{userEmail}</p>
 
-          <div class="meta-list">
-            <div class="meta-item">
-              <span class="meta-label">Departemen:</span>
-              <span class="meta-val" id="profile-dept">Manajemen Eksekutif Humas</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Status Akun:</span>
-              <span class="badge badge-active">● Aktif Terverifikasi</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Zona Waktu:</span>
-              <span class="meta-val">Asia/Jakarta (WIB)</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Sesi Masuk:</span>
-              <span class="meta-val">Perangkat Ini (Aktif)</span>
-            </div>
-          </div>
+        <!-- Aksi Foto Profil (Ganti & Hapus) -->
+        <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;">
+          <button
+            type="button"
+            id="btn-select-photo"
+            class="akn__btn"
+            style="font-size:12px;padding:6px 12px;"
+          >
+            <iconify-icon icon="lucide:upload" aria-hidden="true"></iconify-icon>Pilih Foto Baru
+          </button>
+
+          <button
+            type="button"
+            id="btn-remove-photo"
+            class="akn__btn"
+            style="font-size:12px;padding:6px 12px;color:#ef4444;border-color:#fca5a5;"
+            title="Hapus foto profil dan gunakan inisial default"
+          >
+            <iconify-icon icon="lucide:trash-2" aria-hidden="true"></iconify-icon>Hapus Foto
+          </button>
         </div>
 
-        <!-- FORMULIR INFORMASI PROFIL & GANTI SANDI -->
-        <div class="account-forms-column">
-          <!-- Form Identitas Profil -->
-          <div class="card">
-            <div class="card-header">
-              <h3>Informasi Pribadi & Kontak</h3>
-              <p class="muted">Nama dan kontak Anda akan ditampilkan pada riwayat persetujuan konten dan dokumen SOP.</p>
-            </div>
+        <div id="avatar-feedback" style="display:none;font-size:12px;padding:8px 12px;border-radius:6px;margin-bottom:16px;text-align:left;"></div>
 
-            <form id="form-profile-info" class="form-grid">
-              <div class="form-group">
-                <label for="input-fullname">Nama Lengkap & Gelar</label>
-                <input type="text" id="input-fullname" value="Rani Maulida, M.I.Kom" required />
-              </div>
-
-              <div class="form-group">
-                <label for="input-email">Alamat Email Resmi</label>
-                <input type="email" id="input-email" value="rani.head@pedulinegeri.org" readonly class="input-readonly" />
-              </div>
-
-              <div class="form-group">
-                <label for="input-phone">Nomor Telepon / WhatsApp</label>
-                <input type="text" id="input-phone" value="+62 812-9876-5432" />
-              </div>
-
-              <div class="form-group">
-                <label for="input-jobtitle">Jabatan Organisasi</label>
-                <input type="text" id="input-jobtitle" value="Kepala Bidang Humas & Media" required />
-              </div>
-
-              <div class="form-actions full">
-                <button type="submit" class="btn">Simpan Perubahan Profil</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Form Pembaruan Kata Sandi -->
-          <div class="card" style="margin-top: 1.5rem;">
-            <div class="card-header">
-              <h3>Ganti Kata Sandi</h3>
-              <p class="muted">Gunakan kata sandi kuat minimal 8 karakter yang memadukan huruf, angka, dan simbol.</p>
-            </div>
-
-            <form id="form-change-password" class="form-grid">
-              <div class="form-group full">
-                <label for="current-pwd">Kata Sandi Saat Ini</label>
-                <input type="password" id="current-pwd" placeholder="Masukkan kata sandi lama Anda" required />
-              </div>
-
-              <div class="form-group">
-                <label for="new-pwd">Kata Sandi Baru</label>
-                <input type="password" id="new-pwd" placeholder="Minimal 8 karakter" required minlength="8" />
-              </div>
-
-              <div class="form-group">
-                <label for="confirm-pwd">Konfirmasi Kata Sandi Baru</label>
-                <input type="password" id="confirm-pwd" placeholder="Ketik ulang kata sandi baru" required minlength="8" />
-              </div>
-
-              <div class="form-actions full">
-                <button type="submit" class="btn btn-warning-submit">Perbarui Kata Sandi</button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Preferensi Notifikasi Akun -->
-          <div class="card" style="margin-top: 1.5rem;">
-            <div class="card-header">
-              <h3>Preferensi Notifikasi Pribadi</h3>
-              <p class="muted">Pilih jenis peristiwa kerja yang ingin dikirimkan langsung ke saluran Anda.</p>
-            </div>
-
-            <div class="notification-options">
-              <label class="checkbox-row">
-                <input type="checkbox" id="notify-email" checked />
-                <div>
-                  <strong>Notifikasi Email untuk Persetujuan Penting</strong>
-                  <span class="muted-sm">Terima email instan saat materi siaran pers atau anggaran membutuhkan persetujuan Anda.</span>
-                </div>
-              </label>
-
-              <label class="checkbox-row">
-                <input type="checkbox" id="notify-telegram" checked />
-                <div>
-                  <strong>Sinyal Krisis & Peringatan Telegram</strong>
-                  <span class="muted-sm">Dapatkan notifikasi bot saat pantauan sentimen berita negatif melampaui ambang batas 30%.</span>
-                </div>
-              </label>
-
-              <label class="checkbox-row">
-                <input type="checkbox" id="notify-reminder" checked />
-                <div>
-                  <strong>Pengingat Jadwal Kalender Konten (H-1)</strong>
-                  <span class="muted-sm">Notifikasi pengingat konten yang dijadwalkan terbit keesokan harinya.</span>
-                </div>
-              </label>
-            </div>
-          </div>
+        <div style="text-align:left;border-top:1px solid var(--color-border,#ebecee);padding-top:16px;display:flex;flex-direction:column;gap:8px;font-size:12px;">
+          <div><span style="color:var(--color-muted,#5a6875);">Unit Kerja:</span> <strong>Divisi Komunikasi & Publikasi</strong></div>
+          <div><span style="color:var(--color-muted,#5a6875);">Penyimpanan Avatar:</span> <span class="akn__badge akn__badge--green">SQLite Database (Aktif)</span></div>
+          <div><span style="color:var(--color-muted,#5a6875);">Zona Waktu:</span> <strong>Asia/Jakarta (WIB)</strong></div>
+          <div><span style="color:var(--color-muted,#5a6875);">Autentikasi 2FA:</span> <strong style="color:#10b981;">Aktif (TOTP Authenticator)</strong></div>
         </div>
       </div>
-    </main>
 
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-      }
+      <!-- Kolom Formulir Perbaruan -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Formulir Kontak -->
+        <div class="akn__card">
+          <div class="akn__card-head">
+            <div>
+              <h2 class="akn__card-title">Informasi Pribadi & Kontak</h2>
+              <p class="akn__card-sub">Nama staf yang tercatat pada jadwal konten, dokumen rilis, dan log audit</p>
+            </div>
+          </div>
 
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 1.75rem;
-        background: #0f172a;
-        color: #fff;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .brand { display: flex; align-items: center; gap: 0.6rem; }
-      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-      .top nav a.active, .top nav a:hover { color: #38bdf8; }
-      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
+          <form id="form-profile-info" class="cfg__form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div style="grid-column: 1 / -1;">
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Nama Lengkap & Gelar</label>
+              <input type="text" id="input-profile-name" class="kb__select" style="width:100%;" value={userName} required />
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Alamat Email</label>
+              <input type="email" id="input-profile-email" class="kb__select" style="width:100%;background:#f1f3f5;" value={userEmail} readonly />
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Nomor Telepon / WhatsApp</label>
+              <input type="text" id="input-profile-phone" class="kb__select" style="width:100%;" value="+62 812-9876-5432" />
+            </div>
+            <div style="grid-column: 1 / -1;display:flex;justify-content:flex-end;">
+              <button type="submit" id="btn-save-profile" class="akn__btn akn__btn--primary">
+                <iconify-icon icon="lucide:save" aria-hidden="true"></iconify-icon>Simpan Profil
+              </button>
+            </div>
+          </form>
+        </div>
 
-      main { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
-      .head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
-      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
-      .muted-sm { display: block; font-size: 0.78rem; color: #64748b; margin-top: 0.2rem; }
+        <!-- Formulir Ganti Kata Sandi -->
+        <div class="akn__card">
+          <div class="akn__card-head">
+            <div>
+              <h2 class="akn__card-title">Perbarui Kata Sandi</h2>
+              <p class="akn__card-sub">Gunakan kombinasi minimal 8 karakter huruf dan angka</p>
+            </div>
+          </div>
 
-      .actions { display: flex; gap: 0.6rem; }
-      .btn {
-        font: inherit;
-        background: #0284c7;
-        color: #fff;
-        border: 0;
-        padding: 0.55rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.15s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.88rem;
-      }
-      .btn:hover { background: #0369a1; }
-      .btn-secondary {
-        background: #fff;
-        border: 1px solid #cbd5e1;
-        color: #334155;
-      }
-      .btn-secondary:hover { background: #f1f5f9; }
-      .btn-danger {
-        background: #fff;
-        border: 1px solid #fecaca;
-        color: #dc2626;
-      }
-      .btn-danger:hover { background: #fef2f2; }
-      .btn-warning-submit {
-        background: #0284c7;
-      }
+          <form id="form-change-password" style="display:flex;flex-direction:column;gap:12px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Kata Sandi Saat Ini</label>
+              <input type="password" id="input-old-pw" class="kb__select" style="width:100%;" placeholder="••••••••" required />
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Kata Sandi Baru</label>
+              <input type="password" id="input-new-pw" class="kb__select" style="width:100%;" placeholder="Minimal 8 karakter" required />
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Ulangi Kata Sandi Baru</label>
+              <input type="password" id="input-confirm-pw" class="kb__select" style="width:100%;" placeholder="Ulangi kata sandi baru" required />
+            </div>
+            <div style="display:flex;justify-content:flex-end;">
+              <button type="submit" id="btn-save-pw" class="akn__btn akn__btn--primary">
+                <iconify-icon icon="lucide:key" aria-hidden="true"></iconify-icon>Perbarui Sandi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
 
-      /* Alert Box */
-      .alert-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        margin-bottom: 1.5rem;
-      }
-      .alert-box.error {
-        background: #fef2f2;
-        border-color: #fecaca;
-        color: #991b1b;
-      }
-      .btn-alert-close {
-        background: none;
-        border: none;
-        font-size: 1rem;
-        color: inherit;
-        cursor: pointer;
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const fileInput = document.getElementById('avatar-file-input') as HTMLInputElement | null;
+      const btnTriggerUpload = document.getElementById('btn-trigger-upload');
+      const btnSelectPhoto = document.getElementById('btn-select-photo');
+      const btnRemovePhoto = document.getElementById('btn-remove-photo');
+      const avatarContainer = document.getElementById('avatar-display-container');
+      const feedback = document.getElementById('avatar-feedback');
+
+      function showFeedback(msg: string, isError = false) {
+        if (!feedback) return;
+        feedback.style.display = 'block';
+        feedback.style.background = isError ? '#fef2f2' : '#f0fdf4';
+        feedback.style.color = isError ? '#991b1b' : '#166534';
+        feedback.style.border = `1px solid ${isError ? '#fecaca' : '#bbf7d0'}`;
+        feedback.textContent = msg;
+        setTimeout(() => {
+          if (feedback) feedback.style.display = 'none';
+        }, 4000);
       }
 
-      /* Grid layout */
-      .account-grid {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 1.5rem;
-        align-items: flex-start;
-      }
-      @media (max-width: 900px) {
-        .account-grid { grid-template-columns: 1fr; }
-      }
-
-      /* Card styles */
-      .card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.5rem;
-      }
-      .user-summary-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-      .avatar-large {
-        width: 76px;
-        height: 76px;
-        border-radius: 50%;
-        background: #e0f2fe;
-        color: #0369a1;
-        font-size: 1.6rem;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-      }
-      .user-summary-card h3 {
-        margin: 0 0 0.35rem;
-        font-size: 1.2rem;
-        color: #0f172a;
-      }
-      .user-role-badge {
-        display: inline-block;
-        background: #f1f5f9;
-        color: #334155;
-        padding: 0.25rem 0.65rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 0.35rem;
-      }
-
-      .meta-list {
-        width: 100%;
-        margin-top: 1.5rem;
-        border-top: 1px solid #f1f5f9;
-        padding-top: 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        text-align: left;
-      }
-      .meta-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 0.8rem;
-      }
-      .meta-label { color: #64748b; }
-      .meta-val { color: #0f172a; font-weight: 500; }
-
-      .card-header { margin-bottom: 1.25rem; }
-      .card-header h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: #0f172a; }
-
-      /* Form */
-      .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-      }
-      @media (max-width: 640px) {
-        .form-grid { grid-template-columns: 1fr; }
-      }
-      .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-      .form-group.full { grid-column: 1 / -1; }
-      .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; }
-      .form-group input {
-        font: inherit;
-        padding: 0.55rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-      .input-readonly {
-        background: #f8fafc;
-        color: #64748b;
-        cursor: not-allowed;
-      }
-      .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        padding-top: 1rem;
-        border-top: 1px solid #f1f5f9;
-      }
-
-      /* Notification options */
-      .notification-options {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .checkbox-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        cursor: pointer;
-      }
-      .checkbox-row input {
-        width: 18px;
-        height: 18px;
-        accent-color: #0284c7;
-        margin-top: 0.15rem;
-        cursor: pointer;
-      }
-      .checkbox-row strong {
-        display: block;
-        font-size: 0.85rem;
-        color: #1e293b;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.2rem 0.55rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .badge-active { background: #dcfce7; color: #166534; }
-    </style>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const alertBox = document.getElementById('account-alert');
-        const alertText = document.getElementById('account-alert-text');
-        const btnCloseAlert = document.getElementById('btn-close-alert');
-
-        function notify(msg: string, isError: boolean = false) {
-          if (alertBox && alertText) {
-            alertText.textContent = msg;
-            if (isError) {
-              alertBox.classList.add('error');
-            } else {
-              alertBox.classList.remove('error');
-            }
-            alertBox.hidden = false;
-            setTimeout(() => {
-              alertBox.hidden = true;
-            }, 3500);
-          }
+      function updateAvatarUI(avatarUrl: string | null, userName: string) {
+        if (!avatarContainer) return;
+        if (avatarUrl) {
+          avatarContainer.innerHTML = `<img id="avatar-img-preview" src="${avatarUrl}" alt="${userName}" style="width:100%;height:100%;object-fit:cover;" />`;
+        } else {
+          const initials = userName
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(w => w[0].toUpperCase())
+            .join('') || 'RS';
+          avatarContainer.innerHTML = `<span id="avatar-initials-preview">${initials}</span>`;
         }
 
-        btnCloseAlert?.addEventListener('click', () => {
-          if (alertBox) alertBox.hidden = true;
-        });
-
-        // Sync role and active profile info from localStorage
-        const userRoleSelect = document.getElementById('user-role') as HTMLSelectElement | null;
-        const profileAvatar = document.getElementById('profile-avatar');
-        const profileDisplayName = document.getElementById('profile-display-name');
-        const profileRoleBadge = document.getElementById('profile-role-badge');
-        const profileEmailBadge = document.getElementById('profile-email-badge');
-        const inputEmail = document.getElementById('input-email') as HTMLInputElement | null;
-        const inputFullname = document.getElementById('input-fullname') as HTMLInputElement | null;
-
-        function refreshProfile(role: string) {
-          if (role === 'admin') {
-            if (profileAvatar) profileAvatar.textContent = 'BS';
-            if (profileDisplayName) profileDisplayName.textContent = 'Budi Santoso';
-            if (profileRoleBadge) profileRoleBadge.textContent = 'Administrator Teknis (Admin)';
-            if (profileEmailBadge) profileEmailBadge.textContent = 'budi.admin@pedulinegeri.org';
-            if (inputEmail) inputEmail.value = 'budi.admin@pedulinegeri.org';
-            if (inputFullname) inputFullname.value = 'Budi Santoso, S.Kom';
-          } else if (role === 'staff') {
-            if (profileAvatar) profileAvatar.textContent = 'DL';
-            if (profileDisplayName) profileDisplayName.textContent = 'Dewi Lestari';
-            if (profileRoleBadge) profileRoleBadge.textContent = 'Staf Konten & Kreatif (Staff)';
-            if (profileEmailBadge) profileEmailBadge.textContent = 'dewi.creative@pedulinegeri.org';
-            if (inputEmail) inputEmail.value = 'dewi.creative@pedulinegeri.org';
-            if (inputFullname) inputFullname.value = 'Dewi Lestari';
+        // Juga update avatar di sidebar jika ada elemennya
+        const sidebarAvatar = document.querySelector('.l-humas__sidebar .l-humas__avatar');
+        if (sidebarAvatar) {
+          if (avatarUrl) {
+            if (sidebarAvatar.tagName === 'IMG') {
+              (sidebarAvatar as HTMLImageElement).src = avatarUrl;
+            } else {
+              const img = document.createElement('img');
+              img.src = avatarUrl;
+              img.className = 'l-humas__avatar';
+              img.style.objectFit = 'cover';
+              img.style.border = '1px solid rgba(255,255,255,0.2)';
+              sidebarAvatar.replaceWith(img);
+            }
           } else {
-            if (profileAvatar) profileAvatar.textContent = 'RM';
-            if (profileDisplayName) profileDisplayName.textContent = 'Rani Maulida';
-            if (profileRoleBadge) profileRoleBadge.textContent = 'Ketua Bidang Humas (Head)';
-            if (profileEmailBadge) profileEmailBadge.textContent = 'rani.head@pedulinegeri.org';
-            if (inputEmail) inputEmail.value = 'rani.head@pedulinegeri.org';
-            if (inputFullname) inputFullname.value = 'Rani Maulida, M.I.Kom';
+            if (sidebarAvatar.tagName === 'IMG') {
+              const span = document.createElement('span');
+              span.className = 'l-humas__avatar';
+              span.setAttribute('aria-hidden', 'true');
+              span.textContent = userName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'RS';
+              sidebarAvatar.replaceWith(span);
+            }
           }
+        }
+      }
+
+      // Handler pilih berkas
+      btnTriggerUpload?.addEventListener('click', () => fileInput?.click());
+      btnSelectPhoto?.addEventListener('click', () => fileInput?.click());
+
+      fileInput?.addEventListener('change', async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+
+        // Validasi tipe berkas
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+          showFeedback('Pilih berkas gambar dengan format JPG, PNG, atau WebP.', true);
+          return;
+        }
+
+        // Validasi ukuran (maks 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+          showFeedback('Ukuran foto terlalu besar. Maksimal 2 MB.', true);
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64Data = reader.result as string;
+          try {
+            showFeedback('Menyimpan foto ke database...', false);
+            const res = await fetch('/api/user/avatar', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ avatarBase64: base64Data })
+            });
+
+            const result = await res.json();
+            if (result.success) {
+              const currentName = (document.getElementById('input-profile-name') as HTMLInputElement)?.value || 'Pengguna';
+              updateAvatarUI(result.avatarUrl, currentName);
+              showFeedback('✅ Foto profil berhasil diunggah & disimpan ke database!');
+            } else {
+              showFeedback(result.message || 'Gagal mengunggah foto profil.', true);
+            }
+          } catch (err) {
+            showFeedback('Terjadi kesalahan jaringan saat menyimpan foto.', true);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+
+      // Handler hapus foto profil
+      btnRemovePhoto?.addEventListener('click', async () => {
+        if (!confirm('Apakah Anda yakin ingin menghapus foto profil dan kembali menggunakan inisial?')) {
+          return;
         }
 
         try {
-          const currentRole = localStorage.getItem('user_role') || 'head';
-          if (userRoleSelect) userRoleSelect.value = currentRole;
-          refreshProfile(currentRole);
-        } catch {}
-
-        userRoleSelect?.addEventListener('change', () => {
-          const newRole = userRoleSelect.value;
-          try {
-            localStorage.setItem('user_role', newRole);
-          } catch {}
-          refreshProfile(newRole);
-          notify(`Peran aktif diganti ke: ${userRoleSelect.options[userRoleSelect.selectedIndex].text}`);
-        });
-
-        // Form save profile
-        document.getElementById('form-profile-info')?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          notify('Data profil pribadi berhasil diperbarui.');
-        });
-
-        // Form change password
-        document.getElementById('form-change-password')?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const currentPwd = (document.getElementById('current-pwd') as HTMLInputElement)?.value;
-          const newPwd = (document.getElementById('new-pwd') as HTMLInputElement)?.value;
-          const confirmPwd = (document.getElementById('confirm-pwd') as HTMLInputElement)?.value;
-
-          if (newPwd !== confirmPwd) {
-            notify('Kata sandi baru dan konfirmasi sandi tidak cocok.', true);
-            return;
+          showFeedback('Menghapus foto profil...', false);
+          const res = await fetch('/api/user/avatar', { method: 'DELETE' });
+          const result = await res.json();
+          if (result.success) {
+            const currentName = (document.getElementById('input-profile-name') as HTMLInputElement)?.value || 'Pengguna';
+            updateAvatarUI(null, currentName);
+            showFeedback('✅ Foto profil berhasil dihapus.');
+          } else {
+            showFeedback(result.message || 'Gagal menghapus foto.', true);
           }
-
-          if (newPwd.length < 8) {
-            notify('Kata sandi baru minimal harus 8 karakter.', true);
-            return;
-          }
-
-          notify('Kata sandi berhasil diubah! Silakan gunakan kata sandi baru untuk login berikutnya.');
-          (document.getElementById('form-change-password') as HTMLFormElement)?.reset();
-        });
-
-        // Logout
-        document.getElementById('btn-logout')?.addEventListener('click', () => {
-          try {
-            localStorage.removeItem('user_logged_in');
-          } catch {}
-          window.location.href = '/masuk';
-        });
+        } catch (err) {
+          showFeedback('Terjadi kesalahan jaringan saat menghapus foto.', true);
+        }
       });
-    </script>
-  </body>
-</html>
+
+      // Handler simpan informasi nama & profil
+      document.getElementById('form-profile-info')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById('input-profile-name') as HTMLInputElement;
+        const phoneInput = document.getElementById('input-profile-phone') as HTMLInputElement;
+        const btnSave = document.getElementById('btn-save-profile') as HTMLButtonElement;
+
+        const newName = nameInput.value.trim();
+        const phone = phoneInput.value.trim();
+
+        if (newName.length < 3) {
+          alert('Nama lengkap minimal 3 karakter.');
+          return;
+        }
+
+        btnSave.disabled = true;
+        btnSave.textContent = 'Menyimpan...';
+
+        try {
+          const res = await fetch('/api/user/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: newName, phone })
+          });
+          const result = await res.json();
+          if (result.success) {
+            const topUserName = document.getElementById('top-user-name');
+            const cardUserName = document.getElementById('card-user-name');
+            if (topUserName) topUserName.textContent = newName;
+            if (cardUserName) cardUserName.textContent = newName;
+            alert('Informasi profil berhasil diperbarui.');
+          } else {
+            alert(result.message || 'Gagal memperbarui profil.');
+          }
+        } catch (err) {
+          alert('Terjadi kesalahan jaringan.');
+        } finally {
+          btnSave.disabled = false;
+          btnSave.innerHTML = '<iconify-icon icon="lucide:save" aria-hidden="true"></iconify-icon>Simpan Profil';
+        }
+      });
+
+      // Handler ganti kata sandi
+      document.getElementById('form-change-password')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const oldPw = (document.getElementById('input-old-pw') as HTMLInputElement)?.value;
+        const newPw = (document.getElementById('input-new-pw') as HTMLInputElement)?.value;
+        const confirmPw = (document.getElementById('input-confirm-pw') as HTMLInputElement)?.value;
+        const btnSavePw = document.getElementById('btn-save-pw') as HTMLButtonElement;
+
+        if (newPw !== confirmPw) {
+          alert('Konfirmasi kata sandi baru tidak cocok.');
+          return;
+        }
+
+        btnSavePw.disabled = true;
+        btnSavePw.textContent = 'Memproses...';
+
+        try {
+          const res = await fetch('/api/user/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword: oldPw, newPassword: newPw, confirmPassword: confirmPw })
+          });
+          const result = await res.json();
+          if (result.success) {
+            alert('Kata sandi berhasil diperbarui.');
+            (document.getElementById('form-change-password') as HTMLFormElement)?.reset();
+          } else {
+            alert(result.message || 'Gagal memperbarui kata sandi.');
+          }
+        } catch (err) {
+          alert('Terjadi kesalahan koneksi.');
+        } finally {
+          btnSavePw.disabled = false;
+          btnSavePw.innerHTML = '<iconify-icon icon="lucide:key" aria-hidden="true"></iconify-icon>Perbarui Sandi';
+        }
+      });
+
+      // Handler keluar sesi
+      document.getElementById('btn-logout')?.addEventListener('click', async () => {
+        if (confirm('Apakah Anda yakin ingin keluar dari sesi Dasbor Humas?')) {
+          await fetch('/api/auth/logout', { method: 'POST' });
+          window.location.href = '/masuk';
+        }
+      });
+    });
+  </script>
+</HumasLayout>

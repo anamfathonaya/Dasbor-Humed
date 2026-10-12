@@ -1,74 +1,127 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import {
   mockPerformance,
   reportChannels,
   reportPeriods,
 } from '../lib/clientDataFetcher';
-import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Laporan Kinerja — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/laporan-anggaran" />
+<HumasLayout
+  title="Laporan Kinerja Kanal — Humas Internal Peduli Negeri"
+  pageTitle="Laporan Kinerja Kanal"
+  pageSubtitle="Ringkasan performa per kanal publikasi, konversi kampanye, dan pencatatan temuan berkala"
+  currentPath="/laporan-kinerja"
+  pageContentId="laporan"
+>
+  <main class="lap" data-node-id="laporan.kinerja">
+    <!-- Sub-Navigasi Modul Laporan Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/laporan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Ringkasan Semua Laporan
+      </a>
+      <a href="/laporan-kinerja" class="lap__mini" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;padding:6px 14px;border-radius:8px;text-decoration:none;">
+        Laporan Kinerja Kanal
+      </a>
+      <a href="/laporan-anggaran" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Anggaran
+      </a>
+      <a href="/daftar-rab-lra" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Daftar RAB & LRA
+      </a>
+      <a href="/laporan-tahunan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Tahunan
+      </a>
+      <a href="/bagikan-cetak" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Bagikan & Cetak
+      </a>
+    </div>
 
-    <main>
-      <div class="head">
-        <div>
-          <h2>Laporan Kinerja</h2>
-          <p class="muted">Ringkasan performa per kanal dan periode.
-            <a href="/laporan-anggaran">← Kembali ke Laporan & Anggaran</a></p>
-        </div>
-        <div class="filters">
-          <select id="period">
+    <!-- Filter & Toolbar -->
+    <div class="lap__card" style="margin-bottom:16px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <label style="font-size:12px;font-weight:600;">Periode:</label>
+          <select id="period" class="lap__select">
             {reportPeriods.map((p) => <option value={p.value} selected={p.value === '30d'}>{p.label}</option>)}
           </select>
-          <select id="channel">
+          <label style="font-size:12px;font-weight:600;margin-left:8px;">Kanal:</label>
+          <select id="channel" class="lap__select">
             {reportChannels.map((c) => <option value={c}>{c}</option>)}
           </select>
-          <button type="button" id="save-note-btn" class="btn">📝 Simpan sebagai Catatan</button>
+        </div>
+        <button type="button" id="save-note-btn" class="lap__btn lap__btn--primary">
+          <iconify-icon icon="lucide:file-plus" aria-hidden="true"></iconify-icon> Simpan sebagai Catatan
+        </button>
+      </div>
+    </div>
+
+    <!-- Statistik Kinerja Cards -->
+    <div id="stats" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:16px;"></div>
+
+    <!-- Tabel Rincian per Kanal -->
+    <section class="lap__card" style="margin-bottom:20px;">
+      <div class="lap__toolbar">
+        <div>
+          <div class="lap__count-label">Performa Publikasi</div>
+          <h2 style="font-size:15px;margin:2px 0 0;">Rincian Metrik per Kanal</h2>
         </div>
       </div>
+      <div class="lap__table-wrap">
+        <table class="lap__table">
+          <thead>
+            <tr>
+              <th>Kanal</th>
+              <th style="text-align:right">Jangkauan</th>
+              <th style="text-align:right">Interaksi</th>
+              <th style="text-align:right">Konversi</th>
+              <th style="text-align:right">Perubahan</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="empty" style="text-align:center;padding:20px;color:var(--color-muted,#5a6875);display:none;">Tidak ada data untuk filter ini.</p>
+    </section>
 
-      <section class="stats" id="stats"></section>
-
-      <section class="box">
-        <h3>Rincian per Kanal</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Kanal</th><th class="r">Jangkauan</th><th class="r">Interaksi</th><th class="r">Konversi</th><th class="r">Perubahan</th></tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
+    <!-- Catatan Tersimpan -->
+    <section class="lap__card">
+      <div class="lap__toolbar">
+        <div>
+          <h2 style="font-size:15px;margin:0;">Catatan Analisis Tersimpan</h2>
+          <p style="font-size:12px;color:var(--color-muted,#5a6875);margin:2px 0 0;">Pencatatan temuan penting untuk evaluasi redaksi bulanan</p>
         </div>
-        <p id="empty" class="muted" hidden>Tidak ada data untuk filter ini.</p>
-      </section>
+      </div>
+      <div id="notes-container" style="display:flex;flex-direction:column;gap:10px;margin-top:12px;"></div>
+    </section>
 
-      <section class="box" style="margin-top:1.5rem;">
-        <h3>Catatan Tersimpan</h3>
-        <ul id="notes" class="notes"></ul>
-      </section>
-
-      <dialog id="note-dialog">
-        <form id="note-form" method="dialog">
-          <h3>Simpan sebagai Catatan</h3>
-          <label>Judul<input id="note-title" required maxlength="120" /></label>
-          <label>Catatan<textarea id="note-body" rows="4" placeholder="Temuan atau tindak lanjut..."></textarea></label>
-          <div class="dlg-actions">
-            <button type="button" id="note-cancel" class="btn-ghost">Batal</button>
-            <button type="submit" class="btn">Simpan</button>
+    <!-- Dialog Simpan Catatan -->
+    <dialog id="note-dialog" class="kb__modal" style="border:none;background:transparent;padding:0;">
+      <div class="kb__dialog" style="max-width:480px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="margin:0;font-size:16px;">Simpan Catatan Temuan</h3>
+          <button type="button" id="note-cancel-x" style="background:none;border:none;cursor:pointer;font-size:16px;">✕</button>
+        </div>
+        <form id="note-form">
+          <div style="margin-bottom:12px;">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Judul Catatan</label>
+            <input id="note-title" class="kb__select" style="width:100%;" required maxlength="120" />
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:12px;font-weight:600;margin-bottom:4px;">Uraian Temuan / Tindak Lanjut</label>
+            <textarea id="note-body" class="kb__select" style="width:100%;height:80px;padding:8px;" placeholder="Temuan atau tindak lanjut..."></textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button type="button" id="note-cancel" class="lap__btn">Batal</button>
+            <button type="submit" class="lap__btn lap__btn--primary">Simpan Catatan</button>
           </div>
         </form>
-      </dialog>
-    </main>
+      </div>
+    </dialog>
+  </main>
 
-    <script define:vars={{ data: mockPerformance }}>
+  <script define:vars={{ data: mockPerformance }}>
+    document.addEventListener('DOMContentLoaded', () => {
       const periodEl = document.getElementById('period');
       const channelEl = document.getElementById('channel');
       const rowsEl = document.getElementById('rows');
@@ -77,140 +130,118 @@ import RoleNavigation from '../components/RoleNavigation.astro';
       const n = (v) => v.toLocaleString('id-ID');
 
       function render() {
+        if (!periodEl || !channelEl || !statsEl || !rowsEl) return;
         const list = data.filter(
           (d) => d.period === periodEl.value && (channelEl.value === 'Semua Kanal' || d.channel === channelEl.value)
         );
-        emptyEl.hidden = list.length > 0;
+        if (emptyEl) emptyEl.style.display = list.length === 0 ? 'block' : 'none';
         const sum = (k) => list.reduce((s, d) => s + d[k], 0);
+
         statsEl.innerHTML = [
           ['Total Jangkauan', n(sum('reach'))],
           ['Total Interaksi', n(sum('engagement'))],
           ['Total Konversi', n(sum('conversions'))],
-        ].map(([l, v]) => `<div class="card"><span class="lbl">${l}</span><strong>${v}</strong></div>`).join('');
+        ].map(([l, v]) => `
+          <div class="lap__card" style="padding:16px;">
+            <span style="font-size:12px;color:var(--color-muted,#5a6875);display:block;margin-bottom:4px;">${l}</span>
+            <strong style="font-size:20px;color:var(--color-primary,#1d5c94);">${v}</strong>
+          </div>
+        `).join('');
+
         rowsEl.innerHTML = list.map((d) => {
           const up = d.delta >= 0;
-          return `<tr><td>${d.channel}</td><td class="r">${n(d.reach)}</td><td class="r">${n(d.engagement)}</td><td class="r">${n(d.conversions)}</td><td class="r ${up ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(d.delta)}%</td></tr>`;
+          return `
+            <tr>
+              <td><strong>${d.channel}</strong></td>
+              <td style="text-align:right">${n(d.reach)}</td>
+              <td style="text-align:right">${n(d.engagement)}</td>
+              <td style="text-align:right">${n(d.conversions)}</td>
+              <td style="text-align:right">
+                <span class="lap__badge ${up ? 'lap__badge--final' : 'lap__badge--draf'}">
+                  ${up ? '▲ +' : '▼ '}${Math.abs(d.delta)}%
+                </span>
+              </td>
+            </tr>
+          `;
         }).join('');
       }
-      // --- Simpan laporan sebagai catatan terhubung ke SQLite API ---
+
+      periodEl?.addEventListener('change', render);
+      channelEl?.addEventListener('change', render);
+      render();
+
+      // Notes handling
       const dlg = document.getElementById('note-dialog');
       const titleEl = document.getElementById('note-title');
       const bodyEl = document.getElementById('note-body');
-      const listEl = document.getElementById('notes');
-      const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+      const notesContainer = document.getElementById('notes-container');
 
       async function renderNotes() {
+        if (!notesContainer) return;
         try {
           const res = await fetch('/api/reports/performance/notes');
-          const data = await res.json();
-          const notes = data.success ? data.notes : [];
-          listEl.innerHTML = notes.length ? notes.map((x) =>
-            `<li><div><strong>${esc(x.title)}</strong><small>${esc(x.meta)} · ${esc(x.date)}</small><p>${esc(x.body || '')}</p></div><button data-id="${x.id}" class="del">Hapus</button></li>`
-          ).join('') : '<li class="muted">Belum ada catatan tersimpan.</li>';
-        } catch (e) {
-          listEl.innerHTML = '<li class="muted">Gagal memuat catatan dari server.</li>';
+          const d = await res.json();
+          const notes = d.success ? d.notes : [];
+          if (notes.length === 0) {
+            notesContainer.innerHTML = '<p style="color:var(--color-muted,#5a6875);font-size:13px;margin:0;">Belum ada catatan tersimpan.</p>';
+            return;
+          }
+          notesContainer.innerHTML = notes.map((x) => `
+            <div style="padding:12px;border-radius:8px;border:1px solid var(--color-border,#ebecee);background:var(--color-canvas,#f8f9fa);display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <strong style="display:block;font-size:13px;">${x.title}</strong>
+                <span style="font-size:11px;color:var(--color-muted,#5a6875);">${x.meta} · ${x.date}</span>
+                <p style="margin:4px 0 0;font-size:12px;">${x.body || ''}</p>
+              </div>
+              <button class="lap__btn btn-del-note" data-id="${x.id}" style="font-size:11px;padding:3px 8px;">Hapus</button>
+            </div>
+          `).join('');
+
+          document.querySelectorAll('.btn-del-note').forEach(b => {
+            b.addEventListener('click', async (e) => {
+              const id = (e.currentTarget as HTMLElement).dataset.id;
+              await fetch(`/api/reports/performance/notes/${id}`, { method: 'DELETE' });
+              renderNotes();
+            });
+          });
+        } catch {
+          notesContainer.innerHTML = '<p style="color:var(--color-muted,#5a6875);font-size:13px;">Gagal memuat catatan.</p>';
         }
       }
 
-      document.getElementById('save-note-btn').addEventListener('click', () => {
-        titleEl.value = `Laporan ${channelEl.value} (${periodEl.options[periodEl.selectedIndex].text})`;
-        bodyEl.value = '';
-        dlg.showModal();
-      });
-
-      document.getElementById('note-cancel').addEventListener('click', () => dlg.close());
-
-      document.getElementById('note-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const payload = {
-          title: titleEl.value.trim(),
-          body: bodyEl.value.trim(),
-          channel: channelEl.value,
-          period: periodEl.value,
-          meta: `${channelEl.value} / ${periodEl.value}`
-        };
-
-        try {
-          const res = await fetch('/api/reports/performance/notes', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          const result = await res.json();
-          if (result.success) {
-            dlg.close();
-            await renderNotes();
-          } else {
-            alert(result.error || 'Gagal menyimpan catatan');
-          }
-        } catch (err) {
-          alert('Terjadi kesalahan jaringan.');
-        }
-      });
-
-      listEl.addEventListener('click', async (e) => {
-        const id = e.target.dataset && e.target.dataset.id;
-        if (!id) return;
-        try {
-          const res = await fetch(`/api/reports/performance/notes/${id}`, { method: 'DELETE' });
-          const result = await res.json();
-          if (result.success) {
-            await renderNotes();
-          }
-        } catch (err) {
-          console.error(err);
-        }
-      });
       renderNotes();
 
-      periodEl.addEventListener('change', render);
-      channelEl.addEventListener('change', render);
-      render();
-    </script>
-  </body>
-</html>
+      document.getElementById('save-note-btn')?.addEventListener('click', () => {
+        if (titleEl && channelEl && periodEl) {
+          titleEl.value = `Laporan ${channelEl.value} (${periodEl.options[periodEl.selectedIndex].text})`;
+        }
+        if (dlg instanceof HTMLDialogElement) dlg.showModal();
+      });
 
-<style is:global>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f8fafc; color: #1e293b; }
-  .top { display: flex; justify-content: space-between; align-items: center; padding: .85rem 1.75rem; background: #0f172a; color: #fff; flex-wrap: wrap; gap: 1rem; }
-  .brand { display: flex; align-items: center; gap: .6rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-  .top nav a { color: #94a3b8; text-decoration: none; font-size: .9rem; }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
-  .head h2 { margin: 0 0 .25rem; }
-  .muted { margin: 0; color: #64748b; font-size: .9rem; }
-  .muted a { color: #0284c7; margin-left: .5rem; }
-  .filters { display: flex; gap: .6rem; }
-  select { font: inherit; padding: .45rem .7rem; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; }
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.1rem; }
-  .card .lbl { display: block; font-size: .8rem; color: #64748b; margin-bottom: .3rem; }
-  .card strong { font-size: 1.3rem; }
-  .box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; }
-  .box h3 { margin: 0 0 1rem; font-size: 1.05rem; }
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  th, td { text-align: left; padding: .65rem .6rem; border-bottom: 1px solid #f1f5f9; }
-  th { color: #64748b; font-size: .75rem; text-transform: uppercase; }
-  .r { text-align: right; white-space: nowrap; }
-  .up { color: #15803d; font-weight: 600; }
-  .down { color: #b91c1c; font-weight: 600; }
-  .btn { font: inherit; background: #0284c7; color: #fff; border: 0; padding: .5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
-  .btn:hover { background: #0369a1; }
-  .btn-ghost { font: inherit; background: #fff; border: 1px solid #cbd5e1; padding: .5rem 1rem; border-radius: 8px; cursor: pointer; }
-  dialog { border: 0; border-radius: 12px; padding: 1.5rem; width: min(480px, 92vw); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
-  dialog::backdrop { background: rgba(15,23,42,.5); }
-  dialog h3 { margin: 0 0 1rem; }
-  dialog label { display: block; font-size: .85rem; color: #475569; margin-bottom: .8rem; }
-  dialog input, dialog textarea { display: block; width: 100%; margin-top: .3rem; font: inherit; padding: .5rem; border: 1px solid #cbd5e1; border-radius: 8px; }
-  .dlg-actions { display: flex; justify-content: flex-end; gap: .6rem; }
-  .notes { list-style: none; margin: 0; padding: 0; }
-  .notes li { display: flex; justify-content: space-between; gap: 1rem; padding: .8rem 0; border-bottom: 1px solid #f1f5f9; }
-  .notes small { display: block; color: #94a3b8; font-size: .75rem; }
-  .notes p { margin: .3rem 0 0; font-size: .85rem; color: #475569; }
-  .del { font: inherit; font-size: .75rem; background: none; border: 1px solid #fecaca; color: #b91c1c; border-radius: 6px; padding: .2rem .6rem; cursor: pointer; align-self: flex-start; }
-</style>
+      document.getElementById('note-cancel')?.addEventListener('click', () => {
+        if (dlg instanceof HTMLDialogElement) dlg.close();
+      });
+      document.getElementById('note-cancel-x')?.addEventListener('click', () => {
+        if (dlg instanceof HTMLDialogElement) dlg.close();
+      });
+
+      document.getElementById('note-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          title: titleEl?.value.trim(),
+          body: bodyEl?.value.trim(),
+          channel: channelEl?.value,
+          period: periodEl?.value,
+          meta: `${channelEl?.value} / ${periodEl?.value}`
+        };
+        await fetch('/api/reports/performance/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (dlg instanceof HTMLDialogElement) dlg.close();
+        renderNotes();
+      });
+    });
+  </script>
+</HumasLayout>

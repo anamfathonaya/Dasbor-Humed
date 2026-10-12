@@ -1,4 +1,5 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import { mockBudgetLines } from '../lib/clientDataFetcher';
 import { formatRupiah, formatPercent } from '../lib/format';
 
@@ -11,23 +12,55 @@ const totalSisa = totalRAB - totalLRA;
 const overallAbsorption = totalRAB > 0 ? (totalLRA / totalRAB) * 100 : 0;
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Salinan Resmi Laporan Anggaran {currentYear} (RAB & LRA) — Dasbor Humas Media</title>
-  </head>
-  <body>
+<HumasLayout
+  title="Salinan Resmi Laporan Anggaran (RAB & LRA) — Humas Internal Peduli Negeri"
+  pageTitle="Salinan Resmi Dokumen & Cetak Laporan"
+  pageSubtitle="Pratinjau format lembar cetak standar berkop resmi yayasan, ekspor PDF, salin tautan, dan distribusi dokumen ke mitra"
+  currentPath="/bagikan-cetak"
+  pageContentId="laporan"
+>
+  <main class="lap-print-preview" data-node-id="laporan.bagikan-cetak">
+    <!-- Sub-Navigasi Modul Laporan Detail -->
+    <div class="no-print" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/laporan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Ringkasan Semua Laporan
+      </a>
+      <a href="/laporan-kinerja" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Kinerja Kanal
+      </a>
+      <a href="/laporan-anggaran" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Anggaran
+      </a>
+      <a href="/daftar-rab-lra" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Daftar RAB & LRA
+      </a>
+      <a href="/laporan-tahunan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Tahunan
+      </a>
+      <a href="/bagikan-cetak" class="lap__mini" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;padding:6px 14px;border-radius:8px;text-decoration:none;">
+        Bagikan & Cetak
+      </a>
+    </div>
+
     <!-- ACTION BAR KHUSUS LAYAR (TIDAK DICETAK) -->
     <div class="screen-action-bar no-print">
       <div class="action-container">
-        <a href="/laporan-anggaran" class="btn-back">← Kembali ke Dasbor</a>
+        <a href="/laporan-anggaran" class="btn-back">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon> Kembali ke Laporan Anggaran
+        </a>
         <div class="action-buttons">
-          <button id="btn-copy-link" class="btn-action">🔗 Salin Tautan</button>
-          <button id="btn-share-modal" class="btn-action" style="background:#0284c7; color:#fff;">📤 Bagikan ke Mitra</button>
-          <a href="/api/reports/export?type=budget&year=2026" class="btn-action" style="text-decoration:none; background:#334155; color:#fff;">📥 Unduh CSV</a>
-          <button id="btn-print" class="btn-primary">🖨️ Cetak / Simpan PDF</button>
+          <button id="btn-copy-link" class="btn-action">
+            <iconify-icon icon="lucide:link" aria-hidden="true"></iconify-icon> Salin Tautan
+          </button>
+          <button id="btn-share-modal" class="btn-action" style="background:var(--color-primary,#1d5c94); color:#fff; border-color:var(--color-primary,#1d5c94);">
+            <iconify-icon icon="lucide:send" aria-hidden="true"></iconify-icon> Bagikan ke Mitra
+          </button>
+          <a href="/api/reports/export?type=budget&year=2026" class="btn-action" style="text-decoration:none; background:#334155; color:#fff;">
+            <iconify-icon icon="lucide:download" aria-hidden="true"></iconify-icon> Unduh CSV
+          </a>
+          <button id="btn-print" class="btn-primary">
+            <iconify-icon icon="lucide:printer" aria-hidden="true"></iconify-icon> Cetak / Simpan PDF
+          </button>
         </div>
       </div>
     </div>
@@ -301,33 +334,22 @@ const overallAbsorption = totalRAB > 0 ? (totalLRA / totalRAB) * 100 : 0;
         setTimeout(() => toast.classList.remove('show'), 2500);
       }
     </script>
-  </body>
-</html>
+  </main>
+</HumasLayout>
 
 <style is:global>
-  * { box-sizing: border-box; }
-  
-  body {
-    margin: 0;
-    font-family: "Segoe UI", Roboto, -apple-system, Arial, sans-serif;
-    background: #f1f5f9;
-    color: #1e293b;
-    line-height: 1.5;
-  }
-
   /* BAR AKSI DI LAYAR */
   .screen-action-bar {
-    background: #0f172a;
-    color: #fff;
-    padding: 0.85rem 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    background: var(--color-surface, #fff);
+    color: var(--color-text, #16202b);
+    padding: 0.85rem 1.25rem;
+    border: 1px solid var(--color-border, #dbe1e8);
+    border-radius: var(--radius-md, 8px);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
   }
   .action-container {
-    max-width: 960px;
-    margin: 0 auto;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -335,13 +357,16 @@ const overallAbsorption = totalRAB > 0 ? (totalLRA / totalRAB) * 100 : 0;
     gap: 0.75rem;
   }
   .btn-back {
-    color: #94a3b8;
+    color: var(--color-text-muted, #5a6875);
     text-decoration: none;
     font-size: 0.88rem;
     font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
   }
   .btn-back:hover {
-    color: #38bdf8;
+    color: var(--color-primary, #1d5c94);
   }
   .action-buttons {
     display: flex;

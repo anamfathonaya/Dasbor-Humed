@@ -1,600 +1,195 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import {
   mockUsers,
-  mockPermissions,
+  mockAuditLogs,
 } from '../lib/clientDataFetcher';
-import RoleNavigation from '../components/RoleNavigation.astro';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Manajemen Akun & Penetapan Peran - Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/pengaturan" />
+<HumasLayout
+  title="Manajemen Akun & Log Audit — Humas Internal Peduli Negeri"
+  pageTitle="Manajemen Akun & Log Audit"
+  pageSubtitle="Manajemen pengguna, hak akses berbasis peran (RBAC), dan pemantauan jejak audit keamanan"
+  currentPath="/manajemen-akun"
+  pageContentId="akun"
+>
+  <main class="akn" data-node-id="akun.main">
+    <!-- Sub Navigasi Pengaturan & Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/pengaturan" class="akn__btn">
+        <iconify-icon icon="lucide:plug-zap" aria-hidden="true"></iconify-icon>Pusat Pengaturan
+      </a>
+      <a href="/manajemen-akun" class="akn__btn" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;">
+        <iconify-icon icon="lucide:users" aria-hidden="true"></iconify-icon>Akun & Hak Akses
+      </a>
+      <a href="/jejak-audit" class="akn__btn">
+        <iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon>Jejak Audit
+      </a>
+      <a href="/profil-akun" class="akn__btn">
+        <iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon>Profil Saya
+      </a>
+    </div>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
+    <!-- Top Bar -->
+    <div class="akn__bar">
+      <p class="akn__bar-text">
+        <b>Pengelolaan Akses Tim:</b> {mockUsers.length} Pengguna terdaftar, otorisasi RBAC aktif, dan jejak audit tersimpan aman.
+      </p>
+      <div class="akn__bar-actions">
+        <a href="/pengaturan" class="akn__btn">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon>Pusat Pengaturan
+        </a>
+        <button class="akn__btn akn__btn--primary" type="button" id="btn-open-add-user">
+          <iconify-icon icon="lucide:user-plus" aria-hidden="true"></iconify-icon>Undang Pengguna Baru
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="akn__kpis">
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Pengguna Aktif</span><span class="akn__badge akn__badge--green">Online</span></div>
+        <div class="akn__kpi-val">{mockUsers.length} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">personil</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Tingkat Peran (RBAC)</span><span class="akn__badge akn__badge--blue">4 Level</span></div>
+        <div class="akn__kpi-val">4 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">tingkatan</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Aktivitas Hari Ini</span><span class="akn__badge akn__badge--blue">Log Audit</span></div>
+        <div class="akn__kpi-val">128 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">event</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Percobaan Gagal (Anomali)</span><span class="akn__badge akn__badge--amber">Terblokir</span></div>
+        <div class="akn__kpi-val">1 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">percobaan</span></div>
+      </div>
+    </div>
+
+    <!-- Tabel Pengguna -->
+    <section class="akn__card">
+      <div class="akn__card-head">
         <div>
-          <div class="breadcrumb">
-            <a href="/pengaturan">Pengaturan</a>
-            <span>/</span>
-            <span>Otorisasi & Akun</span>
-          </div>
-          <h2>Manajemen Akun Pengguna & Penetapan Peran</h2>
-          <p class="muted">
-            Kelola izin hak akses personil tim humas, alokasi peran (RBAC), pengaturan status akun, dan reset kredensial.
-          </p>
-        </div>
-        <div class="actions">
-          <a href="/pengaturan" class="btn btn-secondary">
-            ← Kembali ke Pusat Pengaturan
-          </a>
-          <button class="btn" id="btn-open-user-modal">
-            ➕ Tambah Personil Baru
-          </button>
+          <h2 class="akn__card-title">Daftar Akun Pengguna & Hak Akses</h2>
+          <p class="akn__card-sub">Hak kelola modul konten, persetujuan anggaran, dan administrasi sistem</p>
         </div>
       </div>
 
-      <!-- NOTIFIKASI SUKSES / ERROR -->
-      <div id="user-alert" class="alert-box" hidden>
-        <span id="user-alert-text">Perubahan data akun pengguna berhasil disimpan.</span>
-        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
-      </div>
-
-      <!-- KARTU RINGKASAN DISTRIBUSI PERAN -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Total Akun Terdaftar</span>
-          <strong id="stat-total-users">{mockUsers.length}</strong>
-          <span class="stat-sub">5 Personil Aktif</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Ketua Bidang (Head)</span>
-          <strong>1</strong>
-          <span class="stat-sub">Otorisasi Mutlak & Persetujuan</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Administrator Teknis</span>
-          <strong>1</strong>
-          <span class="stat-sub">Konfigurasi Sistem & Integrasi</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Staf & Peninjau Redaksi</span>
-          <strong>3</strong>
-          <span class="stat-sub">Produksi Konten & Verifikasi</span>
-        </div>
-      </div>
-
-      <!-- FILTER & PENCARIAN -->
-      <div class="filter-card">
-        <div class="filter-row">
-          <div class="search-input-wrap">
-            <input
-              type="text"
-              id="search-user"
-              placeholder="Cari berdasarkan nama, email, atau unit kerja..."
-            />
-          </div>
-          <div class="filter-select-wrap">
-            <select id="filter-role">
-              <option value="all">Semua Peran</option>
-              <option value="head">Ketua Bidang</option>
-              <option value="admin">Administrator Teknis</option>
-              <option value="staff">Staf Konten</option>
-              <option value="reviewer">Peninjau / Editor</option>
-            </select>
-          </div>
-          <div class="filter-select-wrap">
-            <select id="filter-status">
-              <option value="all">Semua Status</option>
-              <option value="active">Aktif</option>
-              <option value="inactive">Nonaktif</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABEL DAFTAR PENGGUNA -->
-      <div class="card">
-        <div class="table-wrap">
-          <table class="data-table" id="users-table">
-            <thead>
-              <tr>
-                <th>Nama Personil</th>
-                <th>Alamat Email</th>
-                <th>Unit / Departemen</th>
-                <th>Tingkat Peran</th>
-                <th>Status Akun</th>
-                <th>Aktivitas Terakhir</th>
-                <th style="text-align: right;">Aksi Cepat</th>
-              </tr>
-            </thead>
-            <tbody id="users-tbody">
-              {mockUsers.map((u) => (
-                <tr data-user-id={u.id} data-role={u.role} data-name={u.name.toLowerCase()} data-email={u.email.toLowerCase()}>
+      <div class="akn__table-wrap">
+        <table class="akn__table">
+          <thead>
+            <tr>
+              <th>Pengguna</th>
+              <th>Peran Lembaga</th>
+              <th>Unit Kerja</th>
+              <th>Status Akun</th>
+              <th>Aktivitas Terakhir</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mockUsers.map(user => {
+              const initials = user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+              const roleBadgeClass = user.role === 'head' ? 'akn__badge--blue' : user.role === 'admin' ? 'akn__badge--blue' : 'akn__badge--green';
+              const roleTitle = user.role === 'head' ? 'Kepala Bagian Humas' : user.role === 'admin' ? 'Administrator Teknis' : user.role === 'reviewer' ? 'Peninjau Redaksi' : 'Staf Konten';
+              return (
+                <tr>
                   <td>
-                    <div class="user-item-cell">
-                      <div class="user-avatar">{u.avatar}</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <span class="akn__avatar">{initials}</span>
                       <div>
-                        <strong>{u.name}</strong>
+                        <strong style="display:block;font-size:13px;">{user.name}</strong>
+                        <span style="font-size:11px;color:var(--color-muted,#5a6875);">{user.email}</span>
                       </div>
                     </div>
                   </td>
-                  <td class="muted-sm">{u.email}</td>
-                  <td>{u.department}</td>
-                  <td>
-                    <select class="role-selector" data-id={u.id}>
-                      <option value="head" selected={u.role === 'head'}>Ketua Bidang (Head)</option>
-                      <option value="admin" selected={u.role === 'admin'}>Admin Teknis</option>
-                      <option value="staff" selected={u.role === 'staff'}>Staf Konten</option>
-                      <option value="reviewer" selected={u.role === 'reviewer'}>Editor & Peninjau</option>
-                    </select>
-                  </td>
-                  <td>
-                    <span class={`badge ${u.status === 'active' ? 'badge-active' : 'badge-inactive'}`}>
-                      ● {u.status === 'active' ? 'Aktif' : 'Nonaktif'}
-                    </span>
-                  </td>
-                  <td class="muted-sm">{u.lastActive}</td>
-                  <td style="text-align: right;">
-                    <button class="btn-table-action btn-edit-user" data-id={u.id} data-name={u.name} data-email={u.email} data-dept={u.department} data-role={u.role}>
-                      Sunting
-                    </button>
-                    <button class="btn-table-action btn-toggle-status" data-id={u.id} data-status={u.status}>
-                      {u.status === 'active' ? 'Bekukan' : 'Aktifkan'}
-                    </button>
-                  </td>
+                  <td><span class={`akn__badge ${roleBadgeClass}`}>{roleTitle}</span></td>
+                  <td>{user.unit || 'Divisi Komunikasi & Publikasi'}</td>
+                  <td><span class="akn__badge akn__badge--green">Aktif</span></td>
+                  <td style="font-size:12px;color:var(--color-muted,#5a6875);">{user.lastActive || 'Baru saja'}</td>
+                  <td><button class="akn__btn btn-manage-user" type="button" data-name={user.name}>Kelola</button></td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tabel Log Audit Keamanan -->
+    <section class="akn__card">
+      <div class="akn__card-head">
+        <div>
+          <h2 class="akn__card-title">Jejak Audit Keamanan Sistem Terbaru</h2>
+          <p class="akn__card-sub">Rekaman kronologis operasi penting, autentikasi, dan perubahan data</p>
         </div>
+        <button class="akn__btn" type="button" id="btn-export-audit">
+          <iconify-icon icon="lucide:download" aria-hidden="true"></iconify-icon>Ekspor Log Audit
+        </button>
       </div>
 
-      <!-- MODAL TAMBAH / SUNTING PENGGUNA -->
-      <dialog id="user-modal" class="custom-dialog">
-        <form id="form-user-modal" method="dialog">
-          <div class="dialog-header">
-            <h3 id="modal-title">Tambah Personil Tim Baru</h3>
-            <button type="button" class="btn-close-modal" id="btn-close-modal">✕</button>
-          </div>
+      <div class="akn__table-wrap">
+        <table class="akn__table">
+          <thead>
+            <tr>
+              <th>Waktu Kejadian</th>
+              <th>Nama Pengguna</th>
+              <th>Tindakan / Operasi</th>
+              <th>Target Objek</th>
+              <th>Alamat IP</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-size:12px;color:var(--color-muted,#5a6875);">11 Okt 2026, 20:35 WIB</td>
+              <td><strong>Budi Santoso</strong> <span style="font-size:11px;color:var(--color-muted,#7a8794);">(Admin)</span></td>
+              <td>Perbaruan Konfigurasi Integrasi</td>
+              <td><code>Akun Google SSO Token (Google AI Pro)</code></td>
+              <td>192.168.1.45 (Kantor)</td>
+              <td><span class="akn__badge akn__badge--green">Sukses</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;color:var(--color-muted,#5a6875);">11 Okt 2026, 19:42 WIB</td>
+              <td><strong>Rani Maulida</strong> <span style="font-size:11px;color:var(--color-muted,#7a8794);">(Kepala Humas)</span></td>
+              <td>Pengesahan Revisi SOP Humas</td>
+              <td><code>SOP-HUMAS-2025-01 (Kanal Krisis)</code></td>
+              <td>180.252.16.89 (VPN Eksternal)</td>
+              <td><span class="akn__badge akn__badge--green">Sukses</span></td>
+            </tr>
+            <tr>
+              <td style="font-size:12px;color:var(--color-muted,#5a6875);">11 Okt 2026, 13:02 WIB</td>
+              <td><strong>Percobaan Tamu</strong> <span style="font-size:11px;color:var(--color-muted,#7a8794);">(Anonim)</span></td>
+              <td>Gagal Autentikasi Pengguna</td>
+              <td><code>admin.backup@pedulinegeri.org (3x Salah)</code></td>
+              <td>114.124.201.33 (Luar Jaringan)</td>
+              <td><span class="akn__badge akn__badge--amber">Gagal / Anomali</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-          <div class="dialog-body">
-            <input type="hidden" id="modal-user-id" />
-
-            <div class="form-group">
-              <label for="modal-name">Nama Lengkap & Gelar</label>
-              <input type="text" id="modal-name" required placeholder="Contoh: Muhammad Ihsan, S.Sos" />
-            </div>
-
-            <div class="form-group">
-              <label for="modal-email">Alamat Email Resmi</label>
-              <input type="email" id="modal-email" required placeholder="nama@pedulinegeri.org" />
-            </div>
-
-            <div class="form-group">
-              <label for="modal-dept">Unit Departemen</label>
-              <input type="text" id="modal-dept" required placeholder="Contoh: Liputan Lapangan & Penulisan" />
-            </div>
-
-            <div class="form-group">
-              <label for="modal-role">Tingkatan Peran (Role Access)</label>
-              <select id="modal-role" required>
-                <option value="staff">Staf Konten & Media (Akses Standar)</option>
-                <option value="reviewer">Editor & Peninjau Naskah</option>
-                <option value="admin">Administrator Teknis & Integrasi</option>
-                <option value="head">Ketua Bidang Humas (Akses Penuh)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="modal-pwd">Kata Sandi Awal (Sementara)</label>
-              <input type="password" id="modal-pwd" placeholder="Kosongkan bila tidak mengubah sandi" />
-            </div>
-          </div>
-
-          <div class="dialog-footer">
-            <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Batal</button>
-            <button type="submit" class="btn" id="btn-save-user">Simpan Personil</button>
-          </div>
-        </form>
-      </dialog>
-    </main>
-
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-      }
-
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 1.75rem;
-        background: #0f172a;
-        color: #fff;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .brand { display: flex; align-items: center; gap: 0.6rem; }
-      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-      .top nav a.active, .top nav a:hover { color: #38bdf8; }
-      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
-
-      main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-      .head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
-      .breadcrumb {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-bottom: 0.25rem;
-        display: flex;
-        gap: 0.4rem;
-        align-items: center;
-      }
-      .breadcrumb a { color: #0284c7; text-decoration: none; }
-      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
-      .muted-sm { font-size: 0.8rem; color: #64748b; }
-
-      .actions { display: flex; gap: 0.6rem; }
-      .btn {
-        font: inherit;
-        background: #0284c7;
-        color: #fff;
-        border: 0;
-        padding: 0.55rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.15s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.88rem;
-      }
-      .btn:hover { background: #0369a1; }
-      .btn-secondary {
-        background: #fff;
-        border: 1px solid #cbd5e1;
-        color: #334155;
-      }
-      .btn-secondary:hover { background: #f1f5f9; }
-
-      /* Stat cards */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .stat-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.15rem;
-      }
-      .stat-label { display: block; font-size: 0.78rem; color: #64748b; margin-bottom: 0.25rem; }
-      .stat-card strong { font-size: 1.5rem; color: #0f172a; }
-      .stat-sub { display: block; font-size: 0.75rem; color: #64748b; margin-top: 0.35rem; }
-
-      /* Filter */
-      .filter-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-      }
-      .filter-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
-        .filter-row { grid-template-columns: 1fr; }
-      }
-      .search-input-wrap input, .filter-select-wrap select {
-        width: 100%;
-        font: inherit;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.88rem;
-      }
-
-      /* Card & Table */
-      .card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .table-wrap { overflow-x: auto; }
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.88rem;
-      }
-      .data-table th {
-        background: #f8fafc;
-        padding: 0.75rem 1rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: #475569;
-        border-bottom: 1px solid #e2e8f0;
-        font-weight: 700;
-      }
-      .data-table td {
-        padding: 0.85rem 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        vertical-align: middle;
-      }
-      .data-table tr:hover td { background: #f8fafc; }
-
-      .user-item-cell {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-      }
-      .user-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: #e0f2fe;
-        color: #0369a1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.8rem;
-      }
-
-      .role-selector {
-        font: inherit;
-        padding: 0.35rem 0.5rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        background: #ffffff;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.2rem 0.55rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .badge-active { background: #dcfce7; color: #166534; }
-      .badge-inactive { background: #fee2e2; color: #991b1b; }
-
-      .btn-table-action {
-        font: inherit;
-        background: none;
-        border: none;
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #0284c7;
-        cursor: pointer;
-        padding: 0.2rem 0.5rem;
-      }
-      .btn-table-action:hover { text-decoration: underline; }
-
-      /* Dialog Modal */
-      .custom-dialog {
-        border: none;
-        border-radius: 12px;
-        padding: 0;
-        width: 100%;
-        max-width: 500px;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      }
-      .custom-dialog::backdrop {
-        background: rgba(15, 23, 42, 0.5);
-      }
-      .dialog-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      .dialog-header h3 { margin: 0; font-size: 1.15rem; color: #0f172a; }
-      .btn-close-modal { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #64748b; }
-      .dialog-body {
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-      }
-      .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-      .form-group label { font-size: 0.8rem; font-weight: 600; color: #475569; }
-      .form-group input, .form-group select {
-        font: inherit;
-        padding: 0.55rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.9rem;
-      }
-      .dialog-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 0.5rem;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid #f1f5f9;
-        background: #f8fafc;
-      }
-
-      /* Alert */
-      .alert-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        margin-bottom: 1.5rem;
-      }
-      .btn-alert-close { background: none; border: none; font-size: 1rem; color: inherit; cursor: pointer; }
-    </style>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const alertBox = document.getElementById('user-alert');
-        const alertText = document.getElementById('user-alert-text');
-        const btnCloseAlert = document.getElementById('btn-close-alert');
-
-        function notify(msg: string) {
-          if (alertBox && alertText) {
-            alertText.textContent = msg;
-            alertBox.hidden = false;
-            setTimeout(() => { alertBox.hidden = true; }, 3500);
-          }
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btn-open-add-user')?.addEventListener('click', () => {
+        const email = prompt('Masukkan alamat email staf baru yang ingin diundang:');
+        if (email) {
+          alert(`Undangan aktivasi akun berhasil dikirimkan ke ${email}`);
         }
+      });
 
-        btnCloseAlert?.addEventListener('click', () => {
-          if (alertBox) alertBox.hidden = true;
-        });
+      document.getElementById('btn-export-audit')?.addEventListener('click', () => {
+        alert('Mengunduh rekaman audit log format CSV...');
+      });
 
-        // Filter & Search table
-        const searchInput = document.getElementById('search-user') as HTMLInputElement | null;
-        const roleFilter = document.getElementById('filter-role') as HTMLSelectElement | null;
-        const statusFilter = document.getElementById('filter-status') as HTMLSelectElement | null;
-        const rows = document.querySelectorAll('#users-tbody tr');
-
-        function applyFilters() {
-          const q = (searchInput?.value || '').toLowerCase().trim();
-          const r = roleFilter?.value || 'all';
-          const s = statusFilter?.value || 'all';
-
-          rows.forEach((row) => {
-            const name = row.getAttribute('data-name') || '';
-            const email = row.getAttribute('data-email') || '';
-            const role = row.getAttribute('data-role') || '';
-            const statusBadge = row.querySelector('.badge')?.textContent || '';
-            const isInactive = statusBadge.includes('Nonaktif');
-
-            const matchQuery = !q || name.includes(q) || email.includes(q);
-            const matchRole = r === 'all' || role === r;
-            const matchStatus = s === 'all' || (s === 'active' && !isInactive) || (s === 'inactive' && isInactive);
-
-            if (matchQuery && matchRole && matchStatus) {
-              (row as HTMLElement).style.display = '';
-            } else {
-              (row as HTMLElement).style.display = 'none';
-            }
-          });
-        }
-
-        searchInput?.addEventListener('input', applyFilters);
-        roleFilter?.addEventListener('change', applyFilters);
-        statusFilter?.addEventListener('change', applyFilters);
-
-        // Instant role selector change in table
-        document.querySelectorAll('.role-selector').forEach((sel) => {
-          sel.addEventListener('change', (e) => {
-            const selectEl = e.currentTarget as HTMLSelectElement;
-            const userId = selectEl.getAttribute('data-id');
-            const newRoleName = selectEl.options[selectEl.selectedIndex].text;
-            notify(`Peran pengguna (${userId}) berhasil diubah menjadi: ${newRoleName}`);
-          });
-        });
-
-        // Toggle user status (freeze/activate)
-        document.querySelectorAll('.btn-toggle-status').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const btnEl = e.currentTarget as HTMLButtonElement;
-            const row = btnEl.closest('tr');
-            const badge = row?.querySelector('.badge');
-            const currentStatus = btnEl.getAttribute('data-status');
-
-            if (currentStatus === 'active') {
-              btnEl.setAttribute('data-status', 'inactive');
-              btnEl.textContent = 'Aktifkan';
-              if (badge) {
-                badge.className = 'badge badge-inactive';
-                badge.textContent = '● Nonaktif';
-              }
-              notify('Akun personil berhasil dibekukan sementara.');
-            } else {
-              btnEl.setAttribute('data-status', 'active');
-              btnEl.textContent = 'Bekukan';
-              if (badge) {
-                badge.className = 'badge badge-active';
-                badge.textContent = '● Aktif';
-              }
-              notify('Akun personil berhasil diaktifkan kembali.');
-            }
-          });
-        });
-
-        // Dialog Modal Logic
-        const modal = document.getElementById('user-modal') as HTMLDialogElement | null;
-        const modalTitle = document.getElementById('modal-title');
-        const modalUserId = document.getElementById('modal-user-id') as HTMLInputElement | null;
-        const modalName = document.getElementById('modal-name') as HTMLInputElement | null;
-        const modalEmail = document.getElementById('modal-email') as HTMLInputElement | null;
-        const modalDept = document.getElementById('modal-dept') as HTMLInputElement | null;
-        const modalRole = document.getElementById('modal-role') as HTMLSelectElement | null;
-        const formModal = document.getElementById('form-user-modal');
-
-        document.getElementById('btn-open-user-modal')?.addEventListener('click', () => {
-          if (modalTitle) modalTitle.textContent = 'Tambah Personil Tim Baru';
-          if (modalUserId) modalUserId.value = '';
-          if (modalName) modalName.value = '';
-          if (modalEmail) modalEmail.value = '';
-          if (modalDept) modalDept.value = '';
-          if (modalRole) modalRole.value = 'staff';
-          modal?.showModal();
-        });
-
-        document.querySelectorAll('.btn-edit-user').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            const el = e.currentTarget as HTMLElement;
-            if (modalTitle) modalTitle.textContent = 'Sunting Data Personil';
-            if (modalUserId) modalUserId.value = el.getAttribute('data-id') || '';
-            if (modalName) modalName.value = el.getAttribute('data-name') || '';
-            if (modalEmail) modalEmail.value = el.getAttribute('data-email') || '';
-            if (modalDept) modalDept.value = el.getAttribute('data-dept') || '';
-            if (modalRole) modalRole.value = el.getAttribute('data-role') || 'staff';
-            modal?.showModal();
-          });
-        });
-
-        document.getElementById('btn-close-modal')?.addEventListener('click', () => modal?.close());
-        document.getElementById('btn-cancel-modal')?.addEventListener('click', () => modal?.close());
-
-        formModal?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          modal?.close();
-          notify('Data personil tim berhasil disimpan ke sistem.');
+      document.querySelectorAll('.btn-manage-user').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const name = target.dataset.name || 'Pengguna';
+          alert(`Membuka modal pengelolaan hak akses untuk ${name}`);
         });
       });
-    </script>
-  </body>
-</html>
+    });
+  </script>
+</HumasLayout>

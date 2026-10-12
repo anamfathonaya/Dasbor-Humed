@@ -1,0 +1,342 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+---
+
+<HumasLayout
+  title="Laporan — Humas Internal Peduli Negeri"
+  pageTitle="Laporan Kinerja & Anggaran"
+  pageSubtitle="Laporan kinerja komunikasi berkala, rekap akuntabilitas anggaran, dan ekspor dokumen"
+  currentPath="/laporan"
+  pageContentId="laporan"
+>
+  <main class="lap" data-node-id="laporan.main">
+    <!-- Sub-Navigasi Modul Laporan Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/laporan" class="lap__mini" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;padding:6px 14px;border-radius:8px;text-decoration:none;">
+        Ringkasan Semua Laporan
+      </a>
+      <a href="/laporan-kinerja" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Kinerja Kanal
+      </a>
+      <a href="/laporan-anggaran" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Anggaran
+      </a>
+      <a href="/daftar-rab-lra" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Daftar RAB & LRA
+      </a>
+      <a href="/laporan-tahunan" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Laporan Tahunan
+      </a>
+      <a href="/bagikan-cetak" class="lap__mini" style="padding:6px 14px;border-radius:8px;text-decoration:none;border:1px solid var(--color-border,#dbe1e8);background:var(--color-surface,#fff);color:var(--color-text,#16202b);">
+        Bagikan & Cetak
+      </a>
+    </div>
+
+    <div class="lap__layout">
+      <!-- Tabel Laporan -->
+      <section class="lap__card" aria-labelledby="daftar-laporan">
+        <div class="lap__toolbar">
+          <div>
+            <div class="lap__count-label">Total laporan terdaftar</div>
+            <div class="lap__count" data-part="jumlah" id="lap-total">6 laporan</div>
+          </div>
+          <div class="lap__filters">
+            <label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Saring status</label>
+            <select class="lap__select" id="filter-status" data-action="saring-status" aria-label="Saring status">
+              <option value="all">Semua status</option>
+              <option value="final">Final</option>
+              <option value="tinjau">Menunggu tinjauan</option>
+              <option value="draf">Draf</option>
+            </select>
+            <select class="lap__select" id="filter-periode" data-action="saring-periode" aria-label="Saring periode">
+              <option value="all">Semua periode</option>
+              <option value="Juni 2026">Juni 2026</option>
+              <option value="Mei 2026">Mei 2026</option>
+              <option value="Triwulan II 2026">Triwulan II 2026</option>
+            </select>
+            <button class="lap__btn lap__btn--primary" type="button" id="btn-tambah-laporan" data-action="laporan-baru">
+              <iconify-icon icon="lucide:plus" aria-hidden="true"></iconify-icon> Laporan baru
+            </button>
+          </div>
+        </div>
+
+        <div class="lap__scroll">
+          <table class="lap__table">
+            <caption style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" id="daftar-laporan">Daftar laporan kinerja komunikasi</caption>
+            <thead>
+              <tr>
+                <th scope="col">Judul Laporan</th>
+                <th scope="col" class="lap__col-periode">Periode</th>
+                <th scope="col" class="lap__col-bidang">Cakupan Bidang</th>
+                <th scope="col" class="lap__col-penyusun">Penyusun</th>
+                <th scope="col" class="lap__col-status">Status</th>
+                <th scope="col" class="lap__col-tanggal">Diperbarui</th>
+                <th scope="col" class="lap__col-aksi">Aksi</th>
+              </tr>
+            </thead>
+            <tbody data-part="baris" id="lap-table-body">
+              <tr data-row data-status="final" data-periode="Juni 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Kinerja Kanal Juni</strong>
+                  <span>Jangkauan, interaksi, dan pertumbuhan pengikut</span>
+                </td>
+                <td class="lap__num">Juni 2026</td>
+                <td>Seluruh bidang</td>
+                <td>Rani Maulida</td>
+                <td><span class="lap__badge lap__badge--final">Final</span></td>
+                <td class="lap__num">12 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau" disabled>Final</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-row data-status="tinjau" data-periode="Juni 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Kampanye Donasi Ramadan</strong>
+                  <span>Realisasi donasi daring dan belanja iklan Meta</span>
+                </td>
+                <td class="lap__num">Juni 2026</td>
+                <td>Fundraising</td>
+                <td>Budi Santoso</td>
+                <td><span class="lap__badge lap__badge--tinjau">Menunggu tinjauan</span></td>
+                <td class="lap__num">11 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau">Jadikan final</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-row data-status="draf" data-periode="Juni 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Kegiatan Penyaluran Wilayah</strong>
+                  <span>Rekap kunjungan posko dan dokumentasi lapangan</span>
+                </td>
+                <td class="lap__num">Juni 2026</td>
+                <td>Penyaluran-Edukasi</td>
+                <td>Dewi Lestari</td>
+                <td><span class="lap__badge lap__badge--draf">Draf</span></td>
+                <td class="lap__num">10 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau">Jadikan final</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-row data-status="final" data-periode="Mei 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Kinerja Kanal Mei</strong>
+                  <span>Perbandingan capaian bulanan dan evaluasi ROI</span>
+                </td>
+                <td class="lap__num">Mei 2026</td>
+                <td>Seluruh bidang</td>
+                <td>Rani Maulida</td>
+                <td><span class="lap__badge lap__badge--final">Final</span></td>
+                <td class="lap__num">08 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau" disabled>Final</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-row data-status="draf" data-periode="Triwulan II 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Keuangan Komunikasi Q2</strong>
+                  <span>Realisasi anggaran RAB, LRA, dan efisiensi iklan</span>
+                </td>
+                <td class="lap__num">Triwulan II 2026</td>
+                <td>Keuangan</td>
+                <td>Budi Santoso</td>
+                <td><span class="lap__badge lap__badge--draf">Draf</span></td>
+                <td class="lap__num">09 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau">Jadikan final</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-row data-status="tinjau" data-periode="Mei 2026">
+                <td class="lap__title-cell">
+                  <strong>Laporan Penanganan Isu Publik</strong>
+                  <span>Pemantauan berita media dan respon klarifikasi</span>
+                </td>
+                <td class="lap__num">Mei 2026</td>
+                <td>BPH</td>
+                <td>Rani Maulida</td>
+                <td><span class="lap__badge lap__badge--tinjau">Menunggu tinjauan</span></td>
+                <td class="lap__num">05 Jun 2026</td>
+                <td>
+                  <div class="lap__row-actions">
+                    <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+                    <button class="lap__mini" type="button" data-action="tinjau">Jadikan final</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="lap__empty" id="lap-empty" data-part="kosong" hidden>Tidak ada laporan yang cocok dengan saringan ini.</p>
+        </div>
+      </section>
+
+      <!-- Panel Samping: Terjadwal & Template -->
+      <div class="lap__side">
+        <section class="lap__panel" aria-labelledby="terjadwal-title">
+          <h2 id="terjadwal-title">Laporan Otomatis Terjadwal</h2>
+          <div class="lap__list">
+            <div class="lap__list-item"><strong>Ringkasan Harian Media</strong><span>Setiap hari, 17.00 WIB</span></div>
+            <div class="lap__list-item"><strong>Laporan Pekanan Kanal</strong><span>Setiap Senin, 09.00 WIB</span></div>
+            <div class="lap__list-item"><strong>Laporan Bulanan Pimpinan</strong><span>Tanggal 5, 10.00 WIB</span></div>
+          </div>
+        </section>
+
+        <section class="lap__panel" aria-labelledby="template-title">
+          <h2 id="template-title">Template Dokumen Resmi</h2>
+          <div class="lap__list">
+            <div class="lap__list-item"><strong>Format Kinerja Kanal</strong><span>Jangkauan, impresi, engagement</span></div>
+            <div class="lap__list-item"><strong>Format Laporan Anggaran (RAB & LRA)</strong><span>Realisasi belanja dan selisih</span></div>
+            <div class="lap__list-item"><strong>Format Berita Acara Liputan</strong><span>Dokumentasi posko & serah terima</span></div>
+            <div class="lap__list-item"><strong>Format Tanggapan Krisis Media</strong><span>Pedoman hak jawab dan rilis</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Modal Form Tambah Laporan Baru -->
+    <div class="lap__modal" id="modal-laporan" data-part="modal" hidden>
+      <div class="lap__dialog" role="dialog" aria-modal="true" aria-labelledby="lap-modal-title">
+        <h2 id="lap-modal-title">Buat Laporan Baru</h2>
+        <form id="form-laporan" data-action="form-laporan">
+          <label class="lap__field">Judul laporan
+            <input name="judul" id="lap-judul" required placeholder="mis. Laporan Kinerja Humas Triwulan II" />
+          </label>
+          <label class="lap__field">Periode
+            <input name="periode" id="lap-periode-input" required placeholder="mis. Juni 2026" value="Juni 2026" />
+          </label>
+          <label class="lap__field">Cakupan bidang
+            <select name="bidang" id="lap-bidang">
+              <option value="Seluruh bidang">Seluruh bidang</option>
+              <option value="Operasional">Operasional</option>
+              <option value="Keuangan">Keuangan</option>
+              <option value="Fundraising">Fundraising</option>
+              <option value="Penyaluran-Edukasi">Penyaluran-Edukasi</option>
+              <option value="BPH">BPH</option>
+              <option value="Donatur">Donatur</option>
+              <option value="Wilayah">Wilayah</option>
+            </select>
+          </label>
+          <div class="lap__actions">
+            <button class="lap__btn" type="button" id="btn-tutup-lap-modal" data-action="tutup-modal">Batal</button>
+            <button class="lap__btn lap__btn--primary" type="submit">Simpan sebagai draf</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const filterStatus = document.getElementById('filter-status');
+      const filterPeriode = document.getElementById('filter-periode');
+      const tableBody = document.getElementById('lap-table-body');
+      const emptyText = document.getElementById('lap-empty');
+      const totalCount = document.getElementById('lap-total');
+      const modal = document.getElementById('modal-laporan');
+      const form = document.getElementById('form-laporan');
+
+      function applyFilter() {
+        const st = filterStatus.value;
+        const per = filterPeriode.value;
+        let visible = 0;
+
+        tableBody.querySelectorAll('tr').forEach((row) => {
+          const matchSt = st === 'all' || row.getAttribute('data-status') === st;
+          const matchPer = per === 'all' || row.getAttribute('data-periode') === per;
+          const show = matchSt && matchPer;
+          row.hidden = !show;
+          if (show) visible++;
+        });
+
+        if (totalCount) totalCount.textContent = `${visible} laporan`;
+        if (emptyText) emptyText.hidden = visible !== 0;
+      }
+
+      filterStatus?.addEventListener('change', applyFilter);
+      filterPeriode?.addEventListener('change', applyFilter);
+
+      document.getElementById('btn-tambah-laporan')?.addEventListener('click', () => {
+        modal.hidden = false;
+        document.getElementById('lap-judul')?.focus();
+      });
+
+      document.getElementById('btn-tutup-lap-modal')?.addEventListener('click', () => {
+        modal.hidden = true;
+      });
+
+      tableBody?.addEventListener('click', (e) => {
+        const btnUnduh = e.target.closest('[data-action="unduh"]');
+        if (btnUnduh) {
+          alert('Mengunduh berkas laporan format PDF & ringkasan eksekutif...');
+        }
+        const btnTinjau = e.target.closest('[data-action="tinjau"]');
+        if (btnTinjau && !btnTinjau.disabled) {
+          const row = btnTinjau.closest('tr');
+          if (row) {
+            row.setAttribute('data-status', 'final');
+            const badge = row.querySelector('.lap__badge');
+            if (badge) {
+              badge.className = 'lap__badge lap__badge--final';
+              badge.textContent = 'Final';
+            }
+            btnTinjau.disabled = true;
+            btnTinjau.textContent = 'Final';
+            applyFilter();
+            alert('Status laporan telah diperbarui menjadi FINAL.');
+          }
+        }
+      });
+
+      form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const judul = document.getElementById('lap-judul').value.trim();
+        const periode = document.getElementById('lap-periode-input').value.trim();
+        const bidang = document.getElementById('lap-bidang').value;
+
+        if (!judul) return;
+
+        const tr = document.createElement('tr');
+        tr.setAttribute('data-row', '');
+        tr.setAttribute('data-status', 'draf');
+        tr.setAttribute('data-periode', periode);
+        tr.innerHTML = `
+          <td class="lap__title-cell">
+            <strong>${judul}</strong>
+            <span>Laporan baru dalam penyusunan</span>
+          </td>
+          <td class="lap__num">${periode}</td>
+          <td>${bidang}</td>
+          <td>Admin Humas</td>
+          <td><span class="lap__badge lap__badge--draf">Draf</span></td>
+          <td class="lap__num">Hari ini</td>
+          <td>
+            <div class="lap__row-actions">
+              <button class="lap__mini" type="button" data-action="unduh">Unduh PDF</button>
+              <button class="lap__mini" type="button" data-action="tinjau">Jadikan final</button>
+            </div>
+          </td>
+        `;
+
+        tableBody.prepend(tr);
+        form.reset();
+        modal.hidden = true;
+        applyFilter();
+      });
+
+      applyFilter();
+    });
+  </script>
+</HumasLayout>

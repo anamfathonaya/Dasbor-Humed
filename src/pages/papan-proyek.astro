@@ -1,632 +1,462 @@
 ---
-import {
-  mockProjects,
-  mockStageLabels as stageLabels,
-} from '../lib/clientDataFetcher';
-import RoleNavigation from '../components/RoleNavigation.astro';
-
-const stages = ['todo', 'in_progress', 'review', 'done'] as const;
+import HumasLayout from '../layouts/HumasLayout.astro';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Papan Proyek — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/papan-proyek" />
+<HumasLayout
+  title="Papan Proyek — Humas Internal Peduli Negeri"
+  pageTitle="Papan Proyek"
+  pageSubtitle="Produksi konten multi-bidang, alur peliputan, dan penugasan tim kreatif"
+  currentPath="/papan-proyek"
+  pageContentId="papan-proyek"
+>
+  <main class="papan" data-node-id="papan.main">
+    <!-- Baris Statistik & Filter Papan -->
+    <div class="papan__bar" data-node-id="papan.bar">
+      <div class="papan__stat"><b data-part="stat-total" id="stat-total">12</b><span>Kartu aktif</span></div>
+      <div class="papan__stat"><b data-part="stat-late" id="stat-late">3</b><span>Mendekati tenggat</span></div>
+      <div class="papan__stat"><b data-part="stat-done" id="stat-done">8</b><span>Selesai bulan ini</span></div>
+      <div class="papan__filter">
+        <label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Saring bidang</label>
+        <select class="papan__select" id="filter-bidang" data-action="filter-bidang" aria-label="Saring bidang">
+          <option value="all">Semua bidang</option>
+          <option value="operasional">Operasional</option>
+          <option value="keuangan">Keuangan</option>
+          <option value="fundraising">Fundraising</option>
+          <option value="penyaluran">Penyaluran-Edukasi</option>
+          <option value="bph">BPH</option>
+          <option value="wilayah">Wilayah</option>
+        </select>
+        <select class="papan__select" id="filter-platform" data-action="filter-platform" aria-label="Saring platform">
+          <option value="all">Semua platform</option>
+          <option value="instagram">Instagram</option>
+          <option value="whatsapp">WhatsApp</option>
+          <option value="facebook">Facebook</option>
+          <option value="youtube">YouTube</option>
+          <option value="internal">Kebutuhan internal</option>
+        </select>
+        <button class="papan__btn papan__btn--primary" type="button" id="btn-tambah-kartu" data-action="tambah-kartu">
+          <iconify-icon icon="lucide:plus" aria-hidden="true"></iconify-icon> Tugas baru
+        </button>
+      </div>
+    </div>
 
-    <main>
-      <div class="head">
-        <div>
-          <h2>Monitoring Proyek Berjalan</h2>
-          <span class="muted">Pantau tahapan kerja, progres tim, dan jadwal eksekusi</span>
-        </div>
-        <div class="view-toggles" role="tablist" aria-label="Pilihan Tampilan">
-          <button id="toggle-kanban" class="active" role="tab">Papan Kanban</button>
-          <button id="toggle-timeline" role="tab">Timeline / Gantt</button>
-          <button id="toggle-people" role="tab">Daftar per Anggota</button>
-        </div>
+    <!-- Papan Kanban & Panel Samping -->
+    <div class="papan__layout">
+      <div class="papan__board" data-part="board" id="kanban-board">
+        <!-- Kolom 1: Permintaan Masuk -->
+        <section class="papan__col" data-col="masuk" aria-labelledby="col-masuk">
+          <div class="papan__col-head">
+            <h2 class="papan__col-title" id="col-masuk">Permintaan Masuk</h2>
+            <span class="papan__count" data-part="count-masuk" id="count-masuk">3</span>
+          </div>
+          <div class="papan__cards" data-cards="masuk" id="cards-masuk">
+            <article class="papan__card" data-card data-stage="masuk" data-platform="internal" data-bidang="fundraising">
+              <span class="papan__tag papan__tag--internal">Kebutuhan internal</span>
+              <h3 class="papan__card-title">Desain proposal program beasiswa anak</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Fundraising</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>15 Jun</span>
+                <span class="papan__pri papan__pri--high">Prioritas tinggi</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur" disabled>Kembali</button>
+                <button type="button" data-action="maju">Kerjakan</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="masuk" data-platform="instagram" data-bidang="penyaluran">
+              <span class="papan__tag papan__tag--ig">Instagram · Reels</span>
+              <h3 class="papan__card-title">Reels penyaluran air bersih Sumba</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Penyaluran-Edukasi</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>18 Jun</span>
+                <span class="papan__pri papan__pri--mid">Prioritas sedang</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur" disabled>Kembali</button>
+                <button type="button" data-action="maju">Kerjakan</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="masuk" data-platform="facebook" data-bidang="operasional">
+              <span class="papan__tag papan__tag--fb">Facebook · Carousel</span>
+              <h3 class="papan__card-title">Carousel rangkuman kunjungan donatur yayasan</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Operasional</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>20 Jun</span>
+                <span class="papan__pri papan__pri--low">Prioritas rendah</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur" disabled>Kembali</button>
+                <button type="button" data-action="maju">Kerjakan</button>
+              </div>
+            </article>
+          </div>
+          <p class="papan__empty" data-empty="masuk" hidden>Tidak ada kartu pada tahap ini.</p>
+        </section>
+
+        <!-- Kolom 2: Dikerjakan -->
+        <section class="papan__col" data-col="kerja" aria-labelledby="col-kerja">
+          <div class="papan__col-head">
+            <h2 class="papan__col-title" id="col-kerja">Sedang Dikerjakan</h2>
+            <span class="papan__count" data-part="count-kerja" id="count-kerja">3</span>
+          </div>
+          <div class="papan__cards" data-cards="kerja" id="cards-kerja">
+            <article class="papan__card" data-card data-stage="kerja" data-platform="youtube" data-bidang="penyaluran">
+              <span class="papan__tag papan__tag--yt">YouTube · Video panjang</span>
+              <h3 class="papan__card-title">Dokumenter penyaluran logistik bencana</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Penyaluran-Edukasi</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>21 Jun</span>
+                <span class="papan__pri papan__pri--high">Prioritas tinggi</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Tinjau</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="kerja" data-platform="whatsapp" data-bidang="fundraising">
+              <span class="papan__tag papan__tag--wa">WhatsApp · Pesan CRM</span>
+              <h3 class="papan__card-title">Broadcast kampanye peduli gizi balita</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Fundraising</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>16 Jun</span>
+                <span class="papan__pri papan__pri--high">Prioritas tinggi</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Tinjau</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="kerja" data-platform="internal" data-bidang="keuangan">
+              <span class="papan__tag papan__tag--internal">Kebutuhan internal</span>
+              <h3 class="papan__card-title">Desain laporan akuntabilitas triwulan II</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Keuangan</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>24 Jun</span>
+                <span class="papan__pri papan__pri--mid">Prioritas sedang</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Tinjau</button>
+              </div>
+            </article>
+          </div>
+          <p class="papan__empty" data-empty="kerja" hidden>Tidak ada kartu pada tahap ini.</p>
+        </section>
+
+        <!-- Kolom 3: Menunggu Persetujuan -->
+        <section class="papan__col" data-col="tinjau" aria-labelledby="col-tinjau">
+          <div class="papan__col-head">
+            <h2 class="papan__col-title" id="col-tinjau">Menunggu Persetujuan</h2>
+            <span class="papan__count" data-part="count-tinjau" id="count-tinjau">3</span>
+          </div>
+          <div class="papan__cards" data-cards="tinjau" id="cards-tinjau">
+            <article class="papan__card" data-card data-stage="tinjau" data-platform="instagram" data-bidang="bph">
+              <span class="papan__tag papan__tag--ig">Instagram · Story</span>
+              <h3 class="papan__card-title">Story sambutan pimpinan yayasan</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>BPH</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>14 Jun</span>
+                <span class="papan__pri papan__pri--mid">Prioritas sedang</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Selesai</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="tinjau" data-platform="youtube" data-bidang="wilayah">
+              <span class="papan__tag papan__tag--yt">YouTube · Video pendek</span>
+              <h3 class="papan__card-title">After movie kegiatan relawan posko Jabar</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Wilayah</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>19 Jun</span>
+                <span class="papan__pri papan__pri--low">Prioritas rendah</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Selesai</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="tinjau" data-platform="facebook" data-bidang="donatur">
+              <span class="papan__tag papan__tag--fb">Facebook · Video</span>
+              <h3 class="papan__card-title">Kisah inspiratif relawan medis 5 tahun</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Donatur</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>22 Jun</span>
+                <span class="papan__pri papan__pri--mid">Prioritas sedang</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju">Selesai</button>
+              </div>
+            </article>
+          </div>
+          <p class="papan__empty" data-empty="tinjau" hidden>Tidak ada kartu pada tahap ini.</p>
+        </section>
+
+        <!-- Kolom 4: Selesai -->
+        <section class="papan__col" data-col="selesai" aria-labelledby="col-selesai">
+          <div class="papan__col-head">
+            <h2 class="papan__col-title" id="col-selesai">Selesai</h2>
+            <span class="papan__count" data-part="count-selesai" id="count-selesai">3</span>
+          </div>
+          <div class="papan__cards" data-cards="selesai" id="cards-selesai">
+            <article class="papan__card" data-card data-stage="selesai" data-platform="instagram" data-bidang="operasional">
+              <span class="papan__tag papan__tag--ig">Instagram · Single post</span>
+              <h3 class="papan__card-title">Posting ucapan Hari Lingkungan Hidup</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Operasional</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>12 Jun</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju" disabled>Selesai</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="selesai" data-platform="internal" data-bidang="keuangan">
+              <span class="papan__tag papan__tag--internal">Kebutuhan internal</span>
+              <h3 class="papan__card-title">Set desain program bantuan pendidikan</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Keuangan</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>10 Jun</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju" disabled>Selesai</button>
+              </div>
+            </article>
+
+            <article class="papan__card" data-card data-stage="selesai" data-platform="whatsapp" data-bidang="fundraising">
+              <span class="papan__tag papan__tag--wa">WhatsApp · Status</span>
+              <h3 class="papan__card-title">Status update penyaluran pekan kedua</h3>
+              <div class="papan__meta">
+                <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>Fundraising</span>
+                <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>11 Jun</span>
+              </div>
+              <div class="papan__move">
+                <button type="button" data-action="mundur">Kembali</button>
+                <button type="button" data-action="maju" disabled>Selesai</button>
+              </div>
+            </article>
+          </div>
+          <p class="papan__empty" data-empty="selesai" hidden>Tidak ada kartu pada tahap ini.</p>
+        </section>
       </div>
 
-      <div class="filter-bar">
-        <label>Pilih Proyek:
-          <select id="project-filter">
-            <option value="all">Semua Proyek Aktif</option>
-            {mockProjects.map(p => (
-              <option value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </label>
-        <label>Penanggung Jawab:
-          <select id="assignee-filter">
-            <option value="all">Semua Anggota Tim</option>
-            <option value="Dewi">Dewi</option>
-            <option value="Budi">Budi</option>
-            <option value="Sari">Sari</option>
-            <option value="Rani">Rani</option>
-          </select>
-        </label>
+      <!-- Panel Samping: Beban Kerja & Log Aktivitas -->
+      <div class="papan__side">
+        <section class="papan__panel" aria-labelledby="beban-title">
+          <h2 id="beban-title">Beban Kerja Tim Humas</h2>
+          <div class="papan__load">
+            <div class="papan__load-row"><span>Rani Maulida</span><b>5 tugas</b><div class="papan__meter"><span style="width:83%"></span></div></div>
+            <div class="papan__load-row"><span>Budi Santoso</span><b>4 tugas</b><div class="papan__meter"><span style="width:66%"></span></div></div>
+            <div class="papan__load-row"><span>Dewi Lestari</span><b>3 tugas</b><div class="papan__meter"><span style="width:50%"></span></div></div>
+            <div class="papan__load-row"><span>Ahmad Fauzi</span><b>1 tugas</b><div class="papan__meter"><span style="width:17%"></span></div></div>
+          </div>
+        </section>
+
+        <section class="papan__panel" aria-labelledby="aktivitas-title">
+          <h2 id="aktivitas-title">Aktivitas Terkini</h2>
+          <div class="papan__log">
+            <p class="papan__log-item"><b>Budi</b> memindahkan <b>Dokumenter logistik bencana</b> ke Sedang Dikerjakan · 09:40</p>
+            <p class="papan__log-item"><b>Rani</b> mengajukan review <b>Story sambutan pimpinan</b> · 08:55</p>
+            <p class="papan__log-item"><b>Dewi</b> menandai <b>Set desain bantuan pendidikan</b> selesai · Kemarin 16:20</p>
+          </div>
+        </section>
       </div>
+    </div>
 
-      <!-- BANNER PROGRES KESELURUHAN PROYEK -->
-      <section id="project-overview-banner" class="project-overview-banner">
-        <!-- Diisi secara dinamis oleh JavaScript -->
-      </section>
-
-      <!-- TAMPILAN KANBAN -->
-      <section id="view-kanban" class="kanban-container">
-        <div class="kanban-grid">
-          {stages.map(stage => (
-            <div class="kanban-column" data-stage={stage}>
-              <div class="column-header">
-                <div class="header-left">
-                  <span class={`stage-indicator stage-${stage}`}></span>
-                  <h3>{stageLabels[stage]}</h3>
-                </div>
-                <span class="task-count" id={`count-${stage}`}>0</span>
-              </div>
-              <div class="task-cards-list" id={`list-${stage}`}>
-                <!-- Diisi secara dinamis oleh JavaScript -->
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <!-- TAMPILAN GANTT / TIMELINE -->
-      <section id="view-timeline" class="timeline-container" style="display: none;">
-        <div class="gantt-card">
-          <div class="gantt-header-row">
-            <div>
-              <h3>Garis Waktu & Balok Pekerjaan (Timeline Gantt)</h3>
-              <p class="desc">Jadwal rentang waktu proyek serta garis tenggat per pekerjaan tim.</p>
-            </div>
-            <div class="gantt-legend">
-              <span><i class="g-leg g-leg-proj"></i> Proyek Utama</span>
-              <span><i class="g-leg g-leg-done"></i> Selesai</span>
-              <span><i class="g-leg g-leg-prog"></i> Dikerjakan</span>
-              <span><i class="g-leg g-leg-todo"></i> Belum Selesai</span>
-            </div>
+    <!-- Modal Form Tambah Tugas Baru -->
+    <div class="papan__modal" id="papan-modal" data-part="modal" hidden>
+      <div class="papan__dialog" role="dialog" aria-modal="true" aria-labelledby="papan-modal-title">
+        <h2 id="papan-modal-title">Tugas Produksi Baru</h2>
+        <form id="form-tugas" data-action="form-tugas">
+          <label class="papan__field">Judul tugas produksi
+            <input name="judul" id="task-judul" required placeholder="mis. Reels liputan distribusi sembako" />
+          </label>
+          <label class="papan__field">Platform publikasi
+            <select name="platform" id="task-platform">
+              <option value="instagram">Instagram</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="facebook">Facebook</option>
+              <option value="youtube">YouTube</option>
+              <option value="internal">Kebutuhan internal</option>
+            </select>
+          </label>
+          <label class="papan__field">Bidang pemohon
+            <select name="bidang" id="task-bidang">
+              <option value="operasional">Operasional</option>
+              <option value="keuangan">Keuangan</option>
+              <option value="fundraising">Fundraising</option>
+              <option value="penyaluran">Penyaluran-Edukasi</option>
+              <option value="bph">BPH</option>
+              <option value="donatur">Donatur</option>
+              <option value="wilayah">Wilayah</option>
+            </select>
+          </label>
+          <label class="papan__field">Tenggat waktu
+            <input name="tenggat" id="task-tenggat" type="date" value="2026-06-25" />
+          </label>
+          <div class="papan__actions">
+            <button class="papan__btn" type="button" id="btn-tutup-modal" data-action="tutup-modal">Batal</button>
+            <button class="papan__btn papan__btn--primary" type="submit">Simpan Tugas</button>
           </div>
-          <div class="gantt-chart" id="timeline-chart">
-            <!-- Diisi secara dinamis oleh JavaScript -->
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const board = document.getElementById('kanban-board');
+      const modal = document.getElementById('papan-modal');
+      const form = document.getElementById('form-tugas');
+      const filterBidang = document.getElementById('filter-bidang');
+      const filterPlatform = document.getElementById('filter-platform');
+
+      const STAGES = ['masuk', 'kerja', 'tinjau', 'selesai'];
+      const STAGE_LABELS = {
+        masuk: { next: 'Kerjakan', prev: 'Kembali' },
+        kerja: { next: 'Tinjau', prev: 'Kembali' },
+        tinjau: { next: 'Selesai', prev: 'Kembali' },
+        selesai: { next: 'Selesai', prev: 'Kembali' }
+      };
+
+      function updateCounts() {
+        STAGES.forEach((st) => {
+          const col = document.querySelector(`[data-col="${st}"]`);
+          if (!col) return;
+          const visibleCards = col.querySelectorAll(`.papan__card:not([hidden])`).length;
+          const countBadge = col.querySelector(`.papan__count`);
+          if (countBadge) countBadge.textContent = String(visibleCards);
+          const empty = col.querySelector(`[data-empty="${st}"]`);
+          if (empty) empty.hidden = visibleCards !== 0;
+        });
+
+        const totalActive = document.querySelectorAll('.papan__card:not([data-stage="selesai"]):not([hidden])').length;
+        const totalDone = document.querySelectorAll('.papan__card[data-stage="selesai"]:not([hidden])').length;
+        const statTot = document.getElementById('stat-total');
+        const statDone = document.getElementById('stat-done');
+        if (statTot) statTot.textContent = String(totalActive);
+        if (statDone) statDone.textContent = String(totalDone);
+      }
+
+      function applyFilter() {
+        const bidang = filterBidang.value;
+        const platform = filterPlatform.value;
+
+        document.querySelectorAll('.papan__card').forEach((card) => {
+          const matchBidang = bidang === 'all' || card.getAttribute('data-bidang') === bidang;
+          const matchPlat = platform === 'all' || card.getAttribute('data-platform') === platform;
+          card.hidden = !(matchBidang && matchPlat);
+        });
+
+        updateCounts();
+      }
+
+      filterBidang?.addEventListener('change', applyFilter);
+      filterPlatform?.addEventListener('change', applyFilter);
+
+      // Card movement (Maju / Mundur)
+      board?.addEventListener('click', (e) => {
+        const btnMaju = e.target.closest('[data-action="maju"]');
+        const btnMundur = e.target.closest('[data-action="mundur"]');
+        const card = e.target.closest('.papan__card');
+        if (!card) return;
+
+        let currentStage = card.getAttribute('data-stage') || 'masuk';
+        let idx = STAGES.indexOf(currentStage);
+
+        if (btnMaju && idx < STAGES.length - 1) {
+          const nextStage = STAGES[idx + 1];
+          card.setAttribute('data-stage', nextStage);
+          const targetCol = document.getElementById(`cards-${nextStage}`);
+          if (targetCol) targetCol.appendChild(card);
+          updateButtons(card, nextStage);
+          updateCounts();
+        }
+
+        if (btnMundur && idx > 0) {
+          const prevStage = STAGES[idx - 1];
+          card.setAttribute('data-stage', prevStage);
+          const targetCol = document.getElementById(`cards-${prevStage}`);
+          if (targetCol) targetCol.appendChild(card);
+          updateButtons(card, prevStage);
+          updateCounts();
+        }
+      });
+
+      function updateButtons(card, stage) {
+        const mundurBtn = card.querySelector('[data-action="mundur"]');
+        const majuBtn = card.querySelector('[data-action="maju"]');
+        if (mundurBtn) mundurBtn.disabled = stage === 'masuk';
+        if (majuBtn) {
+          majuBtn.disabled = stage === 'selesai';
+          majuBtn.textContent = STAGE_LABELS[stage]?.next || 'Maju';
+        }
+      }
+
+      // Modal
+      document.getElementById('btn-tambah-kartu')?.addEventListener('click', () => {
+        modal.hidden = false;
+        document.getElementById('task-judul')?.focus();
+      });
+
+      document.getElementById('btn-tutup-modal')?.addEventListener('click', () => {
+        modal.hidden = true;
+      });
+
+      form?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const judul = document.getElementById('task-judul').value.trim();
+        const platform = document.getElementById('task-platform').value;
+        const bidang = document.getElementById('task-bidang').value;
+        const tenggat = document.getElementById('task-tenggat').value || '25 Jun';
+
+        if (!judul) return;
+
+        const tagMap = {
+          instagram: { cls: 'papan__tag--ig', label: 'Instagram · Post' },
+          whatsapp: { cls: 'papan__tag--wa', label: 'WhatsApp · CRM' },
+          facebook: { cls: 'papan__tag--fb', label: 'Facebook' },
+          youtube: { cls: 'papan__tag--yt', label: 'YouTube' },
+          internal: { cls: 'papan__tag--internal', label: 'Kebutuhan internal' }
+        };
+        const tagInfo = tagMap[platform] || tagMap.internal;
+
+        const article = document.createElement('article');
+        article.className = 'papan__card';
+        article.setAttribute('data-card', '');
+        article.setAttribute('data-stage', 'masuk');
+        article.setAttribute('data-platform', platform);
+        article.setAttribute('data-bidang', bidang);
+        article.innerHTML = `
+          <span class="papan__tag ${tagInfo.cls}">${tagInfo.label}</span>
+          <h3 class="papan__card-title">${judul}</h3>
+          <div class="papan__meta">
+            <span><iconify-icon icon="lucide:building-2" aria-hidden="true"></iconify-icon>${bidang.toUpperCase()}</span>
+            <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon>${tenggat}</span>
+            <span class="papan__pri papan__pri--high">Baru masuk</span>
           </div>
-        </div>
-      </section>
-
-      <!-- TAMPILAN DAFTAR PER ANGGOTA TIM -->
-      <section id="view-people" class="people-container" style="display: none;">
-        <div class="people-card">
-          <h3>Beban Kerja & Tugas per Anggota Tim</h3>
-          <p class="desc">Distribusi tugas serta progres pengerjaan masing-masing personel.</p>
-          <div class="people-grid" id="people-list">
-            <!-- Diisi secara dinamis oleh JavaScript -->
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <script is:inline define:vars={{ mockProjects, stageLabels }}>
-      let currentView = 'kanban';
-      let selectedProject = 'all';
-      let selectedAssignee = 'all';
-
-      const toggleKanbanBtn = document.getElementById('toggle-kanban');
-      const toggleTimelineBtn = document.getElementById('toggle-timeline');
-      const togglePeopleBtn = document.getElementById('toggle-people');
-
-      const viewKanban = document.getElementById('view-kanban');
-      const viewTimeline = document.getElementById('view-timeline');
-      const viewPeople = document.getElementById('view-people');
-
-      const projectFilter = document.getElementById('project-filter');
-      const assigneeFilter = document.getElementById('assignee-filter');
-
-      function switchView(view) {
-        currentView = view;
-        toggleKanbanBtn.classList.toggle('active', view === 'kanban');
-        toggleTimelineBtn.classList.toggle('active', view === 'timeline');
-        togglePeopleBtn.classList.toggle('active', view === 'people');
-
-        viewKanban.style.display = view === 'kanban' ? 'block' : 'none';
-        viewTimeline.style.display = view === 'timeline' ? 'block' : 'none';
-        viewPeople.style.display = view === 'people' ? 'block' : 'none';
-      }
-
-      toggleKanbanBtn.onclick = () => switchView('kanban');
-      toggleTimelineBtn.onclick = () => switchView('timeline');
-      togglePeopleBtn.onclick = () => switchView('people');
-
-      function getVisibleTasks() {
-        let allTasks = [];
-        if (selectedProject === 'all') {
-          allTasks = mockProjects.flatMap(p => p.tasks.map(t => ({ ...t, projectName: p.name })));
-        } else {
-          const proj = mockProjects.find(p => p.id === Number(selectedProject));
-          allTasks = proj ? proj.tasks.map(t => ({ ...t, projectName: proj.name })) : [];
-        }
-
-        if (selectedAssignee !== 'all') {
-          allTasks = allTasks.filter(t => t.assignee.toLowerCase() === selectedAssignee.toLowerCase());
-        }
-        return allTasks;
-      }
-
-      function renderKanban() {
-        const tasks = getVisibleTasks();
-        const stages = ['todo', 'in_progress', 'review', 'done'];
-
-        stages.forEach(stage => {
-          const listEl = document.getElementById(`list-${stage}`);
-          const countEl = document.getElementById(`count-${stage}`);
-          const stageTasks = tasks.filter(t => t.stage === stage);
-
-          countEl.textContent = String(stageTasks.length);
-          if (stageTasks.length === 0) {
-            listEl.innerHTML = `
-              <div class="empty-column-msg">
-                <span>Belum ada tugas</span>
-              </div>
-            `;
-          } else {
-            const nowIso = '2026-10-10'; // Acuan tanggal tiruan
-          listEl.innerHTML = stageTasks.map(t => {
-            const isDone = t.stage === 'done';
-            let dueClass = 'due-safe';
-            let dueText = `📅 ${t.dueDate}`;
-
-            if (!isDone) {
-              if (t.dueDate < nowIso) {
-                dueClass = 'due-overdue';
-                dueText = `⚠️ Terlewat (${t.dueDate})`;
-              } else if (t.dueDate <= '2026-10-15') {
-                dueClass = 'due-soon';
-                dueText = `⏳ Segera (${t.dueDate})`;
-              }
-            }
-
-            return `
-              <div class="task-card" draggable="true" data-task-id="${t.id}">
-                <div class="task-meta">
-                  <span class="p-name">${t.projectName}</span>
-                  <span class="prio prio-${t.priority.toLowerCase()}">${t.priority}</span>
-                </div>
-                <h4 class="task-title">${t.title}</h4>
-                <div class="task-footer">
-                  <small>👤 ${t.assignee}</small>
-                  <small class="due-badge ${dueClass}">${dueText}</small>
-                </div>
-              </div>
-            `;
-          }).join('');
-        });
-
-        // Pasang drag event pada kartu dan drop zone pada kolom
-        attachKanbanDragDrop();
-
-        // Update gantt timeline rows visibility
-        document.querySelectorAll('.gantt-row').forEach(row => {
-          const pid = row.dataset.projectId;
-          row.style.display = (selectedProject === 'all' || selectedProject === pid) ? '' : 'none';
-        });
-      }
-
-      let draggedTaskId = null;
-
-      function attachKanbanDragDrop() {
-        document.querySelectorAll('.task-card').forEach(card => {
-          card.ondragstart = (e) => {
-            draggedTaskId = Number(card.dataset.taskId);
-            card.classList.add('is-dragging');
-            e.dataTransfer.setData('text/plain', String(draggedTaskId));
-            e.dataTransfer.effectAllowed = 'move';
-          };
-          card.ondragend = () => {
-            card.classList.remove('is-dragging');
-            document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('drag-over'));
-            draggedTaskId = null;
-          };
-        });
-
-        document.querySelectorAll('.kanban-column').forEach(col => {
-          col.ondragover = (e) => {
-            e.preventDefault();
-            col.classList.add('drag-over');
-            e.dataTransfer.dropEffect = 'move';
-          };
-          col.ondragleave = (e) => {
-            if (!col.contains(e.relatedTarget)) {
-              col.classList.remove('drag-over');
-            }
-          };
-          col.ondrop = (e) => {
-            e.preventDefault();
-            col.classList.remove('drag-over');
-            const targetStage = col.dataset.stage;
-
-            if (draggedTaskId && targetStage) {
-              // Cari task di data mockProjects lalu update stage
-              for (const proj of mockProjects) {
-                const foundTask = proj.tasks.find(t => t.id === draggedTaskId);
-                if (foundTask && foundTask.stage !== targetStage) {
-                  foundTask.stage = targetStage;
-                  // Hitung ulang estimasi progress proyek jika ada task selesai
-                  const totalTasks = proj.tasks.length;
-                  const doneTasks = proj.tasks.filter(t => t.stage === 'done').length;
-                  proj.progress = Math.round((doneTasks / totalTasks) * 100);
-
-                  // Update tampilan progress bar gantt
-                  const fillEl = document.querySelector(`.gantt-row[data-project-id="${proj.id}"] .gantt-bar-fill`);
-                  if (fillEl) {
-                    fillEl.style.width = `${proj.progress}%`;
-                    fillEl.querySelector('span').textContent = `${proj.progress}%`;
-                  }
-                  break;
-                }
-              }
-              renderKanban();
-              renderTimeline();
-            }
-          };
-        });
-      }
-
-      function renderTimeline() {
-        const timelineChart = document.getElementById('timeline-chart');
-        if (!timelineChart) return;
-
-        // Tentukan rentang waktu keseluruhan (misal 1 Okt s/d 20 Des 2026)
-        const timelineStart = new Date('2026-10-01').getTime();
-        const timelineEnd = new Date('2026-12-31').getTime();
-        const totalDuration = timelineEnd - timelineStart;
-
-        const filtered = selectedProject === 'all'
-          ? mockProjects
-          : mockProjects.filter(p => p.id === Number(selectedProject));
-
-        let html = '';
-
-        filtered.forEach(p => {
-          const pStart = Math.max(timelineStart, new Date(p.startDate).getTime());
-          const pEnd = Math.min(timelineEnd, new Date(p.endDate).getTime());
-          const pLeftPct = Math.max(0, ((pStart - timelineStart) / totalDuration) * 100);
-          const pWidthPct = Math.max(4, ((pEnd - pStart) / totalDuration) * 100);
-
-          html += `
-            <div class="timeline-project-block">
-              <div class="timeline-proj-header">
-                <div class="proj-title-wrap">
-                  <b>📁 ${p.name}</b>
-                  <span class="muted">${p.owner} (${p.startDate} s/d ${p.endDate})</span>
-                </div>
-                <span class="proj-badge">${p.progress}% Selesai</span>
-              </div>
-              <div class="timeline-track proj-track">
-                <div class="timeline-bar bar-proj" style="left: ${pLeftPct.toFixed(1)}%; width: ${pWidthPct.toFixed(1)}%;">
-                  <span class="bar-label">${p.progress}%</span>
-                </div>
-              </div>
-
-              <!-- Bar per Tugas (Pekerjaan) -->
-              <div class="timeline-task-list">
-                ${p.tasks.map(t => {
-                  const tDue = new Date(t.dueDate).getTime();
-                  // Asumsikan durasi balok tugas adalah 4-7 hari sebelum due date untuk visualisasi
-                  const tStart = Math.max(pStart, tDue - (5 * 24 * 60 * 60 * 1000));
-                  const tLeftPct = Math.max(0, ((tStart - timelineStart) / totalDuration) * 100);
-                  const tWidthPct = Math.max(4, ((tDue - tStart) / totalDuration) * 100);
-
-                  const stageClass = t.stage === 'done' ? 'bar-done' : t.stage === 'in_progress' ? 'bar-prog' : 'bar-todo';
-
-                  return `
-                    <div class="timeline-task-row">
-                      <div class="task-info-side">
-                        <span class="t-name">${t.title}</span>
-                        <small class="t-meta">👤 ${t.assignee} · 📅 ${t.dueDate}</small>
-                      </div>
-                      <div class="timeline-track task-track">
-                        <div class="timeline-bar ${stageClass}" style="left: ${tLeftPct.toFixed(1)}%; width: ${tWidthPct.toFixed(1)}%;" title="${t.title} (${t.stage})">
-                          <span class="bar-label">${stageLabels[t.stage] || t.stage}</span>
-                        </div>
-                      </div>
-                    </div>
-                  `;
-                }).join('')}
-              </div>
-            </div>
-          `;
-        });
-
-        timelineChart.innerHTML = html || '<p class="muted">Tidak ada proyek yang dipilih.</p>';
-      }
-
-      function renderPeople() {
-        const peopleList = document.getElementById('people-list');
-        if (!peopleList) return;
-
-        const tasks = getVisibleTasks();
-        const grouped = {};
-
-        tasks.forEach(t => {
-          if (!grouped[t.assignee]) grouped[t.assignee] = [];
-          grouped[t.assignee].push(t);
-        });
-
-        const assignees = Object.keys(grouped).sort();
-
-        if (assignees.length === 0) {
-          peopleList.innerHTML = '<p class="muted">Tidak ada data tugas untuk kriteria filter ini.</p>';
-          return;
-        }
-
-        peopleList.innerHTML = assignees.map(name => {
-          const personTasks = grouped[name];
-          const doneCount = personTasks.filter(t => t.stage === 'done').length;
-          const progCount = personTasks.filter(t => t.stage === 'in_progress').length;
-          const todoCount = personTasks.filter(t => t.stage === 'todo' || t.stage === 'review').length;
-
-          return `
-            <div class="person-card">
-              <div class="person-header">
-                <div class="person-info">
-                  <div class="person-avatar">👤</div>
-                  <div>
-                    <b>${name}</b>
-                    <small class="muted">${personTasks.length} tugas dibebankan</small>
-                  </div>
-                </div>
-                <div class="person-stats">
-                  <span class="p-pill p-pill-done" title="Selesai">${doneCount} Selesai</span>
-                  <span class="p-pill p-pill-prog" title="Sedang Dikerjakan">${progCount} Aktif</span>
-                  <span class="p-pill p-pill-todo" title="Menunggu / Review">${todoCount} Tertunda</span>
-                </div>
-              </div>
-              <div class="person-tasks-list">
-                ${personTasks.map(t => `
-                  <div class="person-task-item">
-                    <span class="stage-tag stage-${t.stage}">${stageLabels[t.stage] || t.stage}</span>
-                    <div class="pt-title">
-                      <span>${t.title}</span>
-                      <small class="muted">📁 ${t.projectName} · 📅 Tenggat: ${t.dueDate}</small>
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-
-      function renderOverviewBanner() {
-        const bannerEl = document.getElementById('project-overview-banner');
-        if (!bannerEl) return;
-
-        const tasks = getVisibleTasks();
-        const nowIso = '2026-10-10';
-        const total = tasks.length;
-        const done = tasks.filter(t => t.stage === 'done').length;
-        const overdue = tasks.filter(t => t.stage !== 'done' && t.dueDate < nowIso).length;
-        const soon = tasks.filter(t => t.stage !== 'done' && t.dueDate >= nowIso && t.dueDate <= '2026-10-15').length;
-        const overallPct = total > 0 ? Math.round((done / total) * 100) : 0;
-
-        let projectName = 'Semua Proyek';
-        if (selectedProject !== 'all') {
-          const p = mockProjects.find(x => x.id === Number(selectedProject));
-          if (p) projectName = p.name;
-        }
-
-        bannerEl.innerHTML = `
-          <div class="banner-card">
-            <div class="banner-left">
-              <span class="banner-title">${projectName}</span>
-              <div class="banner-bar-wrap">
-                <div class="banner-bar-track">
-                  <div class="banner-bar-fill" style="width: ${overallPct}%;"></div>
-                </div>
-                <b>${overallPct}% Selesai (${done}/${total} Tugas)</b>
-              </div>
-            </div>
-            <div class="banner-right">
-              <div class="stat-box stat-overdue">
-                <span class="stat-num">${overdue}</span>
-                <span class="stat-label">Terlewat</span>
-              </div>
-              <div class="stat-box stat-soon">
-                <span class="stat-num">${soon}</span>
-                <span class="stat-label">Tenggat Dekat</span>
-              </div>
-              <div class="stat-box stat-active">
-                <span class="stat-num">${total - done}</span>
-                <span class="stat-label">Sedang Berjalan</span>
-              </div>
-            </div>
+          <div class="papan__move">
+            <button type="button" data-action="mundur" disabled>Kembali</button>
+            <button type="button" data-action="maju">Kerjakan</button>
           </div>
         `;
-      }
 
-      function updateAllViews() {
-        renderOverviewBanner();
-        renderKanban();
-        renderTimeline();
-        renderPeople();
-      }
+        document.getElementById('cards-masuk')?.prepend(article);
+        form.reset();
+        modal.hidden = true;
+        updateCounts();
+      });
 
-      projectFilter.onchange = (e) => {
-        selectedProject = e.target.value;
-        updateAllViews();
-      };
-
-      assigneeFilter.onchange = (e) => {
-        selectedAssignee = e.target.value;
-        updateAllViews();
-      };
-
-      updateAllViews();
-
-      // Sinkronisasi dinamis proyek & tugas dari API /api/projects
-      async function syncProjectsFromApi() {
-        try {
-          const res = await fetch('/api/projects');
-          if (!res.ok) return;
-          const json = await res.json();
-          if (json && json.data && Array.isArray(json.data) && json.data.length > 0) {
-            // Perbarui array mockProjects dengan data aktual jika tersedia
-            json.data.forEach((p) => {
-              const existing = mockProjects.find((x) => x.id === p.id);
-              if (existing) {
-                existing.name = p.name || existing.name;
-                existing.progress = p.progress ?? existing.progress;
-              }
-            });
-            updateAllViews();
-          }
-        } catch (_) {}
-      }
-      syncProjectsFromApi();
-    </script>
-  </body>
-</html>
-
-<style is:global>
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, sans-serif; background: #f5f6f8; color: #1f2937; }
-  .top { display: flex; gap: 2rem; align-items: baseline; padding: 1rem 1.5rem; background: #111827; color: #fff; }
-  .top h1 { font-size: 1.1rem; margin: 0; }
-  .top nav { display: flex; gap: 1rem; }
-  .top nav a { color: #9ca3af; text-decoration: none; font-size: .9rem; }
-  .top nav a.active, .top nav a:hover { color: #fff; }
-  main { padding: 1.5rem; }
-
-  .head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
-  .head h2 { margin: 0; }
-  .muted { color: #6b7280; font-size: .88rem; }
-
-  .view-toggles { display: inline-flex; border: 1px solid #d1d5db; border-radius: 6px; overflow: hidden; background: #fff; }
-  .view-toggles button { font: inherit; padding: .45rem .9rem; border: none; background: transparent; cursor: pointer; font-size: .85rem; }
-  .view-toggles button.active { background: #2563eb; color: #fff; font-weight: 600; }
-
-  .filter-bar { margin-bottom: 1.25rem; display: flex; align-items: center; gap: .75rem; font-size: .88rem; flex-wrap: wrap; }
-  .filter-bar select { font: inherit; padding: .35rem .6rem; border: 1px solid #d1d5db; border-radius: 6px; background: #fff; }
-
-  /* Banner Progres & Tenggat */
-  .project-overview-banner { margin-bottom: 1.25rem; }
-  .banner-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-  .banner-left { display: flex; flex-direction: column; gap: .4rem; min-width: 280px; flex: 1; }
-  .banner-title { font-weight: 700; font-size: 1.05rem; color: #0f172a; }
-  .banner-bar-wrap { display: flex; align-items: center; gap: .75rem; }
-  .banner-bar-track { background: #e2e8f0; height: 10px; border-radius: 999px; overflow: hidden; flex: 1; max-width: 260px; }
-  .banner-bar-fill { background: #2563eb; height: 100%; border-radius: 999px; transition: width 0.3s ease; }
-  .banner-bar-wrap b { font-size: .82rem; color: #475569; }
-
-  .banner-right { display: flex; gap: .75rem; }
-  .stat-box { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: .4rem .75rem; border-radius: 6px; min-width: 80px; }
-  .stat-num { font-size: 1.15rem; font-weight: 700; line-height: 1.1; }
-  .stat-label { font-size: .68rem; font-weight: 600; text-transform: uppercase; margin-top: .15rem; }
-  .stat-overdue { background: #fee2e2; color: #991b1b; }
-  .stat-soon { background: #fef3c7; color: #92400e; }
-  .stat-active { background: #e0f2fe; color: #0369a1; }
-
-  /* Due Date Badges on Task Card */
-  .due-badge { padding: .1rem .35rem; border-radius: 4px; font-weight: 600; font-size: .68rem; }
-  .due-overdue { background: #fee2e2; color: #991b1b; }
-  .due-soon { background: #fef3c7; color: #92400e; }
-  .due-safe { color: #64748b; }
-
-  /* Kanban Grid */
-  .kanban-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-  .kanban-column { background: #e5e7eb; border-radius: 8px; padding: .85rem; display: flex; flex-direction: column; min-height: 480px; }
-  .column-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .75rem; }
-  .header-left { display: flex; align-items: center; gap: .45rem; }
-  .stage-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-  .stage-todo { background: #64748b; }
-  .stage-in_progress { background: #3b82f6; }
-  .stage-review { background: #f59e0b; }
-  .stage-done { background: #10b981; }
-  .column-header h3 { margin: 0; font-size: .92rem; font-weight: 600; }
-  .task-count { background: #d1d5db; border-radius: 999px; padding: .1rem .5rem; font-size: .75rem; font-weight: 600; }
-
-  .empty-column-msg { display: flex; align-items: center; justify-content: center; height: 100px; border: 2px dashed #cbd5e1; border-radius: 6px; color: #94a3b8; font-size: .8rem; }
-  .task-cards-list { display: flex; flex-direction: column; gap: .6rem; flex: 1; }
-  .kanban-column.drag-over { background: #dbeafe; outline: 2px dashed #3b82f6; outline-offset: -2px; }
-  .task-card { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: .75rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: grab; user-select: none; }
-  .task-card.is-dragging { opacity: 0.45; transform: scale(0.98); }
-  .task-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: .35rem; }
-  .p-name { font-size: .7rem; color: #6b7280; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 140px; }
-  .prio { font-size: .65rem; padding: .1rem .35rem; border-radius: 4px; font-weight: 600; }
-  .prio-tinggi { background: #fee2e2; color: #991b1b; }
-  .prio-sedang { background: #fef3c7; color: #92400e; }
-  .prio-rendah { background: #e0f2fe; color: #0369a1; }
-  .task-title { margin: 0 0 .5rem; font-size: .85rem; font-weight: 600; line-height: 1.3; }
-  .task-footer { display: flex; justify-content: space-between; font-size: .72rem; color: #6b7280; border-top: 1px solid #f3f4f6; padding-top: .4rem; }
-
-  /* Timeline & Balok Pekerjaan */
-  .gantt-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem; }
-  .gantt-header-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; }
-  .gantt-header-row h3 { margin: 0; font-size: 1.05rem; }
-  .desc { margin: .2rem 0 0; color: #6b7280; font-size: .85rem; }
-  .gantt-legend { display: flex; gap: 1rem; font-size: .75rem; color: #4b5563; }
-  .gantt-legend span { display: inline-flex; align-items: center; gap: .35rem; }
-  .g-leg { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-  .g-leg-proj { background: #1d4ed8; }
-  .g-leg-done { background: #10b981; }
-  .g-leg-prog { background: #3b82f6; }
-  .g-leg-todo { background: #94a3b8; }
-
-  .gantt-chart { display: grid; gap: 1.75rem; }
-  .timeline-project-block { border: 1px solid #f1f5f9; background: #fafafa; border-radius: 8px; padding: 1rem; display: grid; gap: .75rem; }
-  .timeline-proj-header { display: flex; justify-content: space-between; align-items: center; }
-  .proj-title-wrap b { font-size: .95rem; color: #1e293b; display: block; }
-  .proj-title-wrap .muted { font-size: .78rem; }
-  .proj-badge { background: #dbeafe; color: #1e40af; font-size: .75rem; font-weight: 600; padding: .15rem .6rem; border-radius: 999px; }
-
-  .timeline-track { background: #e2e8f0; border-radius: 6px; position: relative; height: 26px; overflow: hidden; width: 100%; }
-  .timeline-bar { position: absolute; height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 .5rem; min-width: 32px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-  .bar-label { color: #fff; font-size: .68rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  .bar-proj { background: #1d4ed8; }
-  .bar-done { background: #10b981; }
-  .bar-prog { background: #3b82f6; }
-  .bar-todo { background: #94a3b8; }
-
-  .timeline-task-list { display: grid; gap: .5rem; padding-left: .5rem; border-left: 2px solid #cbd5e1; margin-top: .25rem; }
-  .timeline-task-row { display: grid; grid-template-columns: 240px 1fr; gap: 1rem; align-items: center; }
-  .task-info-side .t-name { font-size: .82rem; font-weight: 600; color: #334155; display: block; }
-  .task-info-side .t-meta { font-size: .72rem; color: #64748b; }
-  .task-track { height: 20px; background: #edeef2; }
-
-  /* Daftar per Anggota Tim */
-  .people-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.25rem; }
-  .people-card h3 { margin: 0; font-size: 1.05rem; }
-  .people-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; margin-top: 1rem; }
-  .person-card { border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 1rem; display: flex; flex-direction: column; gap: .75rem; }
-  .person-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: .6rem; }
-  .person-info { display: flex; align-items: center; gap: .6rem; }
-  .person-avatar { width: 34px; height: 34px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-  .person-info b { font-size: .92rem; color: #0f172a; display: block; }
-  .person-stats { display: flex; gap: .35rem; font-size: .7rem; font-weight: 600; }
-  .p-pill { padding: .15rem .45rem; border-radius: 4px; }
-  .p-pill-done { background: #dcfce7; color: #15803d; }
-  .p-pill-prog { background: #dbeafe; color: #1d4ed8; }
-  .p-pill-todo { background: #f1f5f9; color: #475569; }
-
-  .person-tasks-list { display: flex; flex-direction: column; gap: .5rem; }
-  .person-task-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: .6rem; display: flex; align-items: flex-start; gap: .6rem; }
-  .stage-tag { font-size: .65rem; font-weight: 600; padding: .1rem .4rem; border-radius: 4px; white-space: nowrap; margin-top: .1rem; }
-  .stage-tag.stage-done { background: #dcfce7; color: #15803d; }
-  .stage-tag.stage-in_progress { background: #dbeafe; color: #1d4ed8; }
-  .stage-tag.stage-review { background: #fef3c7; color: #b45309; }
-  .stage-tag.stage-todo { background: #f1f5f9; color: #475569; }
-  .pt-title { display: flex; flex-direction: column; gap: .15rem; font-size: .82rem; }
-  .pt-title span { font-weight: 600; color: #1e293b; }
-
-  @media (max-width: 900px) {
-    .kanban-grid { grid-template-columns: 1fr 1fr; }
-    .timeline-task-row { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 600px) {
-    .kanban-grid { grid-template-columns: 1fr; }
-  }
-</style>
+      updateCounts();
+    });
+  </script>
+</HumasLayout>

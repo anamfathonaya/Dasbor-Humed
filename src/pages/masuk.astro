@@ -1,5 +1,6 @@
 ---
 // Halaman Masuk Akun Pengguna Dasbor Humas Media
+import '../styles/humas-theme.css';
 ---
 
 <!doctype html>
@@ -7,436 +8,335 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Masuk Akun - Dasbor Humas Media</title>
-  </head>
-  <body>
-    <div class="login-wrapper">
-      <div class="login-card">
-        <!-- Logo & Header Lembaga -->
-        <div class="brand-header">
-          <div class="brand-icon">🌐</div>
-          <h1>Dasbor Humas Media</h1>
-          <p class="brand-sub">Yayasan Kemanusiaan Peduli Negeri</p>
-        </div>
-
-        <!-- Banner Pemberitahuan / Error -->
-        <div id="login-alert" class="alert-box" hidden>
-          <span id="login-alert-text">Email atau kata sandi tidak cocok.</span>
-        </div>
-
-        <!-- Formulir Masuk Email & Sandi -->
-        <form id="form-login" class="login-form">
-          <div class="form-group">
-            <label for="login-email">Alamat Email Resmi</label>
-            <input
-              type="email"
-              id="login-email"
-              name="email"
-              placeholder="nama@pedulinegeri.org"
-              required
-              autocomplete="email"
-            />
-          </div>
-
-          <div class="form-group">
-            <div class="label-row">
-              <label for="login-password">Kata Sandi Akun</label>
-              <a href="#" id="btn-forgot-password" class="link-small">Lupa Sandi?</a>
-            </div>
-            <div class="password-input-wrap">
-              <input
-                type="password"
-                id="login-password"
-                name="password"
-                placeholder="••••••••••••"
-                required
-                autocomplete="current-password"
-              />
-              <button type="button" id="btn-toggle-password" class="btn-eye" title="Tampilkan sandi">
-                👁️
-              </button>
-            </div>
-          </div>
-
-          <!-- Pilihan Cepat Peran Demo (Mock Autentikasi) -->
-          <div class="demo-role-box">
-            <span class="demo-title">Pilih Akun Cepat (Akses Simulasi):</span>
-            <div class="demo-buttons">
-              <button
-                type="button"
-                class="btn-demo-role"
-                data-email="rani.head@pedulinegeri.org"
-                data-role="head"
-                data-name="Rani Maulida (Ketua Bidang)"
-              >
-                Ketua Bidang (Head)
-              </button>
-              <button
-                type="button"
-                class="btn-demo-role"
-                data-email="budi.admin@pedulinegeri.org"
-                data-role="admin"
-                data-name="Budi Santoso (Admin Teknis)"
-              >
-                Admin Teknis
-              </button>
-              <button
-                type="button"
-                class="btn-demo-role"
-                data-email="dewi.creative@pedulinegeri.org"
-                data-role="staff"
-                data-name="Dewi Lestari (Staf Konten)"
-              >
-                Staf Konten
-              </button>
-            </div>
-          </div>
-
-          <div class="form-check">
-            <label>
-              <input type="checkbox" id="remember-me" checked />
-              <span>Ingat sesi masuk di perangkat ini selama 30 hari</span>
-            </label>
-          </div>
-
-          <button type="submit" id="btn-submit" class="btn-submit">
-            Masuk ke Dasbor
-          </button>
-        </form>
-
-        <div class="footer-note">
-          <p>
-            Memerlukan bantuan akses? Hubungi tim administrator teknis di
-            <a href="mailto:admin@pedulinegeri.org">admin@pedulinegeri.org</a>
-          </p>
-          <div class="security-badge">
-            🔒 Sesi terlindungi enkripsi TLS & audit log otomatis
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <title>Masuk — Dasbor Humas Media</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" />
+    <script crossorigin="anonymous" data-iconify-runtime defer integrity="sha384-Hj2pe/JEGitdWiVWNPuXWhAdYtdM+ZO+s0KuZHaAk1oAbeAtNas7R6hKlmbInTM4" src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
     <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #0f172a;
-        color: #1e293b;
-        min-height: 100vh;
+      .demo-roles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+        margin-bottom: 6px;
+      }
+      .demo-chip {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid var(--color-border, #dbe1e8);
+        background: var(--color-surface, #fff);
+        color: var(--color-text-muted, #5a6875);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .demo-chip:hover, .demo-chip.active {
+        border-color: var(--color-primary, #1d5c94);
+        background: var(--color-primary-soft, #e3eefa);
+        color: var(--color-primary, #1d5c94);
+        font-weight: 600;
+      }
+      .masuk__sso-divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 18px 0 14px 0;
+        color: var(--color-text-subtle, #7a8794);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .masuk__sso-divider::before,
+      .masuk__sso-divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
+      }
+      .masuk__sso-divider span {
+        padding: 0 10px;
+      }
+      .masuk__google-btn {
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem;
-      }
-
-      .login-wrapper {
-        width: 100%;
-        max-width: 460px;
-      }
-
-      .login-card {
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 1px solid var(--color-border, #cbd5e1);
         background: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
-        padding: 2.25rem 2rem;
-      }
-
-      .brand-header {
-        text-align: center;
-        margin-bottom: 1.75rem;
-      }
-      .brand-icon {
-        font-size: 2.5rem;
-        margin-bottom: 0.35rem;
-      }
-      .brand-header h1 {
-        font-size: 1.45rem;
-        font-weight: 700;
-        color: #0f172a;
-        margin: 0 0 0.25rem;
-      }
-      .brand-sub {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin: 0;
-      }
-
-      .alert-box {
-        background: #fef2f2;
-        border: 1px solid #fecaca;
-        color: #991b1b;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        margin-bottom: 1.25rem;
-        text-align: center;
-      }
-      .alert-box.success {
-        background: #ecfdf5;
-        border-color: #a7f3d0;
-        color: #065f46;
-      }
-
-      .login-form {
-        display: flex;
-        flex-direction: column;
-        gap: 1.2rem;
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.4rem;
-      }
-      .form-group label {
-        font-size: 0.82rem;
+        color: #1e293b;
+        font-family: inherit;
+        font-size: 13px;
         font-weight: 600;
-        color: #334155;
-      }
-      .form-group input {
-        font: inherit;
-        padding: 0.65rem 0.85rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.92rem;
-        transition: border-color 0.15s, box-shadow 0.15s;
-      }
-      .form-group input:focus {
-        outline: none;
-        border-color: #0284c7;
-        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-      }
-
-      .label-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .link-small {
-        font-size: 0.78rem;
-        color: #0284c7;
-        text-decoration: none;
-        font-weight: 500;
-      }
-      .link-small:hover {
-        text-decoration: underline;
-      }
-
-      .password-input-wrap {
-        position: relative;
-        display: flex;
-        align-items: center;
-      }
-      .password-input-wrap input {
-        width: 100%;
-        padding-right: 2.5rem;
-      }
-      .btn-eye {
-        position: absolute;
-        right: 0.6rem;
-        background: none;
-        border: none;
         cursor: pointer;
-        font-size: 1rem;
-        padding: 0.2rem;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       }
-
-      .demo-role-box {
+      .masuk__google-btn:hover {
         background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 0.85rem;
-        margin-top: 0.25rem;
+        border-color: #94a3b8;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
       }
-      .demo-title {
-        display: block;
-        font-size: 0.75rem;
+      .masuk__google-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #eef2ff;
+        color: #4338ca;
+        border: 1px solid #c7d2fe;
         font-weight: 600;
-        color: #64748b;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-      }
-      .demo-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 0.4rem;
-      }
-      .btn-demo-role {
-        font: inherit;
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 0.45rem 0.25rem;
-        border: 1px solid #cbd5e1;
-        background: #ffffff;
-        color: #334155;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.15s;
-        text-align: center;
-      }
-      .btn-demo-role:hover {
-        border-color: #0284c7;
-        color: #0284c7;
-        background: #f0f9ff;
-      }
-      .btn-demo-role.selected {
-        background: #0284c7;
-        color: #ffffff;
-        border-color: #0284c7;
-      }
-
-      .form-check label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.8rem;
-        color: #475569;
-        cursor: pointer;
-      }
-      .form-check input {
-        width: 16px;
-        height: 16px;
-        accent-color: #0284c7;
-        cursor: pointer;
-      }
-
-      .btn-submit {
-        font: inherit;
-        background: #0284c7;
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.15s;
-        margin-top: 0.25rem;
-      }
-      .btn-submit:hover {
-        background: #0369a1;
-      }
-      .btn-submit:disabled {
-        background: #94a3b8;
-        cursor: not-allowed;
-      }
-
-      .footer-note {
-        margin-top: 1.75rem;
-        padding-top: 1.25rem;
-        border-top: 1px solid #f1f5f9;
-        text-align: center;
-      }
-      .footer-note p {
-        font-size: 0.78rem;
-        color: #64748b;
-        margin: 0 0 0.75rem;
-        line-height: 1.4;
-      }
-      .footer-note a {
-        color: #0284c7;
-        text-decoration: none;
-      }
-      .footer-note a:hover {
-        text-decoration: underline;
-      }
-      .security-badge {
-        font-size: 0.72rem;
-        color: #94a3b8;
       }
     </style>
+  </head>
+  <body>
+    <div data-page-content="masuk" style="display:contents">
+      <main class="masuk" data-node-id="masuk.root" data-theme="light">
+        <section class="masuk__intro" aria-labelledby="masuk-statement">
+          <div class="masuk__brand">
+            <span class="masuk__brand-mark" aria-hidden="true">HM</span>
+            <div>
+              <p class="masuk__brand-name">Humas Internal</p>
+              <p class="masuk__brand-sub">Ruang kerja komunikasi lembaga</p>
+            </div>
+          </div>
 
-    <script>
+          <div class="masuk__statement">
+            <h1 id="masuk-statement">Portal kerja humas dan tim komunikasi</h1>
+            <p>Masuk dengan kredensial lembaga untuk membuka modul pemantauan berita, kalender konten, papan proyek, metrik, dan laporan.</p>
+          </div>
+
+          <div class="masuk__foot">
+            <span><iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon> Akses sesuai peran RBAC</span>
+            <span><iconify-icon icon="lucide:clock" aria-hidden="true"></iconify-icon> Sesi aman & audit log otomatis</span>
+          </div>
+        </section>
+
+        <section class="masuk__panel" aria-labelledby="masuk-title">
+          <div class="masuk__card">
+            <h2 id="masuk-title">Masuk</h2>
+            <p class="masuk__lead">Gunakan akun staf humas yang terdaftar.</p>
+
+            <p class="masuk__alert" role="alert" data-open="false" id="login-alert" data-node-id="masuk.alert">
+              <iconify-icon icon="lucide:circle-alert" aria-hidden="true"></iconify-icon>
+              <span id="login-alert-text">Email atau kata sandi tidak cocok.</span>
+            </p>
+
+            <form id="login-form" data-node-id="masuk.form" novalidate>
+              <div class="masuk__field">
+                <label class="masuk__label" for="masuk-email">Email atau ID staf</label>
+                <input class="masuk__input" id="masuk-email" name="email" type="email" inputmode="email" autocomplete="username"
+                  placeholder="nama@pedulinegeri.org" aria-describedby="masuk-email-error" data-field="email" required />
+                <p class="masuk__error" id="masuk-email-error" data-error-for="email" hidden>
+                  <iconify-icon icon="lucide:circle-alert" aria-hidden="true"></iconify-icon>
+                  <span data-error-text>Email wajib diisi.</span>
+                </p>
+              </div>
+
+              <div class="masuk__field">
+                <label class="masuk__label" for="masuk-password">Kata sandi</label>
+                <div class="masuk__password-wrap">
+                  <input class="masuk__input" id="masuk-password" name="password" type="password" autocomplete="current-password"
+                    placeholder="Masukkan kata sandi" aria-describedby="masuk-password-error" data-field="password" style="padding-right:44px" required />
+                  <button class="masuk__reveal" type="button" id="btn-toggle-password" data-action="masuk:reveal" aria-label="Tampilkan kata sandi" aria-pressed="false">
+                    <iconify-icon icon="lucide:eye" aria-hidden="true" id="reveal-icon"></iconify-icon>
+                  </button>
+                </div>
+                <p class="masuk__error" id="masuk-password-error" data-error-for="password" hidden>
+                  <iconify-icon icon="lucide:circle-alert" aria-hidden="true"></iconify-icon>
+                  <span data-error-text>Kata sandi wajib diisi.</span>
+                </p>
+              </div>
+
+              <!-- Pilihan Cepat Akun Demo -->
+              <div>
+                <span style="font-size: 11px; font-weight: 600; color: var(--color-text-subtle, #7a8794); text-transform: uppercase; letter-spacing: 0.04em;">Pilih Akun Demo Simulasi:</span>
+                <div class="demo-roles">
+                  <button type="button" class="demo-chip active" data-email="rani.head@pedulinegeri.org" data-role="head">
+                    Ketua Bidang (Head)
+                  </button>
+                  <button type="button" class="demo-chip" data-email="budi.admin@pedulinegeri.org" data-role="admin">
+                    Admin Teknis
+                  </button>
+                  <button type="button" class="demo-chip" data-email="dewi.creative@pedulinegeri.org" data-role="staff">
+                    Staf Konten
+                  </button>
+                </div>
+              </div>
+
+              <div class="masuk__row">
+                <label class="masuk__check">
+                  <input type="checkbox" id="remember-me" name="remember" checked />
+                  <span>Ingat perangkat ini</span>
+                </label>
+                <a class="masuk__link" href="#" id="forgot-link">Lupa kata sandi?</a>
+              </div>
+
+              <button class="masuk__submit" type="submit" id="btn-submit" data-action="masuk:submit" data-pending="false">
+                <iconify-icon class="masuk__spinner" icon="lucide:loader-circle" aria-hidden="true"></iconify-icon>
+                <iconify-icon class="masuk__submit-icon" icon="lucide:log-in" aria-hidden="true"></iconify-icon>
+                <span data-submit-label id="submit-label">Masuk ke Dasbor</span>
+              </button>
+
+              <div class="masuk__sso-divider">
+                <span>atau masuk cepat</span>
+              </div>
+
+              <button type="button" class="masuk__google-btn" id="btn-google-sso">
+                <iconify-icon icon="logos:google-icon" aria-hidden="true" style="font-size:18px;"></iconify-icon>
+                <span>Masuk dengan Akun Google</span>
+                <span class="masuk__google-badge">Google AI Pro</span>
+              </button>
+            </form>
+
+            <p class="masuk__note" data-node-id="masuk.note">
+              Akun Google SSO terhubung langsung dengan paket <b>Google AI Pro</b> (Gemini Advanced & Google Drive 2TB) tanpa memerlukan akun Google Workspace Enterprise.
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script is:inline>
       document.addEventListener('DOMContentLoaded', () => {
-        const formLogin = document.getElementById('form-login') as HTMLFormElement | null;
-        const inputEmail = document.getElementById('login-email') as HTMLInputElement | null;
-        const inputPassword = document.getElementById('login-password') as HTMLInputElement | null;
-        const btnTogglePassword = document.getElementById('btn-toggle-password');
+        const form = document.getElementById('login-form');
+        const emailInput = document.getElementById('masuk-email');
+        const passInput = document.getElementById('masuk-password');
+        const toggleBtn = document.getElementById('btn-toggle-password');
+        const revealIcon = document.getElementById('reveal-icon');
         const alertBox = document.getElementById('login-alert');
         const alertText = document.getElementById('login-alert-text');
-        const btnSubmit = document.getElementById('btn-submit') as HTMLButtonElement | null;
-        const demoButtons = document.querySelectorAll('.btn-demo-role');
+        const submitBtn = document.getElementById('btn-submit');
+        const submitLabel = document.getElementById('submit-label');
+        const demoChips = document.querySelectorAll('.demo-chip');
 
         let selectedRole = 'head';
+        emailInput.value = 'rani.head@pedulinegeri.org';
+        passInput.value = 'peduli2026';
 
         // Toggle visibility password
-        btnTogglePassword?.addEventListener('click', () => {
-          if (inputPassword) {
-            const isPassword = inputPassword.type === 'password';
-            inputPassword.type = isPassword ? 'text' : 'password';
-            btnTogglePassword.textContent = isPassword ? '🙈' : '👁️';
+        toggleBtn?.addEventListener('click', () => {
+          const isPass = passInput.type === 'password';
+          passInput.type = isPass ? 'text' : 'password';
+          toggleBtn.setAttribute('aria-pressed', String(isPass));
+          if (revealIcon) {
+            revealIcon.setAttribute('icon', isPass ? 'lucide:eye-off' : 'lucide:eye');
           }
         });
 
-        // Quick demo role autofill
-        demoButtons.forEach((btn) => {
-          btn.addEventListener('click', () => {
-            demoButtons.forEach((b) => b.classList.remove('selected'));
-            btn.classList.add('selected');
-
-            const email = btn.getAttribute('data-email');
-            const role = btn.getAttribute('data-role');
-            if (email && inputEmail) inputEmail.value = email;
-            if (inputPassword) inputPassword.value = 'PeduliNegeri2026!';
+        // Quick demo role selection
+        demoChips.forEach((chip) => {
+          chip.addEventListener('click', () => {
+            demoChips.forEach((c) => c.classList.remove('active'));
+            chip.classList.add('active');
+            const email = chip.getAttribute('data-email');
+            const role = chip.getAttribute('data-role');
+            if (email) emailInput.value = email;
             if (role) selectedRole = role;
+            passInput.value = 'peduli2026';
+            setAlert(null);
           });
         });
 
-        // Forgot password notice
-        document.getElementById('btn-forgot-password')?.addEventListener('click', (e) => {
+        // Set alert message
+        function setAlert(msg) {
+          if (!alertBox || !alertText) return;
+          if (msg) {
+            alertText.textContent = msg;
+            alertBox.setAttribute('data-open', 'true');
+          } else {
+            alertBox.setAttribute('data-open', 'false');
+          }
+        }
+
+        // Form submit
+        form?.addEventListener('submit', async (e) => {
           e.preventDefault();
-          if (alertBox && alertText) {
-            alertBox.classList.remove('success');
-            alertText.textContent = 'Silakan hubungi administrator teknis untuk tautan pemulihan sandi.';
-            alertBox.hidden = false;
+          const email = emailInput.value.trim();
+          const password = passInput.value;
+
+          if (!email || !password) {
+            setAlert('Mohon lengkapi email dan kata sandi Anda.');
+            return;
+          }
+
+          submitBtn.setAttribute('data-pending', 'true');
+          submitBtn.disabled = true;
+          if (submitLabel) submitLabel.textContent = 'Memverifikasi...';
+          setAlert(null);
+
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password, role: selectedRole })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+              document.cookie = 'user_role=' + (data.user?.role || selectedRole) + '; path=/; max-age=2592000; SameSite=Lax';
+              window.location.href = '/dasbor?role=' + (data.user?.role || selectedRole);
+            } else {
+              setAlert(data.message || 'Kredensial tidak valid. Silakan coba kembali.');
+              submitBtn.setAttribute('data-pending', 'false');
+              submitBtn.disabled = false;
+              if (submitLabel) submitLabel.textContent = 'Masuk ke Dasbor';
+            }
+          } catch (err) {
+            // Fallback auth untuk offline/demo
+            document.cookie = 'user_role=' + selectedRole + '; path=/; max-age=2592000; SameSite=Lax';
+            window.location.href = '/dasbor?role=' + selectedRole;
           }
         });
 
-        // Submit form
-        formLogin?.addEventListener('submit', (e) => {
-          e.preventDefault();
-          if (btnSubmit) {
-            btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Memverifikasi kredensial...';
+        // Tombol Masuk Cepat dengan Google SSO (Google AI Pro)
+        const googleSsoBtn = document.getElementById('btn-google-sso');
+        googleSsoBtn?.addEventListener('click', async () => {
+          if (!googleSsoBtn) return;
+          googleSsoBtn.innerHTML = `
+            <iconify-icon icon="lucide:loader-circle" class="masuk__spinner" aria-hidden="true" style="animation:spin 1s linear infinite;"></iconify-icon>
+            <span>Menghubungkan Akun Google AI Pro...</span>
+          `;
+          googleSsoBtn.style.opacity = '0.85';
+          googleSsoBtn.style.pointerEvents = 'none';
+
+          try {
+            const res = await fetch('/api/auth/google', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email: 'humas.pedulinegeri@gmail.com',
+                name: 'Pengguna Google AI Pro',
+                role: selectedRole || 'head'
+              })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              const role = data.user?.role || selectedRole || 'head';
+              document.cookie = 'user_role=' + role + '; path=/; max-age=2592000; SameSite=Lax';
+              window.location.href = '/dasbor-metrik?sso=google_success';
+            } else {
+              setAlert('Gagal autentikasi Google SSO: ' + (data.message || 'Coba lagi'));
+              googleSsoBtn.innerHTML = `
+                <iconify-icon icon="logos:google-icon" aria-hidden="true" style="font-size:18px;"></iconify-icon>
+                <span>Masuk dengan Akun Google</span>
+                <span class="masuk__google-badge">Google AI Pro</span>
+              `;
+              googleSsoBtn.style.opacity = '1';
+              googleSsoBtn.style.pointerEvents = 'auto';
+            }
+          } catch (e) {
+            // Offline/demo fallback
+            document.cookie = 'user_role=' + (selectedRole || 'head') + '; path=/; max-age=2592000; SameSite=Lax';
+            window.location.href = '/dasbor-metrik?sso=google_success';
           }
+        });
 
-          const email = inputEmail?.value.trim().toLowerCase() || '';
-          const password = inputPassword?.value || '';
-
-          setTimeout(() => {
-            if (!password || password.length < 6) {
-              if (alertBox && alertText) {
-                alertBox.classList.remove('success');
-                alertText.textContent = 'Kata sandi minimal 6 karakter.';
-                alertBox.hidden = false;
-              }
-              if (btnSubmit) {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Masuk ke Dasbor';
-              }
-              return;
-            }
-
-            // Simpan peran & sesi ke localStorage
-            try {
-              localStorage.setItem('user_role', selectedRole);
-              localStorage.setItem('user_email', email);
-              localStorage.setItem('user_logged_in', 'true');
-              document.cookie = `user_role=${selectedRole}; path=/; max-age=2592000`;
-            } catch {}
-
-            if (alertBox && alertText) {
-              alertBox.classList.add('success');
-              alertText.textContent = `Berhasil masuk! Mengarahkan ke Dasbor Humas (${selectedRole})...`;
-              alertBox.hidden = false;
-            }
-
-            setTimeout(() => {
-              window.location.href = '/dasbor-metrik';
-            }, 800);
-          }, 500);
+        document.getElementById('forgot-link')?.addEventListener('click', (e) => {
+          e.preventDefault();
+          alert('Untuk pemulihan kata sandi akun lembaga, silakan hubungi tim IT/Admin di admin@pedulinegeri.org');
         });
       });
     </script>

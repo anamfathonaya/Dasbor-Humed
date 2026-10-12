@@ -17,18 +17,11 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
   {
-    title: 'Dasbor Metrik',
-    href: '/dasbor-metrik',
+    title: 'Dasbor & Metrik',
+    href: '/dasbor',
     icon: '📊',
     roles: ['head', 'admin', 'staff'],
     description: 'Ringkasan metrik sosmed, web & iklan'
-  },
-  {
-    title: 'Kalender Konten',
-    href: '/kalender-konten',
-    icon: '📅',
-    roles: ['head', 'admin', 'staff'],
-    description: 'Jadwal tayang & pengingat berkala'
   },
   {
     title: 'Papan Proyek',
@@ -38,11 +31,11 @@ const menuItems: MenuItem[] = [
     description: 'Kanban & timeline peliputan'
   },
   {
-    title: 'Pantauan Berita',
-    href: '/pantauan-berita',
-    icon: '📰',
+    title: 'Kalender Konten',
+    href: '/kalender-konten',
+    icon: '📅',
     roles: ['head', 'admin', 'staff'],
-    description: 'RSS, Google News & Telegram rujukan'
+    description: 'Jadwal tayang & pengingat berkala'
   },
   {
     title: 'Insight Konten',
@@ -52,25 +45,39 @@ const menuItems: MenuItem[] = [
     description: 'Analisis gap topik & rekomendasi ide'
   },
   {
+    title: 'Pantauan Berita',
+    href: '/pantauan-berita',
+    icon: '📰',
+    roles: ['head', 'admin', 'staff'],
+    description: 'RSS, Google News & rujukan berita'
+  },
+  {
     title: 'Laporan & Anggaran',
-    href: '/laporan-anggaran',
+    href: '/laporan',
     icon: '💰',
     roles: ['head', 'admin'],
     description: 'RAB, LRA & laporan kinerja'
   },
   {
-    title: 'Basis Pengetahuan & SOP',
+    title: 'Basis Pengetahuan',
     href: '/basis-pengetahuan',
     icon: '📚',
     roles: ['head', 'admin', 'staff'],
     description: 'Repositori SOP, panduan krisis & alur'
   },
   {
+    title: 'SOP Visual',
+    href: '/sop',
+    icon: '🔄',
+    roles: ['head', 'admin', 'staff'],
+    description: 'Alur SOP & verifikasi checklist APD'
+  },
+  {
     title: 'Pengaturan & Integrasi',
     href: '/pengaturan',
     icon: '⚙️',
     roles: ['head', 'admin'],
-    description: 'DAM NAS, Workspace & matriks otorisasi'
+    description: 'DAM NAS, Google SSO & matriks otorisasi'
   }
 ];
 ---

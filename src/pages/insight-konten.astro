@@ -1,585 +1,382 @@
 ---
-import {
-  mockContentInsights,
-  mockPillarPerformance,
-  mockBestTimings,
-  mockTrendingTopics,
-  mockContentGaps,
-  mockIdeaRecommendations,
-} from '../lib/clientDataFetcher';
-import TrendingTopics from '../components/TrendingTopics.astro';
-import ContentGaps from '../components/ContentGaps.astro';
-import IdeaRecommendations from '../components/IdeaRecommendations.astro';
-import SavedIdeas from '../components/SavedIdeas.astro';
-import RoleNavigation from '../components/RoleNavigation.astro';
-
-const channels = ['Semua Saluran', 'Instagram', 'TikTok', 'YouTube', 'Website', 'Facebook'];
-const verdicts = ['Semua Status', 'Sangat Efektif', 'Stabil', 'Perlu Optimasi'];
+import HumasLayout from '../layouts/HumasLayout.astro';
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Insight Konten Terbaru — Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/insight-konten" />
+<HumasLayout
+  title="Insight Konten — Humas Internal Peduli Negeri"
+  pageTitle="Insight Konten"
+  pageSubtitle="Tren topik, analisis celah liputan (content gaps), dan rekomendasi ide"
+  currentPath="/insight-konten"
+  pageContentId="insight-konten"
+>
+  <div class="insight" data-node-id="insight.root">
+    <!-- Toolbar Pengaturan Periode Analitik -->
+    <section class="insight__toolbar" aria-label="Pengaturan periode">
+      <span class="insight__field">
+        <label for="insight-periode">Periode analitik</label>
+        <select id="insight-periode" data-period>
+          <option value="30">30 hari terakhir</option>
+          <option value="90" selected>90 hari terakhir</option>
+          <option value="180">6 bulan terakhir</option>
+        </select>
+      </span>
+      <span class="insight__field">
+        <label for="insight-banding">Bandingkan dengan</label>
+        <select id="insight-banding" data-compare>
+          <option value="prev" selected>Periode sebelumnya</option>
+          <option value="yoy">Periode sama tahun lalu</option>
+        </select>
+      </span>
+      <span class="insight__toolbar-note" data-period-note>
+        Sumber: agregasi pemantauan berita RSS/Telegram, sentimen publik, dan riwayat interaksi media sosial lembaga.
+      </span>
+    </section>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
-        <div>
-          <h2>Insight & Evaluasi Kinerja Konten</h2>
-          <p class="muted">Analisis efektivitas publikasi, pilar konten berkinerja terbaik, dan rekomendasi waktu tayang optimal</p>
-        </div>
-        <div class="actions">
-          <a href="/kalender-konten" class="btn-primary" style="text-decoration:none;">
-            📅 Terapkan ke Kalender Konten
-          </a>
-          <button id="refresh-insights-btn" class="btn-secondary" title="Segarkan data analisis">
-            <span class="icon">🔄</span> Segarkan Analisis
-          </button>
-        </div>
-      </div>
+    <!-- Layout 2 Kolom: Kiri Tren & Content Gap, Kanan Ide Tersimpan -->
+    <div class="insight__cols">
+      <div style="display:flex;flex-direction:column;gap:var(--space-5,20px);min-width:0;">
+        <!-- Card 1: Tren Topik -->
+        <section class="insight__card" aria-labelledby="insight-tren-title" data-node-id="insight.tren">
+          <div class="insight__card-head">
+            <h2 id="insight-tren-title">Tren Topik Komunikasi</h2>
+            <p>Frekuensi kemunculan lintas sumber berita & kanal sosial</p>
+          </div>
+          <div class="insight__chart">
+            <div class="insight__legend">
+              <span><i class="insight__swatch" style="background:var(--color-data-blue, #2f6ea8)"></i> Periode ini</span>
+              <span><i class="insight__swatch" style="background:var(--color-neutral-soft, #e9edf2)"></i> Periode pembanding</span>
+            </div>
+            <div class="insight__bars" data-bars></div>
+          </div>
+          <p class="insight__summary" data-chart-summary>Topik "Layanan publik digital" naik paling tinggi dibanding periode pembanding.</p>
+        </section>
 
-      <!-- KARTU RINGKASAN UTAMA (KPI) -->
-      <section class="overview-stats">
-        <div class="stat-card">
-          <span class="stat-icon">📈</span>
-          <div>
-            <b class="stat-value">7.8%</b>
-            <span class="stat-label">Rata-rata Engagement Rate</span>
+        <!-- Card 2: Content Gap Table -->
+        <section class="insight__card" aria-labelledby="insight-gap-title" data-node-id="insight.gap">
+          <div class="insight__card-head">
+            <h2 id="insight-gap-title">Celah Liputan (Content Gap)</h2>
+            <p>Topik dengan animo pencarian tinggi namun liputan internal masih minim</p>
           </div>
-        </div>
-        <div class="stat-card stat-highlight">
-          <span class="stat-icon">🏆</span>
-          <div>
-            <b class="stat-value">Edukasi & Humaniora</b>
-            <span class="stat-label">Pilar Paling Berdampak (8.1% Eng)</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">👥</span>
-          <div>
-            <b class="stat-value">252.8K</b>
-            <span class="stat-label">Total Jangkauan (30 Hari)</span>
-          </div>
-        </div>
-        <div class="stat-card role-financial" id="kpi-conversions-card" data-min-role="admin">
-          <span class="stat-icon">🎯</span>
-          <div>
-            <b class="stat-value">1,657</b>
-            <span class="stat-label">Konversi Aksi / Donasi (Restricted)</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- BAGIAN KEDUA: PILAR KONTEN & REKOMENDASI JADWAL TAYANG -->
-      <section class="split-section">
-        <!-- ANALISIS PILAR KONTEN -->
-        <div class="card-box">
-          <div class="card-box-header">
-            <h3>📊 Kinerja Pilar Konten</h3>
-            <span class="badge-info">4 Pilar Terpantau</span>
-          </div>
-          <p class="section-desc">Evaluasi pilar mana yang paling memicu empati dan partisipasi donatur.</p>
-          <div class="pillar-table-wrapper">
-            <table class="pillar-table">
+          <div class="insight__table-wrap">
+            <table>
+              <caption class="insight__summary" style="border-top:0;padding:var(--space-3,12px) var(--space-3,12px) 0;">
+                Volume permintaan dari pencarian situs dan interaksi kanal sosial pada periode terpilih.
+              </caption>
               <thead>
                 <tr>
-                  <th>Nama Pilar</th>
-                  <th>Jumlah Konten</th>
-                  <th>Avg. Eng</th>
-                  <th>Format Paling Efektif</th>
-                  <th>Status</th>
+                  <th scope="col">Topik Bahasan</th>
+                  <th scope="col">Permintaan</th>
+                  <th scope="col">Liputan</th>
+                  <th scope="col">Peluang</th>
+                  <th scope="col">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
-                {mockPillarPerformance.map((p) => (
-                  <tr>
-                    <td><b>{p.pillarName}</b></td>
-                    <td>{p.totalPosts} post</td>
-                    <td><span class="rate-badge">{p.avgEngagement}%</span></td>
-                    <td class="format-cell">{p.topFormat}</td>
-                    <td>
-                      <span class={`status-chip status-${p.status.toLowerCase().replace(' ', '-')}`}>
-                        {p.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+              <tbody data-gap-body>
+                <tr>
+                  <td class="insight-gap-title">Distribusi bantuan air bersih kemarau<span>Kategori: Bencana & Sosial</span></td>
+                  <td class="num">4.120</td>
+                  <td class="num">3 artikel</td>
+                  <td><span class="insight__badge" data-tone="high">Tinggi</span></td>
+                  <td><button class="insight__btn" type="button" data-action="insight:save-idea" data-idea="Liputan distribusi air bersih posko kekeringan" data-source="Content gap · Bencana">Simpan ide</button></td>
+                </tr>
+                <tr>
+                  <td class="insight-gap-title">Transparansi penyaluran donasi publik<span>Kategori: Akuntabilitas</span></td>
+                  <td class="num">3.480</td>
+                  <td class="num">5 artikel</td>
+                  <td><span class="insight__badge" data-tone="high">Tinggi</span></td>
+                  <td><button class="insight__btn" type="button" data-action="insight:save-idea" data-idea="Infografis laporan penyaluran donasi publik" data-source="Content gap · Akuntabilitas">Simpan ide</button></td>
+                </tr>
+                <tr>
+                  <td class="insight-gap-title">Mitigasi bencana hidrometeorologi<span>Kategori: Kesiapsiagaan</span></td>
+                  <td class="num">2.760</td>
+                  <td class="num">7 artikel</td>
+                  <td><span class="insight__badge" data-tone="mid">Sedang</span></td>
+                  <td><button class="insight__btn" type="button" data-action="insight:save-idea" data-idea="Panduan warga siaga bencana hidrometeorologi" data-source="Content gap · Kesiapsiagaan">Simpan ide</button></td>
+                </tr>
+                <tr>
+                  <td class="insight-gap-title">Pemberdayaan UMKM binaan pasca-bencana<span>Kategori: Ekonomi</span></td>
+                  <td class="num">1.940</td>
+                  <td class="num">6 artikel</td>
+                  <td><span class="insight__badge" data-tone="mid">Sedang</span></td>
+                  <td><button class="insight__btn" type="button" data-action="insight:save-idea" data-idea="Kisah inspiratif UMKM bangkit pasca-bencana" data-source="Content gap · Ekonomi">Simpan ide</button></td>
+                </tr>
+                <tr>
+                  <td class="insight-gap-title">Layanan pengaduan dan respon cepat<span>Kategori: Pelayanan</span></td>
+                  <td class="num">1.210</td>
+                  <td class="num">9 artikel</td>
+                  <td><span class="insight__badge" data-tone="low">Terliput</span></td>
+                  <td><button class="insight__btn" type="button" data-action="insight:save-idea" data-idea="Alur respon cepat pengaduan kemanusiaan" data-source="Content gap · Pelayanan">Simpan ide</button></td>
+                </tr>
               </tbody>
             </table>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <!-- REKOMENDASI WAKTU POSTING (AI / BEST TIMINGS) -->
-        <div class="card-box">
-          <div class="card-box-header">
-            <h3>⏰ Jadwal & Waktu Tayang Optimal</h3>
-            <span class="badge-success">Data Terverifikasi</span>
-          </div>
-          <p class="section-desc">Pola waktu dengan keterlibatan audiens tertinggi berdasarkan riwayat 90 hari.</p>
-          <div class="timing-list">
-            {mockBestTimings.map((t) => (
-              <div class="timing-item">
-                <div class="timing-top">
-                  <span class="channel-tag">{t.channel}</span>
-                  <span class="peak-eng">Puncak: {t.peakEngagementRate}</span>
-                </div>
-                <div class="timing-meta">
-                  <b>📅 {t.bestDay}</b> · <span class="slot">🕒 {t.bestTimeSlot}</span>
-                </div>
-                <p class="timing-reason">{t.reason}</p>
+      <!-- Card 3: Ide Tersimpan & Siap Dijadwalkan -->
+      <section class="insight__card" aria-labelledby="insight-ide-title" data-node-id="insight.ide">
+        <div class="insight__card-head">
+          <h2 id="insight-ide-title">Ide Konten Tersimpan</h2>
+          <p><span data-idea-count>2</span> ide siap diadopsi ke editorial</p>
+        </div>
+        <div class="insight__ideas" data-idea-list>
+          <article class="insight__idea" data-idea-item data-adopted="false">
+            <div class="insight__idea-head">
+              <div style="min-width:0;">
+                <h3>Seri penjelasan singkat SOP tanggap darurat</h3>
+                <p class="insight__idea-meta">Tren topik · Edukasi Publik · disimpan 10 Juni 2026</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <!-- DAFTAR TREN TOPIK BERURUTAN DENGAN LABEL KENAIKAN -->
-      <section style="margin-bottom: 2rem;">
-        <TrendingTopics topics={mockTrendingTopics} />
-      </section>
-
-      <!-- CELAH TOPIK BELUM DIANGKAT DENGAN ALASAN SINGKAT -->
-      <section style="margin-bottom: 2rem;">
-        <ContentGaps gaps={mockContentGaps} />
-      </section>
-
-      <!-- REKOMENDASI IDE KONTEN DENGAN AKSI SIMPAN DAN LEWATI -->
-      <section style="margin-bottom: 2rem;">
-        <IdeaRecommendations ideas={mockIdeaRecommendations} />
-      </section>
-
-      <!-- DAFTAR IDE TERSIMPAN DENGAN STATUS DAN AKSI KIRIM KE KALENDER -->
-      <section style="margin-bottom: 2rem;">
-        <SavedIdeas ideas={mockIdeaRecommendations} />
-      </section>
-
-      <!-- FILTER & DAFTAR EVALUASI KONTEN TERBARU -->
-      <section class="insight-feed-section">
-        <div class="feed-header-controls">
-          <div>
-            <h3>Daftar Evaluasi Konten Terbaru</h3>
-            <p class="muted">Catatan performa dan evaluasi redaksi untuk tiap konten yang telah dipublikasikan</p>
-          </div>
-          <div class="filter-controls">
-            <div class="search-wrap">
-              <span class="search-icon">🔍</span>
-              <input type="text" id="filter-search" placeholder="Cari judul konten, tema..." />
             </div>
-            <select id="filter-channel">
-              {channels.map(c => <option value={c}>{c}</option>)}
-            </select>
-            <select id="filter-verdict">
-              {verdicts.map(v => <option value={v}>{v}</option>)}
-            </select>
-          </div>
+            <div class="insight__idea-actions">
+              <button class="insight__btn" type="button" data-action="insight:adopt">Adopsi ke kalender</button>
+              <button class="insight__btn" type="button" data-action="insight:remove">Hapus</button>
+            </div>
+          </article>
+          <article class="insight__idea" data-idea-item data-adopted="false">
+            <div class="insight__idea-head">
+              <div style="min-width:0;">
+                <h3>Infografis capaian penyaluran bantuan Q2</h3>
+                <p class="insight__idea-meta">Content gap · Akuntabilitas · disimpan 8 Juni 2026</p>
+              </div>
+            </div>
+            <div class="insight__idea-actions">
+              <button class="insight__btn" type="button" data-action="insight:adopt">Adopsi ke kalender</button>
+              <button class="insight__btn" type="button" data-action="insight:remove">Hapus</button>
+            </div>
+          </article>
         </div>
-
-        <div id="insight-items-list" class="insight-cards-grid">
-          <!-- Diisi via JavaScript -->
+        <div class="insight__empty" data-idea-empty hidden>
+          <h3>Belum ada ide tersimpan</h3>
+          <p>Simpan ide dari daftar content gap atau tren topik agar bisa dijadwalkan ke kalender editorial.</p>
         </div>
       </section>
-    </main>
+    </div>
+  </div>
 
-    <!-- NOTIFIKASI TOAST -->
-    <div id="toast" class="toast">Aksi berhasil dijalankan!</div>
+  <!-- Dialog Adopsi Ide -->
+  <dialog class="insight__dialog" id="insight-adopt-dialog" data-node-id="insight.dialog" aria-labelledby="insight-dialog-title">
+    <div class="insight__dialog-head">
+      <div>
+        <h2 id="insight-dialog-title">Adopsi ide ke kalender</h2>
+        <p data-dialog-source id="insight-dialog-sub">Atur rencana tayang untuk ide terpilih.</p>
+      </div>
+      <button class="insight__close" type="button" id="btn-close-adopt" aria-label="Tutup dialog">
+        <iconify-icon icon="lucide:x" aria-hidden="true"></iconify-icon>
+      </button>
+    </div>
+    <form method="dialog" id="insight-adopt-form">
+      <div class="insight__dialog-body">
+        <div>
+          <label class="insight__label" for="insight-tanggal">Tanggal rencana tayang</label>
+          <input class="insight__input" id="insight-tanggal" type="date" value="2026-06-18" required />
+        </div>
+        <div>
+          <label class="insight__label" for="insight-kanal">Kanal publikasi</label>
+          <select class="insight__select" id="insight-kanal">
+            <option>Instagram</option>
+            <option>Situs web</option>
+            <option>Facebook</option>
+            <option>WhatsApp Siaran</option>
+            <option>YouTube</option>
+          </select>
+        </div>
+        <div>
+          <label class="insight__label" for="insight-penanggung">Penanggung jawab</label>
+          <select class="insight__select" id="insight-penanggung">
+            <option>Rani Maulida</option>
+            <option>Budi Santoso</option>
+            <option>Dewi Lestari</option>
+          </select>
+        </div>
+      </div>
+      <div class="insight__dialog-foot">
+        <button class="insight__btn" type="button" id="btn-cancel-adopt">Batal</button>
+        <button class="insight__btn insight__btn--primary" type="submit">Simpan jadwal</button>
+      </div>
+    </form>
+  </dialog>
 
-    <script is:inline define:vars={{ insightsData: mockContentInsights }}>
-      let currentData = [...insightsData];
-      let selectedChannel = 'Semua Saluran';
-      let selectedVerdict = 'Semua Status';
-      let searchKeyword = '';
+  <p class="insight__toast" role="status" aria-live="polite" id="insight-toast" hidden></p>
 
-      const listContainer = document.getElementById('insight-items-list');
-      const searchInput = document.getElementById('filter-search');
-      const channelSelect = document.getElementById('filter-channel');
-      const verdictSelect = document.getElementById('filter-verdict');
-      const toastEl = document.getElementById('toast');
-      const refreshBtn = document.getElementById('refresh-insights-btn');
+  <script is:inline>
+    document.addEventListener('DOMContentLoaded', () => {
+      const insight = document.querySelector('[data-node-id="insight.root"]');
+      if (!insight) return;
 
-      function showToast(msg) {
-        toastEl.textContent = msg;
-        toastEl.classList.add('show');
-        setTimeout(() => toastEl.classList.remove('show'), 2800);
-      }
+      const period = insight.querySelector('[data-period]');
+      const compare = insight.querySelector('[data-compare]');
+      const bars = insight.querySelector('[data-bars]');
+      const summary = insight.querySelector('[data-chart-summary]');
+      const ideaList = insight.querySelector('[data-idea-list]');
+      const ideaEmpty = insight.querySelector('[data-idea-empty]');
+      const ideaCount = insight.querySelector('[data-idea-count]');
+      const dialog = document.getElementById('insight-adopt-dialog');
+      const dialogSub = document.getElementById('insight-dialog-sub');
+      const toast = document.getElementById('insight-toast');
 
-      function renderInsightList() {
-        const filtered = currentData.filter(item => {
-          const matchChannel = selectedChannel === 'Semua Saluran' || item.channel === selectedChannel;
-          const matchVerdict = selectedVerdict === 'Semua Status' || item.verdict === selectedVerdict;
-          const q = searchKeyword.toLowerCase().trim();
-          const matchSearch = !q || item.title.toLowerCase().includes(q) || item.pillar.toLowerCase().includes(q) || item.theme.toLowerCase().includes(q);
-          return matchChannel && matchVerdict && matchSearch;
+      let currentIdeaTitle = '';
+
+      const datasets = {
+        '30': {
+          unit: '30 hari terakhir',
+          rows: [
+            { label: 'Bantuan kemanusiaan', now: 118, prev: 96 },
+            { label: 'Mitigasi bencana', now: 94, prev: 88 },
+            { label: 'Pemberdayaan UMKM', now: 76, prev: 61 },
+            { label: 'Transparansi anggaran', now: 64, prev: 40 },
+            { label: 'Layanan posko medis', now: 52, prev: 50 },
+            { label: 'Pendidikan yatim', now: 41, prev: 45 }
+          ]
+        },
+        '90': {
+          unit: '90 hari terakhir',
+          rows: [
+            { label: 'Bantuan kemanusiaan', now: 412, prev: 305 },
+            { label: 'Mitigasi bencana', now: 288, prev: 264 },
+            { label: 'Pemberdayaan UMKM', now: 231, prev: 178 },
+            { label: 'Transparansi anggaran', now: 196, prev: 121 },
+            { label: 'Layanan posko medis', now: 158, prev: 149 },
+            { label: 'Pendidikan yatim', now: 124, prev: 138 }
+          ]
+        },
+        '180': {
+          unit: '6 bulan terakhir',
+          rows: [
+            { label: 'Bantuan kemanusiaan', now: 806, prev: 604 },
+            { label: 'Mitigasi bencana', now: 561, prev: 522 },
+            { label: 'Pemberdayaan UMKM', now: 448, prev: 361 },
+            { label: 'Transparansi anggaran', now: 372, prev: 240 },
+            { label: 'Layanan posko medis', now: 311, prev: 296 },
+            { label: 'Pendidikan yatim', now: 252, prev: 277 }
+          ]
+        }
+      };
+
+      const fmt = new Intl.NumberFormat('id-ID');
+
+      const drawChart = () => {
+        const set = datasets[period.value] || datasets['90'];
+        const max = Math.max.apply(null, set.rows.map((r) => Math.max(r.now, r.prev)));
+        bars.replaceChildren();
+
+        set.rows.forEach((row) => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'insight__row';
+
+          const label = document.createElement('span');
+          label.className = 'insight__row-label';
+          label.textContent = row.label;
+
+          const track = document.createElement('span');
+          track.className = 'insight__track';
+          const barNow = document.createElement('span');
+          barNow.className = 'insight__bar';
+          barNow.style.width = (row.now / max * 100).toFixed(1) + '%';
+          const barPrev = document.createElement('span');
+          barPrev.className = 'insight__bar insight__bar--prev';
+          barPrev.style.width = (row.prev / max * 100).toFixed(1) + '%';
+          track.append(barNow, barPrev);
+
+          const value = document.createElement('span');
+          value.className = 'insight__row-value';
+          value.textContent = fmt.format(row.now);
+
+          const note = document.createElement('span');
+          note.className = 'insight__row-note';
+          const diff = row.now - row.prev;
+          const sign = diff >= 0 ? '+' : '−';
+          note.textContent = 'Pembanding ' + fmt.format(row.prev) + ' · ' + sign + fmt.format(Math.abs(diff));
+
+          wrapper.append(label, track, value, note);
+          bars.append(wrapper);
         });
 
-        if (filtered.length === 0) {
-          listContainer.innerHTML = `
-            <div class="empty-state">
-              <span class="empty-icon">🔍</span>
-              <h4>Tidak ada insight konten yang cocok</h4>
-              <p>Sesuaikan kata kunci pencarian atau ubah filter saluran dan status penilaian.</p>
+        const top = set.rows.slice().sort((a, b) => (b.now - b.prev) - (a.now - a.prev))[0];
+        const compareLabel = compare.value === 'yoy' ? 'periode sama tahun lalu' : 'periode pembanding';
+        if (summary) summary.textContent = 'Periode ' + set.unit + ': topik "' + top.label + '" naik paling tinggi dibanding ' + compareLabel + '.';
+      };
+
+      const refreshIdeas = () => {
+        const items = Array.from(ideaList.querySelectorAll('[data-idea-item]'));
+        if (ideaCount) ideaCount.textContent = String(items.length);
+        if (ideaEmpty) ideaEmpty.hidden = items.length !== 0;
+      };
+
+      const notify = (message) => {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.hidden = false;
+        setTimeout(() => { toast.hidden = true; }, 3200);
+      };
+
+      period?.addEventListener('change', drawChart);
+      compare?.addEventListener('change', drawChart);
+      drawChart();
+
+      // Actions
+      insight.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-action]');
+        if (!trigger) return;
+        const action = trigger.dataset.action;
+
+        if (action === 'insight:save-idea') {
+          const title = trigger.dataset.idea;
+          const exists = Array.from(ideaList.querySelectorAll('[data-idea-item] h3')).some((h) => h.textContent === title);
+          if (exists) {
+            notify('Ide ini sudah tersimpan dalam daftar.');
+            return;
+          }
+
+          const card = document.createElement('article');
+          card.className = 'insight__idea';
+          card.setAttribute('data-idea-item', '');
+          card.dataset.adopted = 'false';
+          card.innerHTML = `
+            <div class="insight__idea-head">
+              <div style="min-width:0;">
+                <h3>${title}</h3>
+                <p class="insight__idea-meta">${trigger.dataset.source || 'Content gap'} · Disimpan baru saja</p>
+              </div>
+            </div>
+            <div class="insight__idea-actions">
+              <button class="insight__btn" type="button" data-action="insight:adopt">Adopsi ke kalender</button>
+              <button class="insight__btn" type="button" data-action="insight:remove">Hapus</button>
             </div>
           `;
-          return;
+          ideaList.prepend(card);
+          refreshIdeas();
+          notify(`Ide disimpan: "${title}"`);
         }
 
-        listContainer.innerHTML = filtered.map(item => {
-          const verdictClass = item.verdict === 'Sangat Efektif' ? 'verdict-high' : item.verdict === 'Stabil' ? 'verdict-mid' : 'verdict-low';
-
-          return `
-            <article class="insight-card">
-              <div class="insight-card-top">
-                <div class="badges-row">
-                  <span class="channel-badge">${item.channel}</span>
-                  <span class="pillar-badge">${item.pillar}</span>
-                  <span class="theme-badge">${item.theme}</span>
-                </div>
-                <span class="verdict-tag ${verdictClass}">${item.verdict}</span>
-              </div>
-
-              <h4 class="insight-title">${item.title}</h4>
-
-              <div class="metrics-grid">
-                <div class="metric-box">
-                  <span class="m-val">${item.reach.toLocaleString()}</span>
-                  <span class="m-lbl">Jangkauan (Reach)</span>
-                </div>
-                <div class="metric-box">
-                  <span class="m-val">${item.engagementRate}%</span>
-                  <span class="m-lbl">Engagement Rate</span>
-                </div>
-                <div class="metric-box">
-                  <span class="m-val">${item.savesOrShares.toLocaleString()}</span>
-                  <span class="m-lbl">Simpan & Bagikan</span>
-                </div>
-                <div class="metric-box metric-conversion-box">
-                  <span class="m-val">${item.conversions}</span>
-                  <span class="m-lbl">Konversi / Donasi</span>
-                </div>
-              </div>
-
-              <div class="editorial-box">
-                <span class="box-tag">💡 Evaluasi & Catatan Redaksi:</span>
-                <p class="insight-summary">${item.summaryInsight}</p>
-              </div>
-
-              <div class="insight-card-footer">
-                <span class="pub-time">📅 Tayang: ${item.publishDate}</span>
-                <div class="btn-group">
-                  <button type="button" class="btn-copy-eval" data-text="${item.summaryInsight}">
-                    📋 Salin Catatan
-                  </button>
-                  <a href="/kalender-konten" class="btn-link-cal">
-                    Jadikan Referensi Kalender →
-                  </a>
-                </div>
-              </div>
-            </article>
-          `;
-        }).join('');
-
-        listContainer.querySelectorAll('.btn-copy-eval').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const txt = e.currentTarget.dataset.text;
-            navigator.clipboard?.writeText(txt);
-            showToast('Catatan evaluasi konten berhasil disalin ke clipboard!');
-          });
-        });
-
-        if (typeof applyRoleVisibility === 'function') {
-          applyRoleVisibility();
-        }
-      }
-
-      searchInput.addEventListener('input', (e) => {
-        searchKeyword = e.target.value;
-        renderInsightList();
-      });
-
-      channelSelect.addEventListener('change', (e) => {
-        selectedChannel = e.target.value;
-        renderInsightList();
-      });
-
-      verdictSelect.addEventListener('change', (e) => {
-        selectedVerdict = e.target.value;
-        renderInsightList();
-      });
-
-      refreshBtn.addEventListener('click', () => {
-        refreshBtn.classList.add('rotating');
-        setTimeout(() => {
-          refreshBtn.classList.remove('rotating');
-          showToast('Data analitik insight konten berhasil diperbarui!');
-          renderInsightList();
-        }, 500);
-      });
-
-      // Logika least privilege sesuai role pengguna (head, admin, staff)
-      const userRoleSelect = (document.getElementById('global-role-switcher') || document.getElementById('user-role')) as HTMLSelectElement | null;
-      let currentRole = 'head';
-      try {
-        const savedRole = localStorage.getItem('user_role');
-        if (savedRole && ['head', 'admin', 'staff'].includes(savedRole)) {
-          currentRole = savedRole;
-          if (userRoleSelect) userRoleSelect.value = savedRole;
-        }
-      } catch (e) {}
-
-      function applyRoleVisibility() {
-        const isStaff = currentRole === 'staff';
-        const kpiConversions = document.getElementById('kpi-conversions-card');
-        if (kpiConversions) {
-          kpiConversions.style.display = isStaff ? 'none' : 'flex';
+        if (action === 'insight:remove') {
+          const card = trigger.closest('[data-idea-item]');
+          if (card) {
+            card.remove();
+            refreshIdeas();
+            notify('Ide dihapus dari simpanan.');
+          }
         }
 
-        // Tampilkan atau sembunyikan kotak metrik konversi dalam kartu insight
-        document.querySelectorAll('.metric-conversion-box').forEach(box => {
-          (box as HTMLElement).style.display = isStaff ? 'none' : 'block';
-        });
-      }
-
-      window.addEventListener('roleChanged', (e: any) => {
-        if (e.detail?.role) {
-          currentRole = e.detail.role;
-          applyRoleVisibility();
+        if (action === 'insight:adopt') {
+          const card = trigger.closest('[data-idea-item]');
+          currentIdeaTitle = card?.querySelector('h3')?.textContent || 'Ide Konten';
+          if (dialogSub) dialogSub.textContent = `Atur rencana tayang untuk: "${currentIdeaTitle}"`;
+          if (dialog) dialog.showModal();
         }
       });
 
-      if (userRoleSelect) {
-        userRoleSelect.addEventListener('change', (e) => {
-          currentRole = e.target.value;
-          try {
-            localStorage.setItem('user_role', currentRole);
-          } catch (err) {}
-          showToast(`Peran dialihkan ke: ${currentRole.toUpperCase()}`);
-          applyRoleVisibility();
-        });
-      }
+      document.getElementById('btn-close-adopt')?.addEventListener('click', () => {
+        if (dialog) dialog.close();
+      });
+      document.getElementById('btn-cancel-adopt')?.addEventListener('click', () => {
+        if (dialog) dialog.close();
+      });
 
-      // Render pertama
-      renderInsightList();
-      applyRoleVisibility();
-    </script>
-  </body>
-</html>
-
-<style is:global>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: #f8fafc;
-    color: #1e293b;
-  }
-
-  /* TOP HEADER */
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1.75rem;
-    background: #0f172a;
-    color: #fff;
-    border-bottom: 1px solid #1e293b;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .brand { display: flex; align-items: center; gap: 0.6rem; }
-  .brand-icon { font-size: 1.3rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; }
-  .top nav a {
-    color: #94a3b8;
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.15s;
-  }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  .role-pill {
-    background: #1e293b;
-    color: #38bdf8;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    border: 1px solid #334155;
-  }
-
-  /* MAIN CONTENT */
-  main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-
-  /* HEAD SECTION */
-  .head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-  .head h2 { margin: 0 0 0.25rem; font-size: 1.4rem; color: #0f172a; }
-  .muted { color: #64748b; font-size: 0.88rem; margin: 0; }
-  .actions { display: flex; gap: 0.6rem; align-items: center; }
-  .btn-primary {
-    font: inherit;
-    background: #0284c7;
-    color: #fff;
-    padding: 0.5rem 0.9rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    transition: background 0.15s;
-  }
-  .btn-primary:hover { background: #0369a1; }
-  .btn-secondary {
-    font: inherit;
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    color: #334155;
-    padding: 0.5rem 0.9rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-secondary:hover { background: #f1f5f9; border-color: #94a3b8; }
-  .rotating .icon { display: inline-block; animation: spin 0.6s linear infinite; }
-  @keyframes spin { 100% { transform: rotate(360deg); } }
-
-  /* OVERVIEW STATS */
-  .overview-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-  }
-  .stat-card {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.15rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-  }
-  .stat-card.stat-highlight { border-left: 4px solid #0284c7; }
-  .stat-icon { font-size: 1.75rem; }
-  .stat-value { font-size: 1.25rem; color: #0f172a; display: block; line-height: 1.2; font-weight: 700; }
-  .stat-label { font-size: 0.8rem; color: #64748b; font-weight: 500; margin-top: 0.15rem; }
-
-  /* SPLIT SECTION */
-  .split-section {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    gap: 1.25rem;
-    margin-bottom: 2rem;
-  }
-  @media (max-width: 900px) {
-    .split-section { grid-template-columns: 1fr; }
-  }
-
-  .card-box {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-  }
-  .card-box-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.25rem;
-  }
-  .card-box-header h3 { margin: 0; font-size: 1.1rem; color: #0f172a; }
-  .badge-info { background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; }
-  .badge-success { background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 999px; }
-  .section-desc { font-size: 0.82rem; color: #64748b; margin: 0 0 1rem; }
-
-  /* PILLAR TABLE */
-  .pillar-table-wrapper { overflow-x: auto; }
-  .pillar-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  .pillar-table th { text-align: left; padding: 0.6rem 0.75rem; background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-weight: 600; }
-  .pillar-table td { padding: 0.75rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
-  .rate-badge { background: #eff6ff; color: #1d4ed8; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 4px; }
-  .format-cell { font-size: 0.8rem; color: #64748b; }
-  .status-chip { font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-block; }
-  .status-high-impact { background: #dcfce7; color: #15803d; }
-  .status-solid { background: #e0f2fe; color: #0369a1; }
-  .status-underperforming { background: #fee2e2; color: #b91c1c; }
-
-  /* TIMING RECOMMENDATIONS */
-  .timing-list { display: flex; flex-direction: column; gap: 0.85rem; }
-  .timing-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; }
-  .timing-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
-  .channel-tag { font-size: 0.75rem; font-weight: 700; color: #0f172a; background: #e2e8f0; padding: 0.15rem 0.45rem; border-radius: 4px; }
-  .peak-eng { font-size: 0.75rem; font-weight: 700; color: #16a34a; }
-  .timing-meta { font-size: 0.85rem; color: #1e293b; margin-bottom: 0.35rem; }
-  .timing-reason { font-size: 0.78rem; color: #64748b; margin: 0; line-height: 1.4; }
-
-  /* FEED SECTION */
-  .insight-feed-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-  .feed-header-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid #f1f5f9; }
-  .feed-header-controls h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: #0f172a; }
-  .filter-controls { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
-  .search-wrap { position: relative; display: flex; align-items: center; }
-  .search-wrap .search-icon { position: absolute; left: 0.65rem; font-size: 0.85rem; color: #94a3b8; }
-  .search-wrap input { font: inherit; font-size: 0.82rem; padding: 0.45rem 0.75rem 0.45rem 2rem; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; }
-  .filter-controls select { font: inherit; font-size: 0.82rem; padding: 0.45rem 0.65rem; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff; }
-
-  /* INSIGHT CARDS GRID */
-  .insight-cards-grid { display: flex; flex-direction: column; gap: 1.1rem; }
-  .insight-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.2rem; transition: border-color 0.15s; }
-  .insight-card:hover { border-color: #cbd5e1; box-shadow: 0 3px 10px rgba(0,0,0,0.03); }
-  .insight-card-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem; }
-  .badges-row { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
-  .channel-badge { background: #0f172a; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 4px; }
-  .pillar-badge { background: #eff6ff; color: #1d4ed8; font-size: 0.72rem; font-weight: 600; padding: 0.15rem 0.45rem; border-radius: 4px; }
-  .theme-badge { background: #f1f5f9; color: #475569; font-size: 0.72rem; font-weight: 500; padding: 0.15rem 0.45rem; border-radius: 4px; }
-  .verdict-tag { font-size: 0.72rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 4px; }
-  .verdict-high { background: #dcfce7; color: #15803d; }
-  .verdict-mid { background: #e0f2fe; color: #0369a1; }
-  .verdict-low { background: #fee2e2; color: #b91c1c; }
-  .insight-title { margin: 0 0 0.85rem; font-size: 1.05rem; color: #0f172a; line-height: 1.4; }
-
-  /* METRICS GRID */
-  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 0.85rem; }
-  .metric-box { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 6px; padding: 0.6rem; }
-  .m-val { font-size: 1.05rem; font-weight: 700; color: #0f172a; display: block; }
-  .m-lbl { font-size: 0.72rem; color: #64748b; }
-
-  /* EDITORIAL BOX */
-  .editorial-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 0.85rem; }
-  .box-tag { font-size: 0.75rem; font-weight: 700; color: #15803d; display: block; margin-bottom: 0.25rem; }
-  .insight-summary { margin: 0; font-size: 0.84rem; color: #166534; line-height: 1.45; }
-
-  .insight-card-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; border-top: 1px solid #f1f5f9; padding-top: 0.75rem; }
-  .pub-time { font-size: 0.75rem; color: #64748b; }
-  .btn-group { display: flex; gap: 0.5rem; align-items: center; }
-  .btn-copy-eval, .btn-link-cal { font: inherit; font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; text-decoration: none; transition: all 0.15s; }
-  .btn-copy-eval { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
-  .btn-copy-eval:hover { background: #f8fafc; border-color: #94a3b8; }
-  .btn-link-cal { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-  .btn-link-cal:hover { background: #bae6fd; }
-
-  /* EMPTY STATE */
-  .empty-state { text-align: center; padding: 3rem 1.5rem; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; }
-  .empty-icon { font-size: 2rem; display: block; margin-bottom: 0.4rem; }
-  .empty-state h4 { margin: 0 0 0.25rem; color: #1e293b; font-size: 1rem; }
-  .empty-state p { margin: 0; color: #64748b; font-size: 0.82rem; }
-
-  /* TOAST */
-  .toast { position: fixed; bottom: 2rem; right: 2rem; background: #0f172a; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.25s ease-out; z-index: 9999; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-</style>
+      document.getElementById('insight-adopt-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (dialog) dialog.close();
+        notify(`Ide berhasil dijadwalkan ke Kalender Konten: "${currentIdeaTitle}"`);
+      });
+    });
+  </script>
+</HumasLayout>

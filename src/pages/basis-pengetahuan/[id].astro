@@ -1,44 +1,14 @@
 ---
+import HumasLayout from '../../layouts/HumasLayout.astro';
 import { mockKnowledgeDocs } from '../../lib/clientDataFetcher';
-import RoleNavigation from '../../components/RoleNavigation.astro';
 
 const { id } = Astro.params;
-const docId = Number(id);
-const doc = mockKnowledgeDocs.find(d => d.id === docId);
+const doc = mockKnowledgeDocs.find(d => d.id === Number(id) || d.code.toLowerCase() === (id || '').toLowerCase());
 
-// Fallback jika tidak ditemukan
 if (!doc) {
   return Astro.redirect('/basis-pengetahuan');
 }
 
-// Dokumen terkait
-const relatedDocs = doc.relatedCodes 
-  ? mockKnowledgeDocs.filter(d => doc.relatedCodes?.includes(d.code))
-  : mockKnowledgeDocs.filter(d => d.id !== doc.id && d.category === doc.category).slice(0, 3);
-
-// Default sections jika belum ada section terinci
-const sections = doc.sections || [
-  {
-    heading: '1. Gambaran Umum dan Ruang Lingkup',
-    content: doc.description,
-  },
-  {
-    heading: '2. Prosedur dan Panduan Pelaksanaan',
-    content: 'Seluruh tim dan relawan pelaksana wajib mengikuti urutan langkah yang telah disetujui dalam rapat pleno redaksi serta berkoordinasi dengan penanggung jawab terkait.',
-    checklist: [
-      'Lakukan koordinasi internal minimal 1 jam sebelum pelaksanaan tugas.',
-      'Periksa kembali kelengkapan data lapangan dan dokumen pendukung.',
-      'Laporkan setiap kendala teknis kepada koordinator bidang terkait.'
-    ]
-  },
-  {
-    heading: '3. Evaluasi dan Pengawasan Kepatuhan',
-    content: 'Pemeriksaan kepatuhan prosedur dilaksanakan secara periodik setiap akhir fase operasional oleh Tim Verifikasi & Pengendalian Mutu Lembaga.',
-    notes: 'Pembaruan isi panduan ini wajib diajukan melalui mekanisme rapat evaluasi triwulan divisi.'
-  }
-];
-
-// Langkah berurutan (SOP Steps)
 const steps = doc.steps || [
   {
     stepNumber: 1,
@@ -70,751 +40,74 @@ const steps = doc.steps || [
 ];
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{doc.code}: {doc.title} — Basis Pengetahuan Dasbor Humas</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/basis-pengetahuan" />
-
-    <main>
-      <!-- BREADCRUMB NAVIGASI -->
-      <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="/basis-pengetahuan">← Kembali ke Basis Pengetahuan & SOP</a>
-        <span class="sep">/</span>
-        <span>{doc.category}</span>
-        <span class="sep">/</span>
-        <span class="current">{doc.code}</span>
-      </nav>
-
-      <div class="reader-layout">
-        <!-- KONTEN UTAMA ARTIKEL / PANDUAN -->
-        <article class="article-sheet">
-          <header class="article-header">
-            <div class="meta-tags">
-              <span class="code-badge">{doc.code}</span>
-              <span class="category-badge">{doc.category}</span>
-              <span class="ver-badge">{doc.version}</span>
-              <span class="read-badge">⏱️ {doc.readTime} baca</span>
-              {doc.accessRole !== 'all' && (
-                <span class="role-badge">Tingkat Akses: {doc.accessRole.toUpperCase()}</span>
-              )}
-            </div>
-
-            <h1 class="article-title">{doc.title}</h1>
-            <p class="article-lead">{doc.description}</p>
-
-            <div class="author-bar">
-              <div class="author-info">
-                <span>Penyusun: <strong>{doc.author}</strong></span>
-                <small>Pembaruan Terakhir: {doc.lastUpdated}</small>
-              </div>
-              <div class="article-actions">
-                <button id="btn-copy-link" class="btn-sm btn-ghost">🔗 Salin Tautan</button>
-                <button id="btn-print-doc" class="btn-sm btn-primary">🖨️ Cetak / PDF</button>
-              </div>
-            </div>
-          </header>
-
-          <hr class="divider" />
-
-          <!-- TAMPILAN DETAIL SOP: LANGKAH BERURUTAN (STEP-BY-STEP WORKFLOW) -->
-          <section class="sop-steps-section" id="alur-langkah-sop">
-            <div class="steps-header">
-              <h2 class="sec-heading">Alur Langkah Berurutan (Standard Operating Procedure)</h2>
-              <span class="steps-badge">{steps.length} Tahapan Baku</span>
-            </div>
-            <p class="sec-intro">
-              Seluruh pelaksana wajib mematuhi urutan tahapan operasional di bawah ini secara kronologis:
-            </p>
-
-            <div class="stepper-container">
-              {steps.map((st) => (
-                <div class="step-card">
-                  <div class="step-indicator">
-                    <span class="step-num">{st.stepNumber}</span>
-                    <span class="step-line"></span>
-                  </div>
-                  <div class="step-content">
-                    <div class="step-top-meta">
-                      <span class="step-phase">{st.phase}</span>
-                      {st.slaTime && <span class="step-sla">⏱️ SLA: {st.slaTime}</span>}
-                    </div>
-                    <h3 class="step-title">{st.title}</h3>
-                    <p class="step-desc">{st.action}</p>
-                    
-                    <div class="step-details-grid">
-                      <div class="step-detail-item">
-                        <span class="detail-label">Pelaksana / Aktor:</span>
-                        <strong class="detail-value">{st.actor}</strong>
-                      </div>
-                      <div class="step-detail-item">
-                        <span class="detail-label">Hasil / Output Wajib:</span>
-                        <strong class="detail-value output-val">{st.output}</strong>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <hr class="divider" />
-
-          <!-- BAGIAN-BAGIAN RINCIAN ARTIKEL / BAB -->
-          <div class="article-body">
-            {sections.map((sec, idx) => (
-              <section class="doc-section" id={`section-${idx + 1}`}>
-                <h2 class="sec-heading">{sec.heading}</h2>
-                <p class="sec-text">{sec.content}</p>
-
-                {sec.checklist && sec.checklist.length > 0 && (
-                  <div class="checklist-box">
-                    <h3 class="checklist-title">Daftar Periksa Kepatuhan (Checklist Wajib):</h3>
-                    <ul class="checklist-items">
-                      {sec.checklist.map((item) => (
-                        <li class="checklist-item">
-                          <label class="check-label">
-                            <input type="checkbox" />
-                            <span>{item}</span>
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {sec.notes && (
-                  <div class="note-box">
-                    <span class="note-tag">Catatan Redaksi & Kepatuhan:</span>
-                    <p class="note-text">{sec.notes}</p>
-                  </div>
-                )}
-              </section>
-            ))}
-          </div>
-
-          <footer class="article-footer">
-            <p>Dokumen ini adalah aset panduan internal resmi Yayasan Kemanusiaan Peduli Negeri.</p>
-            <p>Dilarang menyebarluaskan dokumen ini kepada pihak eksternal tanpa izin tertulis dari Sekretariat Lembaga.</p>
-          </footer>
-        </article>
-
-        <!-- SIDEBAR NAVIGASI DAFTAR ISI & DOKUMEN TERKAIT -->
-        <aside class="sidebar-aside">
-          <!-- DAFTAR ISI -->
-          <div class="sidebar-box">
-            <h3 class="sidebar-heading">Daftar Isi Dokumen</h3>
-            <ul class="toc-list">
-              <li>
-                <a href="#alur-langkah-sop" class="toc-link toc-highlight">
-                  ⚡ Alur Langkah Berurutan ({steps.length} Langkah)
-                </a>
-              </li>
-              {sections.map((sec, idx) => (
-                <li>
-                  <a href={`#section-${idx + 1}`} class="toc-link">
-                    {sec.heading}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <!-- DOKUMEN TERKAIT -->
-          <div class="sidebar-box">
-            <h3 class="sidebar-heading">SOP & Panduan Terkait</h3>
-            <div class="related-list">
-              {relatedDocs.map(rd => (
-                <a href={`/basis-pengetahuan/${rd.id}`} class="related-card">
-                  <div class="related-top">
-                    <span class="rel-code">{rd.code}</span>
-                    <span class="rel-cat">{rd.category}</span>
-                  </div>
-                  <strong class="rel-title">{rd.title}</strong>
-                  <span class="rel-time">⏱️ {rd.readTime}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        </aside>
+<HumasLayout
+  title={`${doc.code} — ${doc.title}`}
+  pageTitle={doc.title}
+  pageSubtitle={`Dokumen resmi ${doc.category} · Versi ${doc.version} · Disusun oleh ${doc.author}`}
+  currentPath="/basis-pengetahuan"
+  pageContentId="basis-pengetahuan"
+>
+  <main class="kb" data-node-id="doc-detail.main">
+    <!-- Top Bar -->
+    <div class="kb__bar">
+      <p class="kb__bar-text">
+        <b>Kode Dokumen: {doc.code}</b> ({doc.version}) • Status: Terverifikasi & Aktif.
+      </p>
+      <div class="kb__bar-actions">
+        <a href="/basis-pengetahuan" class="kb__btn">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon>Katalog Basis Pengetahuan
+        </a>
+        <button class="kb__btn kb__btn--primary" type="button" onclick="window.print()">
+          <iconify-icon icon="lucide:printer" aria-hidden="true"></iconify-icon>Cetak / Unduh PDF
+        </button>
       </div>
-    </main>
+    </div>
 
-    <div id="toast" class="toast"></div>
+    <!-- Ringkasan Dokumen -->
+    <div class="kb__card" style="margin-bottom:20px;">
+      <div class="kb__card-head">
+        <div>
+          <span class="kb__badge kb__badge--blue">{doc.category}</span>
+          <h2 style="font-size:18px;margin:8px 0 4px;">{doc.title}</h2>
+          <p class="kb__card-sub">{doc.description}</p>
+        </div>
+        <span class="kb__badge kb__badge--green">Akses: {doc.accessRole.toUpperCase()}</span>
+      </div>
 
-    <script>
-      const roleSel = document.getElementById('user-role') as HTMLSelectElement;
-      const btnCopy = document.getElementById('btn-copy-link');
-      const btnPrint = document.getElementById('btn-print-doc');
-      const toast = document.getElementById('toast');
+      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--color-muted,#5a6875);border-top:1px solid var(--color-border,#ebecee);padding-top:12px;margin-top:12px;">
+        <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> Penyusun: <b>{doc.author}</b></span>
+        <span><iconify-icon icon="lucide:clock" aria-hidden="true"></iconify-icon> Estimasi baca: <b>{doc.readTime || '6 menit'}</b></span>
+        <span><iconify-icon icon="lucide:calendar" aria-hidden="true"></iconify-icon> Pembaruan: <b>{doc.updatedAt || 'Terbaru'}</b></span>
+      </div>
+    </div>
 
-      let currentRole = 'head';
-      try { currentRole = localStorage.getItem('user_role') || 'head'; } catch {}
-      if (roleSel) roleSel.value = currentRole;
+    <!-- Alur Langkah SOP -->
+    <section class="kb__card">
+      <div class="kb__card-head">
+        <div>
+          <h2 class="kb__card-title">Tahapan Alur Operasional (SOP Steps)</h2>
+          <p class="kb__card-sub">Urutan langkah baku yang wajib dipatuhi pelaksana tugas</p>
+        </div>
+      </div>
 
-      if (roleSel) {
-        roleSel.addEventListener('change', () => {
-          currentRole = roleSel.value;
-          try { localStorage.setItem('user_role', currentRole); } catch {}
-          showToast(`Peran dialihkan ke: ${currentRole.toUpperCase()}`);
-        });
-      }
-
-      if (btnCopy) {
-        btnCopy.addEventListener('click', () => {
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-              showToast('Tautan dokumen berhasil disalin ke clipboard');
-            }).catch(() => {
-              showToast('Gagal menyalin tautan');
-            });
-          }
-        });
-      }
-
-      if (btnPrint) {
-        btnPrint.addEventListener('click', () => {
-          window.print();
-        });
-      }
-
-      function showToast(msg: string) {
-        if (!toast) return;
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2500);
-      }
-    </script>
-  </body>
-</html>
-
-<style is:global>
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f8fafc;
-    color: #1e293b;
-    line-height: 1.6;
-  }
-
-  .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.85rem 1.75rem;
-    background: #0f172a;
-    color: #fff;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .brand { display: flex; align-items: center; gap: 0.6rem; }
-  .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-  .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-  .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-  .top nav a.active, .top nav a:hover { color: #38bdf8; }
-  .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-  .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
-
-  main { max-width: 1280px; margin: 0 auto; padding: 1.5rem; }
-
-  .breadcrumb {
-    margin-bottom: 1.5rem;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .breadcrumb a {
-    color: #0284c7;
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .breadcrumb a:hover { text-decoration: underline; }
-  .breadcrumb .sep { color: #cbd5e1; }
-  .breadcrumb .current { color: #64748b; font-weight: 500; }
-
-  /* DUA KOLOM LAYOUT */
-  .reader-layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 1.75rem;
-    align-items: start;
-  }
-  @media (max-width: 960px) {
-    .reader-layout { grid-template-columns: 1fr; }
-  }
-
-  /* LEMBAR ARTIKEL */
-  .article-sheet {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 2.25rem 2.5rem;
-  }
-  @media (max-width: 640px) {
-    .article-sheet { padding: 1.5rem; }
-  }
-
-  .meta-tags {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-  .code-badge {
-    background: #0f172a;
-    color: #fff;
-    font-size: 0.75rem;
-    font-family: ui-monospace, "Segoe UI Mono", monospace;
-    font-weight: 700;
-    padding: 0.2rem 0.55rem;
-    border-radius: 4px;
-  }
-  .category-badge {
-    background: #e0f2fe;
-    color: #0369a1;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.2rem 0.55rem;
-    border-radius: 4px;
-  }
-  .ver-badge {
-    background: #f1f5f9;
-    color: #475569;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.2rem 0.55rem;
-    border-radius: 4px;
-  }
-  .read-badge {
-    font-size: 0.75rem;
-    color: #64748b;
-  }
-  .role-badge {
-    font-size: 0.72rem;
-    font-weight: 700;
-    background: #fef2f2;
-    color: #991b1b;
-    border: 1px solid #fecaca;
-    padding: 0.15rem 0.45rem;
-    border-radius: 4px;
-  }
-
-  .article-title {
-    margin: 0 0 0.75rem;
-    font-size: 1.55rem;
-    color: #0f172a;
-    line-height: 1.35;
-    font-weight: 800;
-  }
-  .article-lead {
-    margin: 0 0 1.25rem;
-    font-size: 0.98rem;
-    color: #475569;
-    line-height: 1.6;
-  }
-
-  .author-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-  .author-info span { display: block; font-size: 0.85rem; color: #1e293b; }
-  .author-info small { display: block; font-size: 0.78rem; color: #64748b; }
-  .article-actions { display: flex; gap: 0.5rem; }
-
-  .btn-sm {
-    font: inherit;
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 0.4rem 0.8rem;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  .btn-primary {
-    background: #0284c7;
-    color: #fff;
-    border: none;
-  }
-  .btn-primary:hover { background: #0369a1; }
-  .btn-ghost {
-    background: #fff;
-    border: 1px solid #cbd5e1;
-    color: #334155;
-  }
-  .btn-ghost:hover { background: #f1f5f9; }
-
-  .divider {
-    border: 0;
-    border-top: 1px solid #e2e8f0;
-    margin: 1.5rem 0 2rem;
-  }
-
-  /* STEPPER ALUR LANGKAH BERURUTAN (SOP WORKFLOW) */
-  .sop-steps-section {
-    margin-bottom: 2rem;
-    scroll-margin-top: 1rem;
-  }
-  .steps-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .steps-badge {
-    background: #0284c7;
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    letter-spacing: 0.02em;
-  }
-  .sec-intro {
-    font-size: 0.9rem;
-    color: #64748b;
-    margin: 0 0 1.25rem;
-  }
-
-  .stepper-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    position: relative;
-  }
-  .step-card {
-    display: flex;
-    gap: 1.25rem;
-    position: relative;
-  }
-  .step-indicator {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex-shrink: 0;
-  }
-  .step-num {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #0f172a;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.88rem;
-    font-weight: 800;
-    box-shadow: 0 2px 6px rgba(15,23,42,0.15);
-    z-index: 2;
-  }
-  .step-line {
-    flex-grow: 1;
-    width: 2px;
-    background: #e2e8f0;
-    margin-top: 0.5rem;
-  }
-  .step-card:last-child .step-line {
-    display: none;
-  }
-
-  .step-content {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 1.2rem;
-    flex-grow: 1;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .step-content:hover {
-    background: #fff;
-    border-color: #cbd5e1;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  }
-
-  .step-top-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.35rem;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .step-phase {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #0284c7;
-    letter-spacing: 0.03em;
-  }
-  .step-sla {
-    font-size: 0.75rem;
-    color: #64748b;
-    font-weight: 600;
-  }
-
-  .step-title {
-    margin: 0 0 0.5rem;
-    font-size: 1.05rem;
-    color: #0f172a;
-    font-weight: 700;
-  }
-  .step-desc {
-    margin: 0 0 1rem;
-    font-size: 0.88rem;
-    color: #334155;
-    line-height: 1.6;
-  }
-
-  .step-details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    padding: 0.75rem 1rem;
-  }
-  @media (max-width: 600px) {
-    .step-details-grid { grid-template-columns: 1fr; }
-  }
-  .step-detail-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-  .detail-label {
-    font-size: 0.72rem;
-    color: #64748b;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
-  .detail-value {
-    font-size: 0.84rem;
-    color: #1e293b;
-  }
-  .output-val {
-    color: #166534;
-  }
-  .toc-highlight {
-    font-weight: 700;
-    color: #0284c7;
-  }
-
-  /* ISI BAGIAN ARTIKEL */
-  .article-body { display: flex; flex-direction: column; gap: 2rem; }
-  .doc-section { scroll-margin-top: 1rem; }
-  .sec-heading {
-    margin: 0 0 0.75rem;
-    font-size: 1.15rem;
-    color: #0f172a;
-    font-weight: 700;
-  }
-  .sec-text {
-    margin: 0 0 1rem;
-    font-size: 0.92rem;
-    color: #334155;
-    line-height: 1.7;
-  }
-
-  /* CHECKLIST BOX */
-  .checklist-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 1.15rem;
-    margin: 1rem 0;
-  }
-  .checklist-title {
-    margin: 0 0 0.75rem;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #0f172a;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  .checklist-items {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-  .check-label {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.6rem;
-    font-size: 0.88rem;
-    color: #334155;
-    cursor: pointer;
-  }
-  .check-label input {
-    margin-top: 0.25rem;
-    cursor: pointer;
-  }
-
-  /* NOTE BOX */
-  .note-box {
-    background: #fefce8;
-    border-left: 4px solid #eab308;
-    padding: 0.85rem 1.1rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-  }
-  .note-tag {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #854d0e;
-    text-transform: uppercase;
-    margin-bottom: 0.25rem;
-  }
-  .note-text {
-    margin: 0;
-    font-size: 0.85rem;
-    color: #713f12;
-    line-height: 1.5;
-  }
-
-  .article-footer {
-    margin-top: 3rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid #e2e8f0;
-    font-size: 0.75rem;
-    color: #94a3b8;
-    text-align: center;
-  }
-  .article-footer p { margin: 0.2rem 0; }
-
-  /* SIDEBAR */
-  .sidebar-aside {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    position: sticky;
-    top: 1rem;
-  }
-  .sidebar-box {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 1.25rem;
-  }
-  .sidebar-heading {
-    margin: 0 0 0.85rem;
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #0f172a;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-
-  .toc-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .toc-link {
-    font-size: 0.84rem;
-    color: #475569;
-    text-decoration: none;
-    display: block;
-    line-height: 1.4;
-    padding: 0.25rem 0;
-  }
-  .toc-link:hover {
-    color: #0284c7;
-    text-decoration: underline;
-  }
-
-  .related-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .related-card {
-    display: block;
-    text-decoration: none;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.75rem;
-    background: #fafbfc;
-    transition: background 0.15s, border-color 0.15s;
-  }
-  .related-card:hover {
-    background: #fff;
-    border-color: #cbd5e1;
-  }
-  .related-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.35rem;
-  }
-  .rel-code {
-    font-size: 0.7rem;
-    font-weight: 700;
-    font-family: ui-monospace, "Segoe UI Mono", monospace;
-    background: #0f172a;
-    color: #fff;
-    padding: 0.1rem 0.35rem;
-    border-radius: 3px;
-  }
-  .rel-cat {
-    font-size: 0.7rem;
-    color: #0369a1;
-    font-weight: 600;
-  }
-  .rel-title {
-    display: block;
-    font-size: 0.84rem;
-    color: #0f172a;
-    line-height: 1.35;
-    margin-bottom: 0.3rem;
-  }
-  .rel-time {
-    font-size: 0.72rem;
-    color: #64748b;
-  }
-
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: #0f172a;
-    color: #fff;
-    padding: 0.65rem 1.15rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.25s ease-out;
-    z-index: 999;
-  }
-  .toast.show {
-    transform: none;
-    opacity: 1;
-  }
-
-  @media print {
-    .top, .breadcrumb, .sidebar-aside, .article-actions { display: none !important; }
-    body { background: #fff; color: #000; }
-    main { padding: 0; max-width: 100%; }
-    .article-sheet { border: none; padding: 0; }
-    .checklist-box { border: 1px solid #ccc; background: none; }
-  }
-</style>
+      <div class="sop__timeline" style="margin-top:16px;">
+        {steps.map((st) => (
+          <div class="sop__step">
+            <div class="sop__step-icon">{st.stepNumber}</div>
+            <div class="sop__step-content">
+              <div class="sop__step-title">
+                <span>{st.phase}: {st.title}</span>
+                <span class="sop__badge sop__badge--blue">{st.slaTime}</span>
+              </div>
+              <p class="sop__step-desc">{st.action}</p>
+              <div class="sop__step-meta">
+                <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> Pelaksana: {st.actor}</span>
+                <span><iconify-icon icon="lucide:check-circle" aria-hidden="true"></iconify-icon> Output: {st.output}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  </main>
+</HumasLayout>

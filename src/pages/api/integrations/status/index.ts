@@ -41,10 +41,10 @@ export const GET: APIRoute = async ({ request, url }) => {
 
       if (item.status === 'disconnected') {
         health = 'error';
-        if (item.service_key === 'google_workspace') {
+        if (item.service_key === 'google_workspace' || item.service_key === 'google_account') {
           remediation = {
-            issue: 'Token otentikasi Google Workspace belum tersambung atau dicabut.',
-            stepToFix: 'Klik tombol "Hubungkan Akun Google" untuk melakukan alur OAuth2 consent atau unggah file kunci Service Account JSON yang valid.',
+            issue: 'Token otentikasi Google SSO belum tersambung atau sesi telah kedaluwarsa.',
+            stepToFix: 'Klik tombol "Hubungkan Akun Google" untuk melakukan alur Google SSO (OAuth2 User Consent) dengan akun Google AI Pro Anda.',
             actionEndpoint: '/api/integrations/google/connect'
           };
         } else if (item.service_key === 'dam_nas') {

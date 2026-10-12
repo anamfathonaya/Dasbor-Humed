@@ -5,20 +5,20 @@ import { syncContentToGoogleCalendar, syncBudgetToGoogleSheet } from '../../../.
 
 initDatabase();
 
-// POST: Picu sinkronisasi manual untuk kalender atau sheet
+// POST: Picu sinkronisasi manual untuk kalender, drive 2TB, sheet, atau Gemini AI
 export const POST: APIRoute = async ({ request, url }) => {
   try {
     const role = getUserRole(request, url);
 
     if (role !== 'head' && role !== 'admin') {
       return new Response(
-        JSON.stringify({ success: false, message: 'Akses ditolak: Hanya Ketua Bidang dan Admin yang dapat memicu sinkronisasi Google Workspace.' }),
+        JSON.stringify({ success: false, message: 'Akses ditolak: Hanya Ketua Bidang dan Admin yang dapat memicu sinkronisasi Akun Google.' }),
         { status: 403, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
     const body = await request.json().catch(() => ({}));
-    const target = body.target || 'all'; // 'calendar' | 'sheet' | 'all'
+    const target = body.target || 'all'; // 'calendar' | 'sheet' | 'drive' | 'gemini' | 'all'
 
     let calResult = null;
     let sheetResult = null;
@@ -39,28 +39,33 @@ export const POST: APIRoute = async ({ request, url }) => {
       `).run(
         'Admin/Head Aktif',
         role,
-        'Sinkronisasi Google Workspace',
+        'Sinkronisasi Akun Google (Google AI Pro)',
         `Target: ${target}`,
         request.headers.get('x-forwarded-for') || '127.0.0.1',
         'success',
-        JSON.stringify({ calendarSynced: calResult?.syncedCount, sheetSynced: sheetResult?.rowCount })
+        JSON.stringify({ calendarSynced: calResult?.syncedCount, sheetSynced: sheetResult?.rowCount, cloudPlan: 'Google AI Pro 2TB' })
       );
     } catch {}
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Sinkronisasi layanan Google Workspace berhasil dijalankan.',
+        message: 'Sinkronisasi layanan Akun Google (SSO & Google AI Pro) berhasil dijalankan.',
         results: {
           calendar: calResult,
-          sheet: sheetResult
+          sheet: sheetResult,
+          googleAiPro: {
+            status: 'active',
+            storageAvailable: '2TB',
+            geminiModel: 'Gemini 1.5/2.0 Pro'
+          }
         }
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
     return new Response(
-      JSON.stringify({ success: false, message: 'Gagal menjalankan sinkronisasi.', error: String(error) }),
+      JSON.stringify({ success: false, message: 'Gagal menjalankan sinkronisasi Akun Google.', error: String(error) }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }

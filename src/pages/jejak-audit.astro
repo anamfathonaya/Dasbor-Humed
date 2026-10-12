@@ -1,6 +1,6 @@
 ---
+import HumasLayout from '../layouts/HumasLayout.astro';
 import { mockAuditLogs } from '../lib/clientDataFetcher';
-import RoleNavigation from '../components/RoleNavigation.astro';
 
 const extendedAuditLogs = [
   ...mockAuditLogs,
@@ -47,398 +47,187 @@ const extendedAuditLogs = [
 ];
 ---
 
-<!doctype html>
-<html lang="id">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Jejak Audit Perubahan Pengaturan & Keamanan - Dasbor Humas Media</title>
-  </head>
-  <body>
-    <RoleNavigation currentPath="/pengaturan" />
+<HumasLayout
+  title="Jejak Audit Keamanan — Humas Internal Peduli Negeri"
+  pageTitle="Jejak Audit Perubahan & Keamanan"
+  pageSubtitle="Rekam jejak tidak dapat diubah (immutable audit trail) untuk setiap modifikasi parameter sistem & otorisasi"
+  currentPath="/jejak-audit"
+  pageContentId="akun"
+>
+  <main class="akn" data-node-id="audit.main">
+    <!-- Sub Navigasi Pengaturan & Detail -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="/pengaturan" class="akn__btn">
+        <iconify-icon icon="lucide:plug-zap" aria-hidden="true"></iconify-icon>Pusat Pengaturan
+      </a>
+      <a href="/manajemen-akun" class="akn__btn">
+        <iconify-icon icon="lucide:users" aria-hidden="true"></iconify-icon>Akun & Hak Akses
+      </a>
+      <a href="/jejak-audit" class="akn__btn" style="background:var(--color-primary,#1d5c94);color:#fff;font-weight:600;">
+        <iconify-icon icon="lucide:shield-check" aria-hidden="true"></iconify-icon>Jejak Audit
+      </a>
+      <a href="/profil-akun" class="akn__btn">
+        <iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon>Profil Saya
+      </a>
+    </div>
 
-    <main>
-      <!-- HEADER HALAMAN -->
-      <div class="head">
+    <!-- Top Bar -->
+    <div class="akn__bar">
+      <p class="akn__bar-text">
+        <b>Audit Trail Aktif:</b> {extendedAuditLogs.length} Peristiwa tercatat bulan ini, integritas log tersimpan aman.
+      </p>
+      <div class="akn__bar-actions">
+        <a href="/pengaturan" class="akn__btn">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon>Kembali ke Pengaturan
+        </a>
+        <button class="akn__btn akn__btn--primary" type="button" id="btn-export-audit-csv">
+          <iconify-icon icon="lucide:download" aria-hidden="true"></iconify-icon>Unduh Berkas Audit (CSV)
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="akn__kpis">
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Total Peristiwa Tercatat</span><span class="akn__badge akn__badge--blue">Oktober 2026</span></div>
+        <div class="akn__kpi-val">{extendedAuditLogs.length} <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">log</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Aksi Sukses Terverifikasi</span><span class="akn__badge akn__badge--green">RBAC Valid</span></div>
+        <div class="akn__kpi-val">7 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">kejadian</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Peringatan Keamanan</span><span class="akn__badge akn__badge--amber">Anomali IP</span></div>
+        <div class="akn__kpi-val">1 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">kasus</span></div>
+      </div>
+      <div class="akn__kpi-card">
+        <div class="akn__kpi-head"><span>Upaya Akses Gagal</span><span class="akn__badge akn__badge--amber">Terblokir</span></div>
+        <div class="akn__kpi-val">1 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">kasus</span></div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="akn__card" style="margin-bottom:16px;">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+        <div style="flex:1;min-width:240px;">
+          <input
+            type="search"
+            id="search-audit"
+            placeholder="Cari berdasarkan nama pengguna, jenis tindakan, atau objek sasaran..."
+            class="kb__select"
+            style="width:100%;height:38px;padding:0 12px;"
+          />
+        </div>
         <div>
-          <div class="breadcrumb">
-            <a href="/pengaturan">Pengaturan</a>
-            <span>/</span>
-            <span>Keamanan & Kepatuhan</span>
-          </div>
-          <h2>Jejak Audit Perubahan Pengaturan & Tata Kelola</h2>
-          <p class="muted">
-            Rekam jejak tidak dapat diubah (immutable audit trail) untuk setiap modifikasi parameter sistem, hak akses pengguna, integrasi cloud, dan autentikasi.
-          </p>
+          <select id="filter-audit-status" class="kb__select" style="height:38px;">
+            <option value="all">Semua Status</option>
+            <option value="success">Berhasil Saja</option>
+            <option value="warning">Peringatan</option>
+            <option value="failed">Gagal Saja</option>
+          </select>
         </div>
-        <div class="actions">
-          <a href="/pengaturan" class="btn btn-secondary">
-            ← Kembali ke Pengaturan
-          </a>
-          <button class="btn" id="btn-export-audit-csv">
-            📥 Unduh Berkas Audit (CSV)
-          </button>
+        <div>
+          <select id="filter-audit-role" class="kb__select" style="height:38px;">
+            <option value="all">Semua Peran Pelaku</option>
+            <option value="Administrator Teknis">Administrator Teknis</option>
+            <option value="Ketua Bagian Humas">Ketua Bidang</option>
+            <option value="Staf">Staf Konten</option>
+            <option value="Otomatisasi">Sistem Otomatis</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Log Audit -->
+    <section class="akn__card">
+      <div class="akn__card-head">
+        <div>
+          <h2 class="akn__card-title">Rekaman Kronologis Log Audit Sistem</h2>
+          <p class="akn__card-sub">Dipantau dengan timestamp presisi dan pengikatan alamat IP perangkat</p>
         </div>
       </div>
 
-      <!-- NOTIFIKASI -->
-      <div id="audit-alert" class="alert-box" hidden>
-        <span id="audit-alert-text">Log jejak audit diperbarui.</span>
-        <button type="button" id="btn-close-alert" class="btn-alert-close">✕</button>
-      </div>
-
-      <!-- STATISTIK JEJAK AUDIT -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Total Peristiwa Tercatat</span>
-          <strong>{extendedAuditLogs.length}</strong>
-          <span class="stat-sub">Bulan Berjalan (Oktober 2026)</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Aksi Sukses Terverifikasi</span>
-          <strong class="text-green">7</strong>
-          <span class="stat-sub">Sesuai Kebijakan RBAC</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Peringatan Keamanan</span>
-          <strong class="text-amber">1</strong>
-          <span class="stat-sub">Anomali IP & Otomatisasi Blokir</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Upaya Akses Gagal</span>
-          <strong class="text-red">1</strong>
-          <span class="stat-sub">Salah Kredensial Pengguna</span>
-        </div>
-      </div>
-
-      <!-- FILTER LOG AUDIT -->
-      <div class="filter-card">
-        <div class="filter-row">
-          <div class="search-input-wrap">
-            <input
-              type="text"
-              id="search-audit"
-              placeholder="Cari berdasarkan nama pengguna, jenis tindakan, atau objek sasaran..."
-            />
-          </div>
-          <div class="filter-select-wrap">
-            <select id="filter-audit-status">
-              <option value="all">Semua Status</option>
-              <option value="success">Berhasil Saja</option>
-              <option value="warning">Peringatan</option>
-              <option value="failed">Gagal Saja</option>
-            </select>
-          </div>
-          <div class="filter-select-wrap">
-            <select id="filter-audit-role">
-              <option value="all">Semua Peran Pelaku</option>
-              <option value="Administrator Teknis">Administrator Teknis</option>
-              <option value="Ketua Bagian Humas">Ketua Bidang</option>
-              <option value="Staf">Staf Konten</option>
-              <option value="Sistem">Sistem Otomatis</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- TABEL LOG AUDIT -->
-      <div class="card">
-        <div class="table-wrap">
-          <table class="data-table" id="audit-table">
-            <thead>
-              <tr>
-                <th>ID & Waktu Kejadian</th>
-                <th>Pelaku & Peran</th>
-                <th>Tindakan / Operasi</th>
-                <th>Objek Sasaran</th>
-                <th>Alamat IP & Jaringan</th>
-                <th>Hasil</th>
+      <div class="akn__table-wrap">
+        <table class="akn__table">
+          <thead>
+            <tr>
+              <th>ID & Waktu Kejadian</th>
+              <th>Pelaku & Peran</th>
+              <th>Tindakan / Operasi</th>
+              <th>Objek Sasaran</th>
+              <th>Alamat IP & Jaringan</th>
+              <th>Hasil</th>
+            </tr>
+          </thead>
+          <tbody id="audit-tbody">
+            {extendedAuditLogs.map((log) => (
+              <tr data-status={log.status} data-text={`${log.userName} ${log.action} ${log.target} ${log.userRole}`.toLowerCase()}>
+                <td>
+                  <strong style="display:block;font-size:12px;font-family:monospace;color:var(--color-primary,#1d5c94);">{log.id}</strong>
+                  <span style="font-size:11px;color:var(--color-muted,#5a6875);">{log.timestamp}</span>
+                </td>
+                <td>
+                  <strong style="display:block;font-size:13px;">{log.userName}</strong>
+                  <span style="font-size:11px;color:var(--color-muted,#5a6875);">{log.userRole}</span>
+                </td>
+                <td>
+                  <strong style="color:var(--color-text,#16202b);font-size:13px;">{log.action}</strong>
+                </td>
+                <td>
+                  <code style="font-size:12px;background:var(--color-canvas,#f8f9fa);padding:2px 6px;border-radius:4px;border:1px solid var(--color-border,#ebecee);word-break:break-all;">{log.target}</code>
+                </td>
+                <td>
+                  <span style="font-size:12px;color:var(--color-muted,#5a6875);">{log.ipAddress}</span>
+                </td>
+                <td>
+                  <span class={`akn__badge ${log.status === 'success' ? 'akn__badge--green' : 'akn__badge--amber'}`}>
+                    ● {log.status === 'success' ? 'Berhasil' : log.status === 'warning' ? 'Peringatan' : 'Gagal'}
+                  </span>
+                </td>
               </tr>
-            </thead>
-            <tbody id="audit-tbody">
-              {extendedAuditLogs.map((log) => (
-                <tr data-status={log.status} data-text={`${log.userName} ${log.action} ${log.target} ${log.userRole}`.toLowerCase()}>
-                  <td>
-                    <span class="mono log-id">{log.id}</span>
-                    <span class="muted-sm">{log.timestamp}</span>
-                  </td>
-                  <td>
-                    <strong>{log.userName}</strong>
-                    <span class="muted-sm">{log.userRole}</span>
-                  </td>
-                  <td>
-                    <strong class="text-slate">{log.action}</strong>
-                  </td>
-                  <td>
-                    <span class="mono truncate-target" title={log.target}>{log.target}</span>
-                  </td>
-                  <td>
-                    <span class="mono muted-sm">{log.ipAddress}</span>
-                  </td>
-                  <td>
-                    <span class={`badge ${log.status === 'success' ? 'badge-success' : log.status === 'warning' ? 'badge-warning' : 'badge-danger'}`}>
-                      ● {log.status === 'success' ? 'Berhasil' : log.status === 'warning' ? 'Peringatan' : 'Gagal'}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </main>
+    </section>
+  </main>
 
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #f8fafc;
-        color: #1e293b;
-      }
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('search-audit') as HTMLInputElement | null;
+      const statusSelect = document.getElementById('filter-audit-status') as HTMLSelectElement | null;
+      const roleSelect = document.getElementById('filter-audit-role') as HTMLSelectElement | null;
+      const rows = document.querySelectorAll('#audit-tbody tr');
 
-      .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.85rem 1.75rem;
-        background: #0f172a;
-        color: #fff;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-      .brand { display: flex; align-items: center; gap: 0.6rem; }
-      .top h1 { font-size: 1.1rem; margin: 0; color: #f8fafc; }
-      .top nav { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-      .top nav a { color: #94a3b8; text-decoration: none; font-size: 0.9rem; }
-      .top nav a.active, .top nav a:hover { color: #38bdf8; }
-      .role { display: flex; gap: 0.5rem; align-items: center; font-size: 0.8rem; }
-      .role select { font: inherit; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #f8fafc; }
+      function filterAudit() {
+        const query = (searchInput?.value || '').toLowerCase().trim();
+        const status = statusSelect?.value || 'all';
+        const role = (roleSelect?.value || 'all').toLowerCase();
 
-      main { max-width: 1320px; margin: 0 auto; padding: 1.5rem; }
-      .head {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .head h2 { margin: 0 0 0.25rem; font-size: 1.35rem; color: #0f172a; }
-      .breadcrumb {
-        font-size: 0.8rem;
-        color: #64748b;
-        margin-bottom: 0.25rem;
-        display: flex;
-        gap: 0.4rem;
-        align-items: center;
-      }
-      .breadcrumb a { color: #0284c7; text-decoration: none; }
-      .muted { margin: 0; color: #64748b; font-size: 0.9rem; line-height: 1.5; }
-      .muted-sm { display: block; font-size: 0.78rem; color: #64748b; margin-top: 0.15rem; }
-      .text-slate { color: #0f172a; }
-      .text-green { color: #16a34a; }
-      .text-amber { color: #d97706; }
-      .text-red { color: #dc2626; }
-      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+        rows.forEach(r => {
+          const row = r as HTMLElement;
+          const text = row.getAttribute('data-text') || '';
+          const rowStatus = row.getAttribute('data-status') || '';
 
-      .actions { display: flex; gap: 0.6rem; }
-      .btn {
-        font: inherit;
-        background: #0284c7;
-        color: #fff;
-        border: 0;
-        padding: 0.55rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.15s;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.88rem;
-      }
-      .btn:hover { background: #0369a1; }
-      .btn-secondary {
-        background: #fff;
-        border: 1px solid #cbd5e1;
-        color: #334155;
-      }
-      .btn-secondary:hover { background: #f1f5f9; }
+          const matchQuery = !query || text.includes(query);
+          const matchStatus = status === 'all' || rowStatus === status;
+          const matchRole = role === 'all' || text.includes(role);
 
-      /* Stat cards */
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-      }
-      .stat-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1.15rem;
-      }
-      .stat-label { display: block; font-size: 0.78rem; color: #64748b; margin-bottom: 0.25rem; }
-      .stat-card strong { font-size: 1.5rem; color: #0f172a; }
-      .stat-sub { display: block; font-size: 0.75rem; color: #64748b; margin-top: 0.35rem; }
-
-      /* Filter */
-      .filter-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.5rem;
-      }
-      .filter-row {
-        display: grid;
-        grid-template-columns: 2fr 1fr 1fr;
-        gap: 1rem;
-      }
-      @media (max-width: 768px) {
-        .filter-row { grid-template-columns: 1fr; }
-      }
-      .search-input-wrap input, .filter-select-wrap select {
-        width: 100%;
-        font: inherit;
-        padding: 0.5rem 0.75rem;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        font-size: 0.88rem;
-      }
-
-      /* Card & Table */
-      .card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        overflow: hidden;
-      }
-      .table-wrap { overflow-x: auto; }
-      .data-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-        font-size: 0.88rem;
-      }
-      .data-table th {
-        background: #f8fafc;
-        padding: 0.75rem 1rem;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: #475569;
-        border-bottom: 1px solid #e2e8f0;
-        font-weight: 700;
-      }
-      .data-table td {
-        padding: 0.85rem 1rem;
-        border-bottom: 1px solid #f1f5f9;
-        vertical-align: middle;
-      }
-      .data-table tr:hover td { background: #f8fafc; }
-
-      .log-id {
-        display: inline-block;
-        background: #f1f5f9;
-        padding: 0.15rem 0.4rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        color: #475569;
-      }
-      .truncate-target {
-        display: inline-block;
-        max-width: 260px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 0.82rem;
-        color: #334155;
-      }
-
-      .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.2rem 0.55rem;
-        border-radius: 999px;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-      .badge-success { background: #dcfce7; color: #166534; }
-      .badge-warning { background: #fef3c7; color: #92400e; }
-      .badge-danger { background: #fee2e2; color: #991b1b; }
-
-      /* Alert */
-      .alert-box {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #ecfdf5;
-        border: 1px solid #a7f3d0;
-        color: #065f46;
-        padding: 0.75rem 1.25rem;
-        border-radius: 8px;
-        font-size: 0.88rem;
-        margin-bottom: 1.5rem;
-      }
-      .btn-alert-close { background: none; border: none; font-size: 1rem; color: inherit; cursor: pointer; }
-    </style>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        const alertBox = document.getElementById('audit-alert');
-        const alertText = document.getElementById('audit-alert-text');
-        const btnCloseAlert = document.getElementById('btn-close-alert');
-
-        function notify(msg: string) {
-          if (alertBox && alertText) {
-            alertText.textContent = msg;
-            alertBox.hidden = false;
-            setTimeout(() => { alertBox.hidden = true; }, 3500);
+          if (matchQuery && matchStatus && matchRole) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
           }
-        }
-
-        btnCloseAlert?.addEventListener('click', () => {
-          if (alertBox) alertBox.hidden = true;
         });
+      }
 
-        // Search & Filter
-        const searchInput = document.getElementById('search-audit') as HTMLInputElement | null;
-        const statusFilter = document.getElementById('filter-audit-status') as HTMLSelectElement | null;
-        const roleFilter = document.getElementById('filter-audit-role') as HTMLSelectElement | null;
-        const rows = document.querySelectorAll('#audit-tbody tr');
+      searchInput?.addEventListener('input', filterAudit);
+      statusSelect?.addEventListener('change', filterAudit);
+      roleSelect?.addEventListener('change', filterAudit);
 
-        function filterLogs() {
-          const q = (searchInput?.value || '').toLowerCase().trim();
-          const s = statusFilter?.value || 'all';
-          const r = roleFilter?.value || 'all';
-
-          rows.forEach((row) => {
-            const rowStatus = row.getAttribute('data-status') || '';
-            const rowText = row.getAttribute('data-text') || '';
-
-            const matchQuery = !q || rowText.includes(q);
-            const matchStatus = s === 'all' || rowStatus === s;
-            const matchRole = r === 'all' || rowText.includes(r.toLowerCase());
-
-            if (matchQuery && matchStatus && matchRole) {
-              (row as HTMLElement).style.display = '';
-            } else {
-              (row as HTMLElement).style.display = 'none';
-            }
-          });
-        }
-
-        searchInput?.addEventListener('input', filterLogs);
-        statusFilter?.addEventListener('change', filterLogs);
-        roleFilter?.addEventListener('change', filterLogs);
-
-        // Export CSV button
-        document.getElementById('btn-export-audit-csv')?.addEventListener('click', () => {
-          notify('Mengunduh berkas rekapitulasi audit (jejak_audit_humas_2026.csv)...');
-        });
+      document.getElementById('btn-export-audit-csv')?.addEventListener('click', () => {
+        alert('Mengunduh rekaman audit log lengkap format CSV...');
       });
-    </script>
-  </body>
-</html>
+    });
+  </script>
+</HumasLayout>

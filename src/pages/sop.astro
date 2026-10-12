@@ -1,0 +1,207 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+---
+
+<HumasLayout
+  title="SOP & Alur Peliputan Lapangan — Humas Internal Peduli Negeri"
+  pageTitle="SOP & Alur Peliputan Lapangan"
+  pageSubtitle="Pedoman visual tahapan kerja, alur mitigasi krisis media, dan checklist kepatuhan APD relawan"
+  currentPath="/sop"
+  pageContentId="sop"
+>
+  <main class="sop" data-node-id="sop.main">
+    <!-- Top Bar -->
+    <div class="sop__bar">
+      <p class="sop__bar-text">
+        <b>Pedoman Alur Krisis:</b> SOP-HUM-01 Peliputan Tanggap Bencana & SOP-KRS-02 Manajemen Krisis Media Sosial aktif.
+      </p>
+      <div class="sop__bar-actions">
+        <a href="/basis-pengetahuan" class="sop__btn">
+          <iconify-icon icon="lucide:arrow-left" aria-hidden="true"></iconify-icon>Katalog Basis Pengetahuan
+        </a>
+        <button class="sop__btn sop__btn--primary" type="button" id="btn-aktivasi-siaga">
+          <iconify-icon icon="lucide:alert-triangle" aria-hidden="true"></iconify-icon>Aktivasi Protokol Siaga
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="sop__kpis">
+      <div class="sop__kpi-card">
+        <div class="sop__kpi-head"><span>SLA Rilis Klarifikasi</span><span class="sop__badge sop__badge--green">Maksimal</span></div>
+        <div class="sop__kpi-val">60 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">menit</span></div>
+      </div>
+      <div class="sop__kpi-card">
+        <div class="sop__kpi-head"><span>Batas Ambang Krisis</span><span class="sop__badge sop__badge--amber">Warning</span></div>
+        <div class="sop__kpi-val">&gt;15% <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">sentimen (-)</span></div>
+      </div>
+      <div class="sop__kpi-card">
+        <div class="sop__kpi-head"><span>Tim Siaga Lapangan</span><span class="sop__badge sop__badge--blue">Aktif</span></div>
+        <div class="sop__kpi-val">12 <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">personil</span></div>
+      </div>
+      <div class="sop__kpi-card">
+        <div class="sop__kpi-head"><span>Tingkat Kepatuhan APD</span><span class="sop__badge sop__badge--green">100%</span></div>
+        <div class="sop__kpi-val">Lolos <span style="font-size:13px;font-weight:500;color:var(--color-muted,#5a6875)">audit</span></div>
+      </div>
+    </div>
+
+    <!-- Layout Utama -->
+    <div class="sop__layout">
+      <!-- Kolom Alur Visual -->
+      <section class="sop__card">
+        <div class="sop__card-head">
+          <div>
+            <h2 class="sop__card-title">Tahapan Alur Kerja: SOP Peliputan Tanggap Darurat Bencana</h2>
+            <p class="sop__card-sub">Urutan baku sejak deklarasi darurat posko hingga penyetoran aset liputan</p>
+          </div>
+          <span class="sop__badge sop__badge--green">SOP-HUM-01 (v2.3)</span>
+        </div>
+
+        <div class="sop__timeline">
+          <!-- Tahap 1 -->
+          <div class="sop__step">
+            <div class="sop__step-icon">1</div>
+            <div class="sop__step-content">
+              <div class="sop__step-title">
+                <span>Fase Pra-Keberangkatan: Briefing & Pemetaan Zona Bahaya</span>
+                <span class="sop__badge sop__badge--blue">SLA: 30 Menit</span>
+              </div>
+              <p class="sop__step-desc">
+                Menghadiri briefing komando di posko induk, mencatat titik kumpul aman (assembly point), serta memeriksa fungsi APD helm, rompi resmi, dan alat komunikasi satelit.
+              </p>
+              <div class="sop__step-meta">
+                <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> PJ: Koordinator Peliputan Lapangan</span>
+                <span><iconify-icon icon="lucide:check-circle" aria-hidden="true"></iconify-icon> Output: Surat Tugas & Peta Bahaya</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tahap 2 -->
+          <div class="sop__step">
+            <div class="sop__step-icon">2</div>
+            <div class="sop__step-content">
+              <div class="sop__step-title">
+                <span>Fase Tiba di Lokasi: Izin Tokoh Lokal & Asesmen Etis</span>
+                <span class="sop__badge sop__badge--blue">SLA: 15 Menit</span>
+              </div>
+              <p class="sop__step-desc">
+                Menghubungi ketua posko setempat, memperkenalkan diri sebagai tim kemanusiaan resmi, dan meminta persetujuan lisan sebelum merekam aktivitas warga terdampak.
+              </p>
+              <div class="sop__step-meta">
+                <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> PJ: Fotografer & Reporter</span>
+                <span><iconify-icon icon="lucide:check-circle" aria-hidden="true"></iconify-icon> Output: Akses Liputan Tertib</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tahap 3 -->
+          <div class="sop__step">
+            <div class="sop__step-icon">3</div>
+            <div class="sop__step-content">
+              <div class="sop__step-title">
+                <span>Fase Dokumentasi: Rekam Penyaluran & Perlindungan Anak</span>
+                <span class="sop__badge sop__badge--green">Etika Ketat</span>
+              </div>
+              <p class="sop__step-desc">
+                Merekam video bantuan dengan framing sopan. Dilarang mengeksploitasi kesedihan ekstrem, aurat terbuka, atau wajah anak-anak tanpa izin wali secara tertulis.
+              </p>
+              <div class="sop__step-meta">
+                <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> PJ: Videografer & Redaksi</span>
+                <span><iconify-icon icon="lucide:check-circle" aria-hidden="true"></iconify-icon> Output: Raw Foto & B-Roll Video</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tahap 4 -->
+          <div class="sop__step">
+            <div class="sop__step-icon">4</div>
+            <div class="sop__step-content">
+              <div class="sop__step-title">
+                <span>Fase Pengunggahan: Setor Aset ke DAM NAS Synology</span>
+                <span class="sop__badge sop__badge--amber">Maks 21.00 WIB</span>
+              </div>
+              <p class="sop__step-desc">
+                Mengunggah seluruh hasil rekaman foto dan video mentah ke folder server DAM lokal dengan penamaan baku untuk kurasi konten media sosial harian.
+              </p>
+              <div class="sop__step-meta">
+                <span><iconify-icon icon="lucide:user" aria-hidden="true"></iconify-icon> PJ: Tim IT & Editor</span>
+                <span><iconify-icon icon="lucide:check-circle" aria-hidden="true"></iconify-icon> Output: Aset Terkatalogisasi</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel Samping: Checklist Kepatuhan Lapangan -->
+      <aside style="display:flex;flex-direction:column;gap:16px;">
+        <div class="sop__card">
+          <h2 class="sop__card-title">Checklist Keselamatan Personil</h2>
+          <p class="sop__card-sub">Wajib diverifikasi sebelum turun ke lapangan</p>
+          <div class="sop__checklist">
+            <label class="sop__check-item">
+              <input type="checkbox" checked>
+              <span>Rompi Identitas & Helm Keselamatan</span>
+            </label>
+            <label class="sop__check-item">
+              <input type="checkbox" checked>
+              <span>Sepatu Bot Khusus Lumpur / Puing</span>
+            </label>
+            <label class="sop__check-item">
+              <input type="checkbox" checked>
+              <span>Kartu Identitas Darurat & Golongan Darah</span>
+            </label>
+            <label class="sop__check-item">
+              <input type="checkbox" checked>
+              <span>Radio HT Dua Arah + Baterai Cadangan</span>
+            </label>
+            <label class="sop__check-item">
+              <input type="checkbox">
+              <span>Drybag Kedap Air untuk Memori Kamera</span>
+            </label>
+          </div>
+          <button class="sop__btn sop__btn--primary" type="button" id="btn-verif-apd" style="width:100%;margin-top:4px;">
+            Verifikasi Kesiapan Tim
+          </button>
+        </div>
+
+        <div class="sop__card">
+          <h2 class="sop__card-title">Matriks Otorisasi Rilis Klarifikasi</h2>
+          <p class="sop__card-sub">Kewenangan juru bicara resmi</p>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">
+            <div style="padding:10px;border-radius:10px;background:var(--color-canvas,#f8f9fa);border:1px solid var(--color-border,#ebecee);">
+              <strong style="color:var(--color-text,#16202b)">Isu Tingkat 1 (Sentimen &lt; 10%):</strong>
+              <div style="color:var(--color-muted,#5a6875);margin-top:2px;">Tanggapan kolom komentar oleh Admin Humas.</div>
+            </div>
+            <div style="padding:10px;border-radius:10px;background:var(--color-canvas,#f8f9fa);border:1px solid var(--color-border,#ebecee);">
+              <strong style="color:var(--color-text,#16202b)">Isu Tingkat 2 (Sentimen 10-25%):</strong>
+              <div style="color:var(--color-muted,#5a6875);margin-top:2px;">Pernyataan tertulis disetujui Kepala Bagian Humas.</div>
+            </div>
+            <div style="padding:10px;border-radius:10px;background:var(--color-canvas,#f8f9fa);border:1px solid var(--color-border,#ebecee);">
+              <strong style="color:var(--color-text,#16202b)">Isu Tingkat 3 (Krisis Berat &gt; 25%):</strong>
+              <div style="color:var(--color-muted,#5a6875);margin-top:2px;">Konferensi pers resmi oleh Direktur Eksekutif / BPH.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btnSiaga = document.getElementById('btn-aktivasi-siaga');
+      btnSiaga?.addEventListener('click', () => {
+        alert('Protokol Siaga Tanggap Darurat Bencana telah diaktifkan! Notifikasi dikirimkan ke tim lapangan dan kanal komunikasi.');
+      });
+
+      const btnVerif = document.getElementById('btn-verif-apd');
+      btnVerif?.addEventListener('click', () => {
+        const checkboxes = document.querySelectorAll('.sop__checklist input[type="checkbox"]');
+        let checkedCount = 0;
+        checkboxes.forEach(cb => {
+          if ((cb as HTMLInputElement).checked) checkedCount++;
+        });
+        alert(`Pemeriksaan kesiapan tim berhasil diverifikasi (${checkedCount} dari ${checkboxes.length} item). Dicatat ke log audit.`);
+      });
+    });
+  </script>
+</HumasLayout>
