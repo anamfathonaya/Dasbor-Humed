@@ -2,17 +2,57 @@ import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
 
+const isSupabasePreferred = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL &&
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== 'https://placeholder.supabase.co' &&
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
 const dbPath = path.resolve(process.cwd(), 'dasbor.db');
 const dbDir = path.dirname(dbPath);
 if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
-export const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+// Lazy/safe instantiation SQLite untuk dual build baseline coexistence.
+// Di Vercel serverless / Supabase mode produksi, runtime dasbor.db tidak lagi dibutuhkan.
+let _dbInstance: any = null;
+function getDbInstance() {
+  if (!_dbInstance) {
+    try {
+      _dbInstance = new Database(dbPath);
+      _dbInstance.pragma('journal_mode = WAL');
+      _dbInstance.pragma('foreign_keys = ON');
+    } catch (err: any) {
+      console.warn('[db.ts] SQLite database init bypassed or failed:', err.message);
+      // Return a safe mock/proxy if sqlite fails (e.g. on serverless environments without dasbor.db)
+      _dbInstance = {
+        prepare: () => ({
+          all: () => [],
+          get: () => null,
+          run: () => ({ lastInsertRowid: 0, changes: 0 }),
+        }),
+        exec: () => {},
+        pragma: () => {},
+      };
+    }
+  }
+  return _dbInstance;
+}
+
+export const db = new Proxy({} as any, {
+  get(_target, prop) {
+    const instance = getDbInstance();
+    const val = instance[prop];
+    return typeof val === 'function' ? val.bind(instance) : val;
+  },
+});
 
 export function initDatabase() {
+  if (isSupabasePreferred) {
+    // Runtime dasbor.db dihentikan saat Supabase aktif (production/serverless environment)
+    return;
+  }
   // 1. Roles & Users
   db.exec(`
     CREATE TABLE IF NOT EXISTS roles (
@@ -539,6 +579,109 @@ export function initDatabase() {
       details TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    );
+
+    -- 12. Log Hasil Uji & Ekspor Laporan
+    CREATE TABLE IF NOT EXISTS report_export_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      export_type TEXT NOT NULL,
+      format TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'completed',
+      total_rows INTEGER NOT NULL DEFAULT 0,
+      duration_ms INTEGER NOT NULL DEFAULT 0,
+      file_size_bytes INTEGER DEFAULT 0,
+      download_url TEXT,
+      split_count INTEGER DEFAULT 1,
+      tested_by TEXT DEFAULT 'admin',
+      notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 13. Hasil Perbandingan Modul & Matriks Paritas Hak Akses
+    CREATE TABLE IF NOT EXISTS module_parity_records (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      module_name TEXT NOT NULL,
+      astro_route TEXT NOT NULL,
+      nextjs_route TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'matched',
+      api_endpoints_count INTEGER DEFAULT 0,
+      rls_policies_count INTEGER DEFAULT 0,
+      ui_parity_score INTEGER DEFAULT 100,
+      notes TEXT,
+      tested_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS role_access_parity (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role_name TEXT NOT NULL,
+      resource TEXT NOT NULL,
+      permission_key TEXT NOT NULL,
+      astro_allowed BOOLEAN NOT NULL DEFAULT 1,
+      supabase_rls_allowed BOOLEAN NOT NULL DEFAULT 1,
+      parity_status TEXT NOT NULL DEFAULT 'matched',
+      verified_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 14. Kanal Media Sosial & Kredensial Terenkripsi
+    CREATE TABLE IF NOT EXISTS social_channels (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      platform TEXT NOT NULL,
+      handle TEXT NOT NULL,
+      followers_count INTEGER DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'connected',
+      platform_url TEXT,
+      last_synced_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS channel_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      channel_id INTEGER,
+      auth_type TEXT NOT NULL DEFAULT 'oauth2',
+      encrypted_token TEXT,
+      refresh_token TEXT,
+      expires_at DATETIME,
+      scopes TEXT,
+      updated_by INTEGER,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE,
+      FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+    );
+
+    -- 15. Metrik Harian Kanal
+    CREATE TABLE IF NOT EXISTS channel_daily_metrics (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      channel_id INTEGER,
+      platform TEXT NOT NULL,
+      metric_date DATE NOT NULL,
+      reach INTEGER DEFAULT 0,
+      impressions INTEGER DEFAULT 0,
+      engagement INTEGER DEFAULT 0,
+      followers_gained INTEGER DEFAULT 0,
+      conversions INTEGER DEFAULT 0,
+      clicks INTEGER DEFAULT 0,
+      shares INTEGER DEFAULT 0,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE,
+      UNIQUE(channel_id, metric_date)
+    );
+
+    -- 16. Log Webhook Kanal
+    CREATE TABLE IF NOT EXISTS channel_webhook_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      channel_id INTEGER,
+      platform TEXT NOT NULL,
+      event_type TEXT NOT NULL,
+      payload_json TEXT,
+      status TEXT NOT NULL DEFAULT 'received',
+      ip_address TEXT,
+      signature_verified BOOLEAN DEFAULT 1,
+      error_message TEXT,
+      received_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      processed_at DATETIME,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
     );
   `);
 
@@ -1735,4 +1878,7 @@ export const dbQueries = {
     getRecent: (limit = 100) => db.prepare('SELECT * FROM audit_logs ORDER BY id DESC LIMIT ?').all(limit),
   },
 };
+
+// Ekspor lapisan klien Supabase terpadu untuk operasi auth & storage
+export { supabase, createServerClient, getServiceSupabase, isSupabaseConfigured } from './supabase';
 

@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "title": "Laporan Performa Multi-Kanal Q3 (30 Hari Terakhir)",
+    "period": "30d",
+    "start_date": "2026-09-01",
+    "end_date": "2026-09-30",
+    "generated_by": null,
+    "notes": "Kompilasi capaian jangkauan, interaksi, dan konversi program kemanusiaan seluruh kanal resmi.",
+    "created_at": "2026-10-11 11:17:21"
+  },
+  {
+    "id": 2,
+    "title": "Laporan Kinerja Triwulan Lembaga (90 Hari Terakhir)",
+    "period": "90d",
+    "start_date": "2026-07-01",
+    "end_date": "2026-09-30",
+    "generated_by": null,
+    "notes": "Laporan perbandingan kinerja jangka panjang menjelang audit program semesteran.",
+    "created_at": "2026-10-11 11:17:21"
+  },
+  {
+    "id": 3,
+    "title": "Laporan Tanggap Cepat Mingguan (7 Hari Terakhir)",
+    "period": "7d",
+    "start_date": "2026-10-04",
+    "end_date": "2026-10-10",
+    "generated_by": null,
+    "notes": "Evaluasi kampanye respon tanggap darurat bencana sepekan.",
+    "created_at": "2026-10-11 11:17:21"
+  }
+]

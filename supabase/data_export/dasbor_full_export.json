@@ -1,0 +1,2529 @@
+{
+  "exported_at": "2026-10-18T16:14:02.532Z",
+  "total_tables": 40,
+  "summary": {
+    "roles": 3,
+    "users": 4,
+    "content_pillars": 4,
+    "content_calendar": 11,
+    "reminders": 3,
+    "content_themes": 8,
+    "metric_snapshots": 32,
+    "donations": 4,
+    "ad_campaigns": 4,
+    "top_pages": 4,
+    "projects": 3,
+    "project_tasks": 11,
+    "news_sources": 8,
+    "news_items": 7,
+    "news_bookmarks": 0,
+    "news_references": 0,
+    "trending_topics": 6,
+    "content_gaps": 4,
+    "idea_recommendations": 4,
+    "saved_ideas": 1,
+    "performance_reports": 3,
+    "performance_rows": 18,
+    "performance_notes": 1,
+    "budget_lines": 10,
+    "budget_revisions": 0,
+    "annual_reports": 3,
+    "shared_reports": 1,
+    "knowledge_docs": 8,
+    "doc_sections": 2,
+    "sop_steps": 2,
+    "doc_proposals": 4,
+    "knowledge_categories": 5,
+    "doc_proposal_logs": 2,
+    "permissions": 6,
+    "role_permissions": 18,
+    "system_settings": 7,
+    "system_integrations": 4,
+    "audit_logs": 4,
+    "dam_shares": 0,
+    "integration_sync_jobs": 0
+  },
+  "data": {
+    "roles": [
+      {
+        "id": 1,
+        "name": "head",
+        "permissions": "[\"all\"]"
+      },
+      {
+        "id": 2,
+        "name": "admin",
+        "permissions": "[\"metrics\",\"projects\",\"content\",\"reports\"]"
+      },
+      {
+        "id": 3,
+        "name": "staff",
+        "permissions": "[\"content_read\",\"content_write\",\"public_metrics\"]"
+      }
+    ],
+    "users": [
+      {
+        "id": 1,
+        "name": "Rani",
+        "email": "rani@ngo.or.id",
+        "role_id": 1,
+        "created_at": "2026-10-10 15:17:51",
+        "avatar_url": null,
+        "auth_migration_note": "Password tidak diekspor. Staf disetel via Supabase Auth Invitation/Reset."
+      },
+      {
+        "id": 2,
+        "name": "Budi",
+        "email": "budi@ngo.or.id",
+        "role_id": 2,
+        "created_at": "2026-10-10 15:17:51",
+        "avatar_url": null,
+        "auth_migration_note": "Password tidak diekspor. Staf disetel via Supabase Auth Invitation/Reset."
+      },
+      {
+        "id": 3,
+        "name": "Dewi",
+        "email": "dewi@ngo.or.id",
+        "role_id": 3,
+        "created_at": "2026-10-10 15:17:51",
+        "avatar_url": null,
+        "auth_migration_note": "Password tidak diekspor. Staf disetel via Supabase Auth Invitation/Reset."
+      },
+      {
+        "id": 4,
+        "name": "Sari",
+        "email": "sari@ngo.or.id",
+        "role_id": 3,
+        "created_at": "2026-10-10 15:17:51",
+        "avatar_url": null,
+        "auth_migration_note": "Password tidak diekspor. Staf disetel via Supabase Auth Invitation/Reset."
+      }
+    ],
+    "content_pillars": [
+      {
+        "id": 1,
+        "name": "Aksi Kemanusiaan",
+        "description": "Distribusi bantuan dan respon bencana",
+        "color": "#e11d48"
+      },
+      {
+        "id": 2,
+        "name": "Edukasi",
+        "description": "Tips, wawasan kemanusiaan, dan SOP kerelawanan",
+        "color": "#2563eb"
+      },
+      {
+        "id": 3,
+        "name": "Donasi & Galang Dana",
+        "description": "Kampanye donasi dan transparansi penghimpunan",
+        "color": "#16a34a"
+      },
+      {
+        "id": 4,
+        "name": "Laporan & Transparansi",
+        "description": "Laporan penyaluran dan audit program berkala",
+        "color": "#d97706"
+      }
+    ],
+    "content_calendar": [
+      {
+        "id": 1,
+        "title": "Penyaluran paket sembako Cianjur",
+        "scheduled_at": "2026-10-02 09:00:00",
+        "channel": "Instagram",
+        "pillar_id": 1,
+        "assignee_id": 4,
+        "status": "terbit",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 2,
+        "title": "Infografis: cara donasi aman",
+        "scheduled_at": "2026-10-05 12:00:00",
+        "channel": "Instagram",
+        "pillar_id": 2,
+        "assignee_id": 2,
+        "status": "terbit",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 3,
+        "title": "Video testimoni penerima manfaat",
+        "scheduled_at": "2026-10-08 18:00:00",
+        "channel": "YouTube",
+        "pillar_id": 1,
+        "assignee_id": 3,
+        "status": "terbit",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 4,
+        "title": "Kampanye Bantu Pendidikan Anak",
+        "scheduled_at": "2026-10-10 10:00:00",
+        "channel": "Website",
+        "pillar_id": 3,
+        "assignee_id": 4,
+        "status": "terjadwal",
+        "remind_before": 60,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 5,
+        "title": "Reels relawan di lapangan",
+        "scheduled_at": "2026-10-12 19:00:00",
+        "channel": "TikTok",
+        "pillar_id": 1,
+        "assignee_id": 3,
+        "status": "terjadwal",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 6,
+        "title": "Update donasi pekan ke-2",
+        "scheduled_at": "2026-10-14 08:00:00",
+        "channel": "Facebook",
+        "pillar_id": 3,
+        "assignee_id": 2,
+        "status": "draft",
+        "remind_before": 1440,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 7,
+        "title": "Tips tanggap bencana banjir",
+        "scheduled_at": "2026-10-16 11:00:00",
+        "channel": "Instagram",
+        "pillar_id": 2,
+        "assignee_id": 1,
+        "status": "draft",
+        "remind_before": 60,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 8,
+        "title": "Laporan penyaluran September",
+        "scheduled_at": "2026-10-20 09:00:00",
+        "channel": "Website",
+        "pillar_id": 4,
+        "assignee_id": 1,
+        "status": "draft",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 9,
+        "title": "Siaran kabar terbaru ke channel",
+        "scheduled_at": "2026-10-20 15:00:00",
+        "channel": "Telegram",
+        "pillar_id": 4,
+        "assignee_id": null,
+        "status": "ide",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 10,
+        "title": "Live Q&A bersama ketua bidang",
+        "scheduled_at": "2026-10-24 20:00:00",
+        "channel": "YouTube",
+        "pillar_id": 2,
+        "assignee_id": 3,
+        "status": "ide",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      },
+      {
+        "id": 11,
+        "title": "Kisah relawan pekan ini",
+        "scheduled_at": "2026-10-28 17:00:00",
+        "channel": "Instagram",
+        "pillar_id": 1,
+        "assignee_id": 4,
+        "status": "ide",
+        "remind_before": 0,
+        "created_at": "2026-10-10 15:17:51",
+        "content_type": null,
+        "sub_type": null,
+        "request_bidang": null
+      }
+    ],
+    "reminders": [
+      {
+        "id": 1,
+        "content_id": 4,
+        "task_id": null,
+        "remind_at": "2026-10-10 09:00:00",
+        "is_sent": 0,
+        "title": "Siapkan aset visual Kampanye Bantu Pendidikan Anak",
+        "message": "Jadwal tayang jam 10:00 di Website. Pastikan link donasi aktif.",
+        "channel": "in_app",
+        "sent_at": null,
+        "status": "pending",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "content_id": 6,
+        "task_id": null,
+        "remind_at": "2026-10-13 08:00:00",
+        "is_sent": 0,
+        "title": "Review draft copy: Update donasi pekan ke-2",
+        "message": "Tayang besok jam 08:00 di Facebook. Cek nominal penghimpunan terbaru.",
+        "channel": "in_app",
+        "sent_at": null,
+        "status": "pending",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "content_id": 7,
+        "task_id": null,
+        "remind_at": "2026-10-16 10:00:00",
+        "is_sent": 0,
+        "title": "Verifikasi narasi Tips tanggap bencana banjir",
+        "message": "Tayang 16 Oktober jam 11:00 di Instagram. Koordinasi dengan tim lapangan.",
+        "channel": "in_app",
+        "sent_at": null,
+        "status": "pending",
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "content_themes": [
+      {
+        "id": 1,
+        "pillar_id": 1,
+        "name": "Tanggap Bencana",
+        "description": "Respon cepat logistik dan evakuasi"
+      },
+      {
+        "id": 2,
+        "pillar_id": 1,
+        "name": "Distribusi Wilayah Terpencil",
+        "description": "Penyaluran logistik daerah 3T"
+      },
+      {
+        "id": 3,
+        "pillar_id": 2,
+        "name": "Literasi Kebencanaan",
+        "description": "Mitigasi dan kesiapsiagaan masyarakat"
+      },
+      {
+        "id": 4,
+        "pillar_id": 2,
+        "name": "SOP Relawan",
+        "description": "Protokol perlindungan anak dan keselamatan tim"
+      },
+      {
+        "id": 5,
+        "pillar_id": 3,
+        "name": "Galang Dana Darurat",
+        "description": "Campaign cepat respon krisis"
+      },
+      {
+        "id": 6,
+        "pillar_id": 3,
+        "name": "Sedekah Program Rutin",
+        "description": "Program bulanan beasiswa dan pangan"
+      },
+      {
+        "id": 7,
+        "pillar_id": 4,
+        "name": "Laporan Penyaluran",
+        "description": "Akuntabilitas penggunaan dana donasi"
+      },
+      {
+        "id": 8,
+        "pillar_id": 4,
+        "name": "Audit Publik & Dampak",
+        "description": "Cerita dampak dan transparansi keuangan"
+      }
+    ],
+    "metric_snapshots": [
+      {
+        "id": 1,
+        "source": "sosmed",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "followers_total",
+        "metric_value": 48320,
+        "delta": 3.4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "source": "sosmed",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "reach",
+        "metric_value": 312500,
+        "delta": 8.1,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "source": "sosmed",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "engagement_rate",
+        "metric_value": 4.6,
+        "delta": -0.6,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 4,
+        "source": "sosmed",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "posts_published",
+        "metric_value": 38,
+        "delta": 5,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 5,
+        "source": "sosmed",
+        "channel": "Instagram",
+        "period": "30d",
+        "metric_name": "followers",
+        "metric_value": 21400,
+        "delta": 4.2,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 6,
+        "source": "sosmed",
+        "channel": "Instagram",
+        "period": "30d",
+        "metric_name": "reach",
+        "metric_value": 148200,
+        "delta": 9.8,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 7,
+        "source": "sosmed",
+        "channel": "Instagram",
+        "period": "30d",
+        "metric_name": "engagement",
+        "metric_value": 5.2,
+        "delta": 0.4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 8,
+        "source": "sosmed",
+        "channel": "Instagram",
+        "period": "30d",
+        "metric_name": "posts",
+        "metric_value": 14,
+        "delta": 2,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 9,
+        "source": "sosmed",
+        "channel": "Facebook",
+        "period": "30d",
+        "metric_name": "followers",
+        "metric_value": 14900,
+        "delta": 1.8,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 10,
+        "source": "sosmed",
+        "channel": "Facebook",
+        "period": "30d",
+        "metric_name": "reach",
+        "metric_value": 76400,
+        "delta": 2.4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 11,
+        "source": "sosmed",
+        "channel": "Facebook",
+        "period": "30d",
+        "metric_name": "engagement",
+        "metric_value": 3.1,
+        "delta": -0.2,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 12,
+        "source": "sosmed",
+        "channel": "Facebook",
+        "period": "30d",
+        "metric_name": "posts",
+        "metric_value": 10,
+        "delta": 0,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 13,
+        "source": "sosmed",
+        "channel": "TikTok",
+        "period": "30d",
+        "metric_name": "followers",
+        "metric_value": 8300,
+        "delta": 12.1,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 14,
+        "source": "sosmed",
+        "channel": "TikTok",
+        "period": "30d",
+        "metric_name": "reach",
+        "metric_value": 61900,
+        "delta": 21.5,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 15,
+        "source": "sosmed",
+        "channel": "TikTok",
+        "period": "30d",
+        "metric_name": "engagement",
+        "metric_value": 6.7,
+        "delta": 1.5,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 16,
+        "source": "sosmed",
+        "channel": "TikTok",
+        "period": "30d",
+        "metric_name": "posts",
+        "metric_value": 8,
+        "delta": 4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 17,
+        "source": "sosmed",
+        "channel": "YouTube",
+        "period": "30d",
+        "metric_name": "followers",
+        "metric_value": 3720,
+        "delta": 0.8,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 18,
+        "source": "sosmed",
+        "channel": "YouTube",
+        "period": "30d",
+        "metric_name": "reach",
+        "metric_value": 26000,
+        "delta": -1.7,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 19,
+        "source": "sosmed",
+        "channel": "YouTube",
+        "period": "30d",
+        "metric_name": "engagement",
+        "metric_value": 4,
+        "delta": -0.1,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 20,
+        "source": "sosmed",
+        "channel": "YouTube",
+        "period": "30d",
+        "metric_name": "posts",
+        "metric_value": 6,
+        "delta": 1,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 21,
+        "source": "website",
+        "channel": "Website",
+        "period": "30d",
+        "metric_name": "visitors",
+        "metric_value": 21480,
+        "delta": 6.2,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 22,
+        "source": "website",
+        "channel": "Website",
+        "period": "30d",
+        "metric_name": "pageviews",
+        "metric_value": 63910,
+        "delta": 4.8,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 23,
+        "source": "website",
+        "channel": "Website",
+        "period": "30d",
+        "metric_name": "avg_session_seconds",
+        "metric_value": 161,
+        "delta": 1.9,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 24,
+        "source": "website",
+        "channel": "Website",
+        "period": "30d",
+        "metric_name": "bounce_rate",
+        "metric_value": 48,
+        "delta": -2.3,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 25,
+        "source": "donasi",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "total_donations",
+        "metric_value": 184600000,
+        "delta": 12.7,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 26,
+        "source": "donasi",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "donors_count",
+        "metric_value": 1268,
+        "delta": 9.4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 27,
+        "source": "donasi",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "avg_donation",
+        "metric_value": 145000,
+        "delta": 3,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 28,
+        "source": "donasi",
+        "channel": "all",
+        "period": "30d",
+        "metric_name": "active_campaigns",
+        "metric_value": 7,
+        "delta": 0,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 29,
+        "source": "meta",
+        "channel": "Meta",
+        "period": "30d",
+        "metric_name": "spend",
+        "metric_value": 22400000,
+        "delta": 4.5,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 30,
+        "source": "meta",
+        "channel": "Meta",
+        "period": "30d",
+        "metric_name": "ad_reach",
+        "metric_value": 540200,
+        "delta": 10.3,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 31,
+        "source": "meta",
+        "channel": "Meta",
+        "period": "30d",
+        "metric_name": "conversions",
+        "metric_value": 864,
+        "delta": 14.1,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 32,
+        "source": "meta",
+        "channel": "Meta",
+        "period": "30d",
+        "metric_name": "cost_per_conversion",
+        "metric_value": 25900,
+        "delta": -8.2,
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "donations": [
+      {
+        "id": 1,
+        "campaign_name": "Bantu Pendidikan Anak",
+        "platform": "Kitabisa",
+        "amount": 72400000,
+        "donors_count": 512,
+        "target_amount": 100000000,
+        "period": "30d",
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "campaign_name": "Sembako untuk Korban Banjir",
+        "platform": "Website Lembaga",
+        "amount": 58200000,
+        "donors_count": 396,
+        "target_amount": 75000000,
+        "period": "30d",
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "campaign_name": "Air Bersih Desa",
+        "platform": "Kitabisa",
+        "amount": 31800000,
+        "donors_count": 241,
+        "target_amount": 60000000,
+        "period": "30d",
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 4,
+        "campaign_name": "Layanan Kesehatan Keliling",
+        "platform": "Website Lembaga",
+        "amount": 22200000,
+        "donors_count": 119,
+        "target_amount": 50000000,
+        "period": "30d",
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "ad_campaigns": [
+      {
+        "id": 1,
+        "name": "Donasi Pendidikan Anak",
+        "platform": "Meta",
+        "objective": "Konversi",
+        "status": "Aktif",
+        "spend": 7800000,
+        "reach": 198400,
+        "conversions": 342,
+        "period": "30d",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "name": "Sembako Korban Banjir",
+        "platform": "Meta",
+        "objective": "Konversi",
+        "status": "Aktif",
+        "spend": 6200000,
+        "reach": 151200,
+        "conversions": 281,
+        "period": "30d",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "name": "Awareness Program Air Bersih",
+        "platform": "Meta",
+        "objective": "Jangkauan",
+        "status": "Aktif",
+        "spend": 4600000,
+        "reach": 132900,
+        "conversions": 96,
+        "period": "30d",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 4,
+        "name": "Rekrut Relawan Oktober",
+        "platform": "Meta",
+        "objective": "Prospek",
+        "status": "Selesai",
+        "spend": 3800000,
+        "reach": 57700,
+        "conversions": 145,
+        "period": "30d",
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "top_pages": [
+      {
+        "id": 1,
+        "path": "/program/pendidikan-anak",
+        "views": 9120,
+        "avg_time": "3m 05d",
+        "period": "30d"
+      },
+      {
+        "id": 2,
+        "path": "/berita/penyaluran-cianjur",
+        "views": 7480,
+        "avg_time": "2m 12d",
+        "period": "30d"
+      },
+      {
+        "id": 3,
+        "path": "/tentang-kami",
+        "views": 5260,
+        "avg_time": "1m 48d",
+        "period": "30d"
+      },
+      {
+        "id": 4,
+        "path": "/laporan-tahunan",
+        "views": 3940,
+        "avg_time": "4m 20d",
+        "period": "30d"
+      }
+    ],
+    "projects": [
+      {
+        "id": 1,
+        "name": "Kampanye Respons Bencana Cianjur",
+        "owner": "Dewi (Ketua Tim Lapangan)",
+        "owner_id": 3,
+        "start_date": "2026-10-01",
+        "end_date": "2026-10-25",
+        "progress": 65,
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "name": "Revitalisasi Portal Donasi Digital",
+        "owner": "Budi (Admin IT & Humas)",
+        "owner_id": 2,
+        "start_date": "2026-10-05",
+        "end_date": "2026-11-10",
+        "progress": 35,
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "name": "Penyusunan Laporan Tahunan Kemanusiaan 2026",
+        "owner": "Rani (Ketua Bidang Humas)",
+        "owner_id": 1,
+        "start_date": "2026-10-10",
+        "end_date": "2026-12-15",
+        "progress": 15,
+        "status": "active",
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "project_tasks": [
+      {
+        "id": 1,
+        "project_id": 1,
+        "title": "Liputan dokumentasi distribusi logistik",
+        "stage": "done",
+        "assignee": "Dewi",
+        "assignee_id": 3,
+        "due_date": "2026-10-05",
+        "priority": "Tinggi",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 2,
+        "project_id": 1,
+        "title": "Rilis siaran pers ke media nasional",
+        "stage": "done",
+        "assignee": "Budi",
+        "assignee_id": 2,
+        "due_date": "2026-10-08",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 3,
+        "project_id": 1,
+        "title": "Produksi video rangkuman pekan ke-2",
+        "stage": "in_progress",
+        "assignee": "Sari",
+        "assignee_id": 4,
+        "due_date": "2026-10-14",
+        "priority": "Tinggi",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 4,
+        "project_id": 1,
+        "title": "Laporan dampak & infografis penerima manfaat",
+        "stage": "todo",
+        "assignee": "Rani",
+        "assignee_id": 1,
+        "due_date": "2026-10-22",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 5,
+        "project_id": 2,
+        "title": "Audit UX alur checkout donasi instan",
+        "stage": "done",
+        "assignee": "Budi",
+        "assignee_id": 2,
+        "due_date": "2026-10-09",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 6,
+        "project_id": 2,
+        "title": "Integrasi payment gateway QRIS",
+        "stage": "in_progress",
+        "assignee": "Budi",
+        "assignee_id": 2,
+        "due_date": "2026-10-18",
+        "priority": "Tinggi",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 7,
+        "project_id": 2,
+        "title": "A/B testing landing page kampanye pendidikan",
+        "stage": "review",
+        "assignee": "Sari",
+        "assignee_id": 4,
+        "due_date": "2026-10-24",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 8,
+        "project_id": 2,
+        "title": "Penyusunan panduan donasi bagi publik",
+        "stage": "todo",
+        "assignee": "Rani",
+        "assignee_id": 1,
+        "due_date": "2026-11-05",
+        "priority": "Rendah",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 9,
+        "project_id": 3,
+        "title": "Pengumpulan data audit RAB & realisasi LRA",
+        "stage": "in_progress",
+        "assignee": "Rani",
+        "assignee_id": 1,
+        "due_date": "2026-10-25",
+        "priority": "Tinggi",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 10,
+        "project_id": 3,
+        "title": "Wawancara studi kasus mitra lapangan",
+        "stage": "todo",
+        "assignee": "Dewi",
+        "assignee_id": 3,
+        "due_date": "2026-11-10",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      },
+      {
+        "id": 11,
+        "project_id": 3,
+        "title": "Desain layout & infografis booklet PDF",
+        "stage": "todo",
+        "assignee": "Sari",
+        "assignee_id": 4,
+        "due_date": "2026-11-30",
+        "priority": "Sedang",
+        "created_at": "2026-10-10 21:12:32",
+        "position": 0
+      }
+    ],
+    "news_sources": [
+      {
+        "id": 1,
+        "name": "BNPB Info Bencana",
+        "type": "rss",
+        "url_or_handle": "https://bnpb.go.id/feed",
+        "category": "Bencana",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 4,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "name": "BMKG Cuaca & Gempa",
+        "type": "rss",
+        "url_or_handle": "https://bmkg.go.id/rss",
+        "category": "Bencana",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 2,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "name": "Antara Humaniora",
+        "type": "rss",
+        "url_or_handle": "https://antaranews.com/rss/humaniora",
+        "category": "Bantuan Kemanusiaan",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 6,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 4,
+        "name": "Google News: Penyaluran Bantuan",
+        "type": "google_news",
+        "url_or_handle": "q=bantuan+kemanusiaan+indonesia",
+        "category": "Bantuan Kemanusiaan",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 8,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 5,
+        "name": "Google News: Banjir & Longsor",
+        "type": "google_news",
+        "url_or_handle": "q=bencana+banjir+longsor",
+        "category": "Bencana",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 5,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 6,
+        "name": "Telegram Siaga Bencana Relawan",
+        "type": "telegram",
+        "url_or_handle": "@siagabencana_id",
+        "category": "Bencana",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 11,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 7,
+        "name": "Telegram Info Logistik Kemanusiaan",
+        "type": "telegram",
+        "url_or_handle": "@infologistik_ngo",
+        "category": "Bantuan Kemanusiaan",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 3,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 8,
+        "name": "Telegram Forum Relawan Nusantara",
+        "type": "telegram",
+        "url_or_handle": "@forumrelawan_nusantara",
+        "category": "Sosial",
+        "is_active": 1,
+        "last_synced": "2026-10-10 21:02:32",
+        "unread_count": 7,
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "news_items": [
+      {
+        "id": 1,
+        "source_id": 2,
+        "title": "BMKG Rilis Peringatan Dini Cuaca Ekstrem Jawa Barat 3 Hari ke Depan",
+        "source_type": "rss",
+        "source_name": "BMKG Cuaca & Gempa",
+        "url": "https://bmkg.go.id/peringatan-dini-jabar",
+        "published_at": "2026-10-10 09:15:00",
+        "summary": "Potensi hujan lebat disertai kilat dan angin kencang berpeluang melanda wilayah Bogor, Cianjur, dan Sukabumi. Tim siaga bencana diimbau meningkatkan kesiapsiagaan logistik.",
+        "category": "Bencana",
+        "is_curated": 1,
+        "is_important": 1,
+        "channel_handle": null,
+        "is_read": 0,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 2,
+        "source_id": 6,
+        "title": "Update Jalur Logistik: Jembatan Darurat Cianjur Selatan Selesai Dibangun",
+        "source_type": "telegram",
+        "source_name": "Telegram Siaga Bencana Relawan",
+        "url": "https://t.me/siagabencana_id/4129",
+        "published_at": "2026-10-10 08:40:00",
+        "summary": "Truk logistik sembako kapasitas hingga 5 ton kini sudah dapat melintas menuju 4 desa terisolir. Distribusi paket pangan lanjutan dijadwalkan mulai pukul 11:00 WIB.",
+        "category": "Bantuan Kemanusiaan",
+        "is_curated": 1,
+        "is_important": 1,
+        "channel_handle": "@siagabencana_id",
+        "is_read": 0,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 3,
+        "source_id": 4,
+        "title": "Kemenkes Percepat Distribusi Paket Gizi Balita Wilayah 3T",
+        "source_type": "google_news",
+        "source_name": "Google News: Penyaluran Bantuan",
+        "url": "https://news.google.com/articles/kemenkes-gizi-3t",
+        "published_at": "2026-10-10 07:30:00",
+        "summary": "Pemerintah menggandeng koalisi NGO penyalur bantuan untuk menjangkau 25 ribu anak di daerah terluar guna menekan angka risiko stunting pascabencana.",
+        "category": "Kesehatan",
+        "is_curated": 1,
+        "is_important": 0,
+        "channel_handle": null,
+        "is_read": 0,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 4,
+        "source_id": 1,
+        "title": "BNPB Catat Tren Peningkatan Kejadian Bencana Hidrometeorologi Basah",
+        "source_type": "rss",
+        "source_name": "BNPB Info Bencana",
+        "url": "https://bnpb.go.id/berita/tren-hidrometeorologi-oktober",
+        "published_at": "2026-10-09 19:20:00",
+        "summary": "Sebanyak 64 kejadian banjir dan tanah longsor tercatat dalam sepekan terakhir. Wilayah penyangga sungai diminta memperkuat koordinasi tanggap darurat.",
+        "category": "Bencana",
+        "is_curated": 1,
+        "is_important": 0,
+        "channel_handle": null,
+        "is_read": 1,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 5,
+        "source_id": 7,
+        "title": "Kebutuhan Mendesak Air Bersih di Pengungsian Desa Sukamaju",
+        "source_type": "telegram",
+        "source_name": "Telegram Info Logistik Kemanusiaan",
+        "url": "https://t.me/infologistik_ngo/1042",
+        "published_at": "2026-10-09 16:55:00",
+        "summary": "Diperlukan tambahan 2 tangki air bersih harian dan 300 jeriken keluarga untuk pengungsi mandiri di posko 3. Relawan terdekat diharapkan merapat.",
+        "category": "Bantuan Kemanusiaan",
+        "is_curated": 1,
+        "is_important": 1,
+        "channel_handle": "@infologistik_ngo",
+        "is_read": 0,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 6,
+        "source_id": 3,
+        "title": "Transparansi Lembaga Donasi Digital Jadi Sorotan Publik di Era Pasca Bencana",
+        "source_type": "rss",
+        "source_name": "Antara Humaniora",
+        "url": "https://antaranews.com/humaniora/transparansi-donasi-digital",
+        "published_at": "2026-10-09 14:10:00",
+        "summary": "Laporan audit terbuka dan pembaruan berkala via dasbor digital dinilai kunci meningkatkan kepercayaan muzaki serta donatur perseorangan.",
+        "category": "Regulasi",
+        "is_curated": 1,
+        "is_important": 0,
+        "channel_handle": null,
+        "is_read": 1,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      },
+      {
+        "id": 7,
+        "source_id": 8,
+        "title": "Inisiatif Dapur Umum Mandiri Ibu-Ibu Relawan di Posko Pengungsian",
+        "source_type": "telegram",
+        "source_name": "Telegram Forum Relawan Nusantara",
+        "url": "https://t.me/forumrelawan_nusantara/884",
+        "published_at": "2026-10-09 11:30:00",
+        "summary": "Penyajian 1.200 porsi makanan hangat per hari berhasil dijalankan berkat kolaborasi bahan pangan lokal dan donasi sembako lembaga.",
+        "category": "Sosial",
+        "is_curated": 1,
+        "is_important": 0,
+        "channel_handle": "@forumrelawan_nusantara",
+        "is_read": 0,
+        "read_at": null,
+        "created_at": "2026-10-10 21:12:32"
+      }
+    ],
+    "news_bookmarks": [],
+    "news_references": [],
+    "trending_topics": [
+      {
+        "id": 1,
+        "rank": 1,
+        "topic": "Krisis Air Bersih Pasca Bencana",
+        "category": "Bencana",
+        "growth_percentage": 182,
+        "mention_count": 14200,
+        "recommended_angle": "Publikasikan dokumentasi water treatment mobile dan distribusi jeriken darurat tim lapangan.",
+        "momentum": "Meroket",
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 2,
+        "rank": 2,
+        "topic": "Jalur Logistik Terisolir Cianjur",
+        "category": "Bantuan Kemanusiaan",
+        "growth_percentage": 124,
+        "mention_count": 9850,
+        "recommended_angle": "Update video drone jembatan darurat dan call-to-action konvoi armada kemanusiaan.",
+        "momentum": "Meroket",
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 3,
+        "rank": 3,
+        "topic": "Transparansi Audit Donasi Digital",
+        "category": "Regulasi",
+        "growth_percentage": 78,
+        "mention_count": 6400,
+        "recommended_angle": "Rilis infografis laporan penyaluran dana publik secara berkala via stories & dasbor terbuka.",
+        "momentum": "Meningkat",
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 4,
+        "rank": 4,
+        "topic": "Dapur Umum Mandiri Komunitas",
+        "category": "Sosial",
+        "growth_percentage": 62,
+        "mention_count": 5120,
+        "recommended_angle": "Sorot kisah ketangguhan ibu-ibu relawan lokal dan kebutuhan bahan pokok harian.",
+        "momentum": "Meningkat",
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 5,
+        "rank": 5,
+        "topic": "Mitigasi Cuaca Ekstrem Musim Hujan",
+        "category": "Bencana",
+        "growth_percentage": 45,
+        "mention_count": 4300,
+        "recommended_angle": "Panduan carousel kesiapsiagaan tas siaga bencana (TSB) keluarga.",
+        "momentum": "Meningkat",
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 6,
+        "rank": 6,
+        "topic": "Paket Gizi Darurat Balita 3T",
+        "category": "Kesehatan",
+        "growth_percentage": 28,
+        "mention_count": 3100,
+        "recommended_angle": "Kolaborasi kampanye donasi spesifik makanan pendamping ASI (MPASI) sehat.",
+        "momentum": "Stabil",
+        "created_at": "2026-10-10 21:20:02"
+      }
+    ],
+    "content_gaps": [
+      {
+        "id": 1,
+        "gap_topic": "Prosedur & Keamanan Distribusi Logistik di Zona Rawan Gempa Susulan",
+        "target_pillar": "Edukasi Bencana & Humaniora",
+        "suggested_format": "Carousel Edukasi",
+        "potential_audience": "Relawan muda & komunitas donor daerah",
+        "reason": "Audiens sering bertanya bagaimana relawan tetap aman saat bertugas, namun belum pernah ada konten panduan SOP keselamatan lapangan yang dipublikasikan.",
+        "urgency": "Tinggi",
+        "is_adopted": 0,
+        "adopted_at": null,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 2,
+        "gap_topic": "Lika-Liku Pengelolaan Gudang Donasi Barang Bekas Layak Pakai vs Pangan Darurat",
+        "target_pillar": "Transparansi & Akuntabilitas",
+        "suggested_format": "Reels / Video Singkat",
+        "potential_audience": "Masyarakat umum & calon donatur perseorangan",
+        "reason": "Sering terjadi penumpukan pakaian yang tidak sesuai kebutuhan darurat. Konten ini penting untuk mengedukasi donatur agar memprioritaskan bantuan higienis dan dana tunai.",
+        "urgency": "Tinggi",
+        "is_adopted": 0,
+        "adopted_at": null,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 3,
+        "gap_topic": "Dukungan Psikososial Anak Pascabencana (Trauma Healing Sederhana)",
+        "target_pillar": "Sosial & Relawan",
+        "suggested_format": "Carousel Edukasi",
+        "potential_audience": "Guru, orang tua, & relawan pendamping tenda ramah anak",
+        "reason": "Konten lembaga saat ini 85% terfokus pada logistik fisik; aspek pemulihan mental dan keceriaan anak belum terdokumentasikan secara terstruktur.",
+        "urgency": "Sedang",
+        "is_adopted": 0,
+        "adopted_at": null,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 4,
+        "gap_topic": "Akuntabilitas Donasi Non-Tunai: Alur Pemanfaatan QRIS dan Pembayaran Otomatis",
+        "target_pillar": "Transparansi & Akuntabilitas",
+        "suggested_format": "Artikel Website & Press",
+        "potential_audience": "Donatur milenial & mitra teknologi perbankan",
+        "reason": "Laporan audit digital perbankan dan settlement fee gateway belum pernah dirinci secara infografis padahal 60% donasi masuk via channel ini.",
+        "urgency": "Sedang",
+        "is_adopted": 0,
+        "adopted_at": null,
+        "created_at": "2026-10-10 21:20:02"
+      }
+    ],
+    "idea_recommendations": [
+      {
+        "id": 1,
+        "hook_title": "Kenapa 1 Jeriken Air Bersih Berarti Hidup dan Harapan Bagi 50 Jiwa?",
+        "source_context": "Tren Topik",
+        "pillar": "Edukasi Bencana & Humaniora",
+        "suggested_channel": "Instagram",
+        "expected_impact": "Tinggi (Konversi Donasi)",
+        "rationale": "Topik air bersih sedang memuncak (+182%). Mengaitkannya dengan narasi mikro 1 jeriken mengubah empati publik menjadi tindakan transfer donasi langsung.",
+        "key_points": "[\"Visual kontras: sumber air keruh vs instalasi filter air bergerak\",\"Data infografis kebutuhan harian satu keluarga di tenda darurat\",\"Call to action paket donasi sedekah air bersih Rp 50.000/keluarga\"]",
+        "is_skipped": 0,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 2,
+        "hook_title": "POV Relawan: 12 Jam di Bak Truk Logistik Menembus Jalur Berlumpur",
+        "source_context": "Pola Performa Lampau",
+        "pillar": "Transparansi & Akuntabilitas",
+        "suggested_channel": "TikTok",
+        "expected_impact": "Tinggi (Viral / Emosional)",
+        "rationale": "Reels logistik sebelumnya meraup engagement 9.2%. Format storytelling orang pertama (POV) memiliki retention rate 3.1x lipat di platform video pendek.",
+        "key_points": "[\"Hook 3 detik pertama: ban truk amblas dan kerja bakti warga menarik tali tambang\",\"Suara natural lapangan tanpa musik berlebih untuk kesan otentik\",\"Penutup: apresiasi kepada semua donatur yang mendanai bahan bakar armada\"]",
+        "is_skipped": 0,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 3,
+        "hook_title": "3 Mitos Bantuan Barang Bekas: Mengapa Sumbangan Pakaian Sering Terbengkalai?",
+        "source_context": "Celah Konten",
+        "pillar": "Edukasi Bencana & Humaniora",
+        "suggested_channel": "Instagram",
+        "expected_impact": "Stabil (Edukasi)",
+        "rationale": "Mengisi celah konten prioritas tinggi mengenai edukasi jenis bantuan yang paling tepat sasaran dan mengurangi beban pilah logistik di posko.",
+        "key_points": "[\"Foto realita tumpukan baju basah yang tidak terpakai di posko\",\"Penjelasan biaya sortir & angkut vs bantuan pangan instan\",\"Solusi cerdas: alihkan ke infaq tunai terukur\"]",
+        "is_skipped": 0,
+        "created_at": "2026-10-10 21:20:02"
+      },
+      {
+        "id": 4,
+        "hook_title": "Mini Dokumenter: Senyum Pertama di Tenda Sekolah Darurat",
+        "source_context": "Hari Besar Kemanusiaan",
+        "pillar": "Sosial & Relawan",
+        "suggested_channel": "YouTube",
+        "expected_impact": "Tinggi (Viral / Emosional)",
+        "rationale": "Menjelang Hari Anak Sedunia, peliputan pemulihan psikososial anak akan menyentuh donatur institusi dan CSR perusahaan.",
+        "key_points": "[\"Wawancara singkat relawan psikolog anak\",\"Aktivitas menggambar dan permainan interaktif anak-anak posko\",\"Pesan harapan masa depan pendidikan pascabencana\"]",
+        "is_skipped": 0,
+        "created_at": "2026-10-10 21:20:02"
+      }
+    ],
+    "saved_ideas": [
+      {
+        "id": 1,
+        "recommendation_id": 1,
+        "hook_title": "Kenapa 1 Jeriken Air Bersih Berarti Hidup dan Harapan Bagi 50 Jiwa?",
+        "suggested_channel": "Instagram",
+        "pillar": "Edukasi Bencana & Humaniora",
+        "rationale": "Topik air bersih sedang memuncak (+182%). Mengaitkannya dengan narasi mikro 1 jeriken mengubah empati publik menjadi tindakan transfer donasi langsung.",
+        "key_points": null,
+        "status": "tersimpan",
+        "calendar_id": null,
+        "user_id": null,
+        "created_at": "2026-10-10 21:20:02",
+        "updated_at": "2026-10-10 21:20:02"
+      }
+    ],
+    "performance_reports": [
+      {
+        "id": 1,
+        "title": "Laporan Performa Multi-Kanal Q3 (30 Hari Terakhir)",
+        "period": "30d",
+        "start_date": "2026-09-01",
+        "end_date": "2026-09-30",
+        "generated_by": null,
+        "notes": "Kompilasi capaian jangkauan, interaksi, dan konversi program kemanusiaan seluruh kanal resmi.",
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 2,
+        "title": "Laporan Kinerja Triwulan Lembaga (90 Hari Terakhir)",
+        "period": "90d",
+        "start_date": "2026-07-01",
+        "end_date": "2026-09-30",
+        "generated_by": null,
+        "notes": "Laporan perbandingan kinerja jangka panjang menjelang audit program semesteran.",
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 3,
+        "title": "Laporan Tanggap Cepat Mingguan (7 Hari Terakhir)",
+        "period": "7d",
+        "start_date": "2026-10-04",
+        "end_date": "2026-10-10",
+        "generated_by": null,
+        "notes": "Evaluasi kampanye respon tanggap darurat bencana sepekan.",
+        "created_at": "2026-10-11 11:17:21"
+      }
+    ],
+    "performance_rows": [
+      {
+        "id": 1,
+        "report_id": 3,
+        "channel": "Instagram",
+        "period": "7d",
+        "reach": 48200,
+        "engagement": 3100,
+        "conversions": 85,
+        "delta": 6.2,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 2,
+        "report_id": 3,
+        "channel": "TikTok",
+        "period": "7d",
+        "reach": 91000,
+        "engagement": 7400,
+        "conversions": 40,
+        "delta": 18.5,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 3,
+        "report_id": 3,
+        "channel": "YouTube",
+        "period": "7d",
+        "reach": 15400,
+        "engagement": 1200,
+        "conversions": 22,
+        "delta": -2.1,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 4,
+        "report_id": 3,
+        "channel": "Website",
+        "period": "7d",
+        "reach": 12100,
+        "engagement": 4300,
+        "conversions": 130,
+        "delta": 4,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 5,
+        "report_id": 3,
+        "channel": "Donasi",
+        "period": "7d",
+        "reach": 8300,
+        "engagement": 2100,
+        "conversions": 210,
+        "delta": 12,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 6,
+        "report_id": 3,
+        "channel": "Iklan Meta",
+        "period": "7d",
+        "reach": 120000,
+        "engagement": 5200,
+        "conversions": 150,
+        "delta": -4.8,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 7,
+        "report_id": 1,
+        "channel": "Instagram",
+        "period": "30d",
+        "reach": 192000,
+        "engagement": 12800,
+        "conversions": 340,
+        "delta": 9.8,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 8,
+        "report_id": 1,
+        "channel": "TikTok",
+        "period": "30d",
+        "reach": 365000,
+        "engagement": 29800,
+        "conversions": 160,
+        "delta": 22.3,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 9,
+        "report_id": 1,
+        "channel": "YouTube",
+        "period": "30d",
+        "reach": 66000,
+        "engagement": 5100,
+        "conversions": 95,
+        "delta": 3.4,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 10,
+        "report_id": 1,
+        "channel": "Website",
+        "period": "30d",
+        "reach": 51000,
+        "engagement": 18200,
+        "conversions": 520,
+        "delta": 7.7,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 11,
+        "report_id": 1,
+        "channel": "Donasi",
+        "period": "30d",
+        "reach": 34000,
+        "engagement": 8700,
+        "conversions": 860,
+        "delta": 15.4,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 12,
+        "report_id": 1,
+        "channel": "Iklan Meta",
+        "period": "30d",
+        "reach": 470000,
+        "engagement": 21000,
+        "conversions": 640,
+        "delta": 1.9,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 13,
+        "report_id": 2,
+        "channel": "Instagram",
+        "period": "90d",
+        "reach": 540000,
+        "engagement": 35400,
+        "conversions": 910,
+        "delta": 14.1,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 14,
+        "report_id": 2,
+        "channel": "TikTok",
+        "period": "90d",
+        "reach": 980000,
+        "engagement": 81000,
+        "conversions": 420,
+        "delta": 31,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 15,
+        "report_id": 2,
+        "channel": "YouTube",
+        "period": "90d",
+        "reach": 188000,
+        "engagement": 14600,
+        "conversions": 270,
+        "delta": 5.9,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 16,
+        "report_id": 2,
+        "channel": "Website",
+        "period": "90d",
+        "reach": 149000,
+        "engagement": 52000,
+        "conversions": 1480,
+        "delta": 11.2,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 17,
+        "report_id": 2,
+        "channel": "Donasi",
+        "period": "90d",
+        "reach": 97000,
+        "engagement": 24000,
+        "conversions": 2350,
+        "delta": 19.8,
+        "created_at": "2026-10-11 11:17:21"
+      },
+      {
+        "id": 18,
+        "report_id": 2,
+        "channel": "Iklan Meta",
+        "period": "90d",
+        "reach": 1300000,
+        "engagement": 59000,
+        "conversions": 1720,
+        "delta": 6.3,
+        "created_at": "2026-10-11 11:17:21"
+      }
+    ],
+    "performance_notes": [
+      {
+        "id": 1,
+        "report_id": 1,
+        "title": "Evaluasi Lonjakan Jangkauan TikTok Q3",
+        "body": "Penyampaian cerita di balik layar distribusi bantuan air bersih terbukti meningkatkan konversi donatur baru hingga 22.3%. Perlu dipertahankan untuk kuartal berikutnya.",
+        "channel": "TikTok",
+        "period": "30d",
+        "meta": "TikTok / 30d",
+        "created_by": null,
+        "created_at": "2026-10-11 11:17:21"
+      }
+    ],
+    "budget_lines": [
+      {
+        "id": 1,
+        "program": "Kampanye Donasi Digital Ramadan",
+        "category": "Media Sosial",
+        "rab": 120000000,
+        "lra": 98500000,
+        "owner": "Tim Media",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q1",
+        "status": "hemat",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 2,
+        "program": "Produksi Video Dokumenter Gempa Darurat",
+        "category": "Produksi Konten",
+        "rab": 85000000,
+        "lra": 91200000,
+        "owner": "Tim Media",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q2",
+        "status": "melebihi",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 3,
+        "program": "Iklan Meta (Facebook & Instagram) Q1-Q2",
+        "category": "Iklan Berbayar",
+        "rab": 150000000,
+        "lra": 112000000,
+        "owner": "Tim Humas",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q2",
+        "status": "hemat",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 4,
+        "program": "Pemeliharaan Website & Cloud Hosting",
+        "category": "Infrastruktur",
+        "rab": 36000000,
+        "lra": 30000000,
+        "owner": "Tim Humas",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q1",
+        "status": "sesuai",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 5,
+        "program": "Liputan Media Massa & Press Release",
+        "category": "Hubungan Media",
+        "rab": 60000000,
+        "lra": 41000000,
+        "owner": "Tim Humas",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q2",
+        "status": "hemat",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 6,
+        "program": "Penyusunan & Pencetakan Laporan Tahunan",
+        "category": "Pelaporan",
+        "rab": 45000000,
+        "lra": 12500000,
+        "owner": "Ketua Bidang",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q3",
+        "status": "hemat",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 7,
+        "program": "Pengadaan Alat Liputan & Drone Lapangan",
+        "category": "Produksi Konten",
+        "rab": 65000000,
+        "lra": 64800000,
+        "owner": "Tim Media",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q1",
+        "status": "sesuai",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 8,
+        "program": "Media Gathering & Buka Bersama Jurnalis",
+        "category": "Hubungan Media",
+        "rab": 30000000,
+        "lra": 34500000,
+        "owner": "Tim Humas",
+        "owner_id": null,
+        "year": 2026,
+        "quarter": "Q1",
+        "status": "melebihi",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 9,
+        "program": "Audit Keuangan Lembaga & Publikasi Transparansi",
+        "category": "Pelaporan",
+        "rab": 50000000,
+        "lra": 49000000,
+        "owner": "Ketua Bidang",
+        "owner_id": null,
+        "year": 2025,
+        "quarter": "Q4",
+        "status": "sesuai",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      },
+      {
+        "id": 10,
+        "program": "Kampanye Akhir Tahun Bersama Dhuafa",
+        "category": "Media Sosial",
+        "rab": 95000000,
+        "lra": 94000000,
+        "owner": "Tim Media",
+        "owner_id": null,
+        "year": 2025,
+        "quarter": "Q4",
+        "status": "sesuai",
+        "notes": null,
+        "created_at": "2026-10-11 11:18:47",
+        "updated_at": "2026-10-11 11:18:47"
+      }
+    ],
+    "budget_revisions": [],
+    "annual_reports": [
+      {
+        "id": 1,
+        "year": 2026,
+        "theme": "Menjangkau yang Terjauh: Inovasi Penyaluran Bantuan Darurat & Berkelanjutan",
+        "executive_summary": "Pada tahun berjalan 2026, Humas dan Media NGO memprioritaskan akselerasi digital kampanye kemanusiaan terintegrasi, respons tanggap darurat bencana hidrometeorologi, dan transparansi penyaluran donasi publik.",
+        "total_donors": 48500,
+        "total_beneficiaries": 124000,
+        "total_funds_raised": 14500000000,
+        "total_funds_distributed": 11800000000,
+        "milestones": "[{\"title\":\"Respons Darurat Gempa & Banjir Bandang\",\"date\":\"Maret 2026\",\"impact\":\"Distribusi 8.500 paket pangan & shelter sementara di 4 kabupaten terdampak.\"},{\"title\":\"Kampanye Terpadu Ramadan 1447H\",\"date\":\"April 2026\",\"impact\":\"Penggalangan dana donasi mencapai 118% dari target kuartal pertama.\"},{\"title\":\"Peluncuran Mobile Water Treatment\",\"date\":\"Juni 2026\",\"impact\":\"Akses 50.000 liter air minum bersih harian untuk pengungsi.\"},{\"title\":\"Audit Publik & Dasbor Terbuka\",\"date\":\"September 2026\",\"impact\":\"Penyajian laporan keuangan wajar tanpa pengecualian (WTP).\"}]",
+        "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Kampanye Ramadan, respons bencana awal tahun, & audit donasi Q1\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Penyaluran qurban pelosok nusantara & laporan semester\",\"progress\":85,\"status\":\"Berjalan\"},{\"quarter\":\"Q3\",\"target\":\"Program pemulihan pascabencana & beasiswa yatim dhuafa\",\"progress\":55,\"status\":\"Berjalan\"},{\"quarter\":\"Q4\",\"target\":\"Penyusunan laporan tahunan, evaluasi dampak, & audit eksternal\",\"progress\":15,\"status\":\"Direncanakan\"}]",
+        "status": "published",
+        "created_at": "2026-10-11 11:25:25",
+        "updated_at": "2026-10-11 11:25:25"
+      },
+      {
+        "id": 2,
+        "year": 2025,
+        "theme": "Ketangguhan Bersama: Kolaborasi Lintas Lembaga untuk Kemanusiaan",
+        "executive_summary": "Tahun 2025 berhasil ditutup dengan peningkatan serapan anggaran kemanusiaan sebesar 94.2% dan pembukaan 12 posko wilayah respon cepat di Indonesia timur.",
+        "total_donors": 62400,
+        "total_beneficiaries": 185000,
+        "total_funds_raised": 19800000000,
+        "total_funds_distributed": 18650000000,
+        "milestones": "[{\"title\":\"Ekspedisi Kemanusiaan Pulau Terluar\",\"date\":\"Mei 2025\",\"impact\":\"Penyaluran fasilitas kesehatan & genset surya untuk 15 pulau terluar.\"},{\"title\":\"Dapur Gizi Balita & Ibu Hamil\",\"date\":\"Agustus 2025\",\"impact\":\"Penurunan angka risiko stunting pada 3.200 balita binaan.\"},{\"title\":\"Penghargaan Transparansi Lembaga Filantropi\",\"date\":\"November 2025\",\"impact\":\"Meraih predikat Akuntabilitas Terbaik Nasional.\"}]",
+        "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Eksplorasi wilayah sasaran 3T & kampanye donasi awal tahun\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Distribusi bantuan pangan darurat & logistik pertengahan tahun\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q3\",\"target\":\"Pembangunan infrastruktur air bersih & sanitasi\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q4\",\"target\":\"Konsolidasi laporan tahunan & audit tahunan final\",\"progress\":100,\"status\":\"Tuntas\"}]",
+        "status": "published",
+        "created_at": "2026-10-11 11:25:25",
+        "updated_at": "2026-10-11 11:25:25"
+      },
+      {
+        "id": 3,
+        "year": 2024,
+        "theme": "Fondasi Kepedulian: Memperkuat Kapasitas Relawan & Jejaring Donatur",
+        "executive_summary": "Transformasi digital sistem informasi donasi dan integrasi pelaporan keuangan berbasis dasbor terpusat pertama kali diresmikan di tahun 2024.",
+        "total_donors": 51200,
+        "total_beneficiaries": 142000,
+        "total_funds_raised": 16200000000,
+        "total_funds_distributed": 15100000000,
+        "milestones": "[{\"title\":\"Digitalisasi CRM Donatur Lembaga\",\"date\":\"April 2024\",\"impact\":\"Peningkatan retensi donatur rutin bulanan hingga 35%.\"},{\"title\":\"Respons Tanggap Darurat Lahar Dingin\",\"date\":\"Juli 2024\",\"impact\":\"Evakuasi & suplai logistik bagi 6.000 jiwa warga terdampak.\"}]",
+        "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Inisiasi integrasi dasbor sistem IT lembaga\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Operasionalisasi pos siaga bencana wilayah barat\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q3\",\"target\":\"Pengadaan armada ambulans dan mobil logistik\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q4\",\"target\":\"Laporan tahunan konsolidasi 2024\",\"progress\":100,\"status\":\"Tuntas\"}]",
+        "status": "published",
+        "created_at": "2026-10-11 11:25:25",
+        "updated_at": "2026-10-11 11:25:25"
+      }
+    ],
+    "shared_reports": [
+      {
+        "id": 1,
+        "share_token": "2b6f1bb5d75d908d928bd56b",
+        "report_type": "budget",
+        "title": "Laporan Realisasi Anggaran 2026",
+        "target_recipient": "auditor@ngo.or.id",
+        "recipient_channel": "link",
+        "download_url": "/api/reports/export?type=budget&year=2026&period=30d",
+        "year": 2026,
+        "period": "30d",
+        "expires_at": "2026-11-10T11:28:31.939Z",
+        "access_count": 0,
+        "last_accessed_at": null,
+        "created_by": null,
+        "notes": "",
+        "created_at": "2026-10-11 11:28:31"
+      }
+    ],
+    "knowledge_docs": [
+      {
+        "id": 1,
+        "code": "SOP-HUM-01",
+        "title": "SOP Peliputan dan Dokumentasi Bencana di Lapangan",
+        "category": "SOP",
+        "description": "Prosedur keselamatan tim media, etika wawancara penyintas, batas zona merah, dan perlindungan privasi anak penyintas bencana.",
+        "version": "v2.3",
+        "author": "Koordinator Peliputan Lapangan",
+        "access_role": "all",
+        "read_time": "6 menit",
+        "download_url": null,
+        "related_codes": "[\"SOP-DON-02\",\"SOP-IT-03\",\"WRK-PUB-01\"]",
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 1
+      },
+      {
+        "id": 2,
+        "code": "SOP-HUM-02",
+        "title": "SOP Komunikasi Krisis dan Manajemen Isu Negatif Lembaga",
+        "category": "SOP",
+        "description": "Panduan eskalasi juru bicara, penanganan hoaks, pernyataan sikap resmi satu pintu (single voice policy), dan waktu tanggap klarifikasi.",
+        "version": "v3.0",
+        "author": "Ketua Bidang Humas & Media",
+        "access_role": "head",
+        "read_time": "8 menit",
+        "download_url": null,
+        "related_codes": "[\"SOP-HUM-01\",\"BRD-GUI-01\"]",
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 1
+      },
+      {
+        "id": 3,
+        "code": "BRD-GUI-01",
+        "title": "Pedoman Visual Identitas Brand, Palet Warna, dan Tipografi Lembaga",
+        "category": "Pedoman Brand",
+        "description": "Ketentuan penggunaan logo pada rompi relawan, kartu nama, backdrop konferensi pers, filter foto media sosial, dan materi cetak resmi.",
+        "version": "v2.0",
+        "author": "Creative Lead Designer",
+        "access_role": "all",
+        "read_time": "5 menit",
+        "download_url": null,
+        "related_codes": "[\"WRK-PUB-01\"]",
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 3
+      },
+      {
+        "id": 4,
+        "code": "WRK-PUB-01",
+        "title": "Alur Kerja Produksi Konten Kampanye Digital Terintegrasi",
+        "category": "Alur Kerja",
+        "description": "Diagram tahapan mulai dari riset topik, penulisan naskah, persetujuan redaksi, penjadwalan kalender, hingga evaluasi engagement.",
+        "version": "v1.4",
+        "author": "Editor Pelaksana Media",
+        "access_role": "all",
+        "read_time": "5 menit",
+        "download_url": null,
+        "related_codes": null,
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 4
+      },
+      {
+        "id": 5,
+        "code": "TPL-LRA-01",
+        "title": "Panduan dan Template Penyusunan RAB Program Humas",
+        "category": "Template",
+        "description": "Format baku estimasi biaya iklan meta, pengadaan materi liputan, honorarium kontributor daerah, dan realisasi LRA.",
+        "version": "v2.1",
+        "author": "Divisi Administrasi Keuangan Humas",
+        "access_role": "admin",
+        "read_time": "7 menit",
+        "download_url": null,
+        "related_codes": null,
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 5
+      },
+      {
+        "id": 6,
+        "code": "SOP-IT-03",
+        "title": "Prosedur Akses Digital Asset Management (DAM Local NAS)",
+        "category": "Panduan Teknis",
+        "description": "Tata cara koneksi ke server NAS lokal kantor, struktur folder liputan per tahun, penamaan file RAW, dan hak akses folder sensitif.",
+        "version": "v1.2",
+        "author": "Admin Infrastruktur IT",
+        "access_role": "all",
+        "read_time": "4 menit",
+        "download_url": null,
+        "related_codes": null,
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 2
+      },
+      {
+        "id": 7,
+        "code": "SOP-DON-02",
+        "title": "Etika Publikasi Donatur dan Penerima Manfaat",
+        "category": "SOP",
+        "description": "Aturan kepatuhan perlindungan data pribadi donatur dan martabat keluarga dhuafa dalam publikasi materi visual.",
+        "version": "v1.8",
+        "author": "Divisi Advokasi & Legal Lembaga",
+        "access_role": "all",
+        "read_time": "9 menit",
+        "download_url": null,
+        "related_codes": null,
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 1
+      },
+      {
+        "id": 8,
+        "code": "TPL-RPT-02",
+        "title": "Template Standar Laporan Akuntabilitas Semesteran",
+        "category": "Template",
+        "description": "Dokumen acuan format ringkasan eksekutif, tabel infografis capaian, dan matriks pertanggungjawaban dana publik.",
+        "version": "v2.0",
+        "author": "Sekretariat Bidang",
+        "access_role": "head",
+        "read_time": "10 menit",
+        "download_url": null,
+        "related_codes": null,
+        "is_archived": 0,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06",
+        "category_id": 5
+      }
+    ],
+    "doc_sections": [
+      {
+        "id": 1,
+        "doc_id": 1,
+        "position": 1,
+        "heading": "1. Tujuan dan Ruang Lingkup",
+        "content": "Dokumen ini mengatur tata laksana standar bagi seluruh personil Humas, fotografer, videografer, dan relawan dokumentasi saat bertugas di lokasi bencana alam maupun tanggap darurat krisis kemanusiaan.",
+        "checklist": null,
+        "notes": "Berlaku wajib sejak hari pertama fase tanggap darurat dideklarasikan oleh komandan posko operasi."
+      },
+      {
+        "id": 2,
+        "doc_id": 1,
+        "position": 2,
+        "heading": "2. Protokol Keselamatan dan Alat Pelindung Diri (APD)",
+        "content": "Keselamatan jiwa personil selalu menjadi prioritas di atas materi liputan. Tim dilarang memasuki radius zona merah aktif tanpa izin resmi Basarnas atau TNI/Polri.",
+        "checklist": "[\"Rompi identitas kemanusiaan lembaga dan helm keselamatan wajib dipakai setiap saat di lapangan.\",\"Sepatu bot keselamatan dan kartu identitas darurat (tertera golongan darah dan kontak darurat keluarga).\",\"Perangkat komunikasi radio dua arah (HT) cadangan baterai penuh serta powerbank.\",\"Pouch kedap air untuk kartu memori cadangan dan paspor/dokumen resmi relawan.\"]",
+        "notes": null
+      }
+    ],
+    "sop_steps": [
+      {
+        "id": 1,
+        "doc_id": 1,
+        "step_number": 1,
+        "phase": "Fase Pra-Keberangkatan",
+        "title": "Briefing Keamanan & Pembagian Zona",
+        "actor": "Koordinator Liputan & Tim Dokumentasi",
+        "action": "Menghadiri briefing komando di posko induk, mencatat titik kumpul aman (assembly point), serta mengecek fungsi APD dan alat komunikasi satelit.",
+        "output": "Surat tugas peliputan terverifikasi & peta zona bahaya.",
+        "sla_time": "30 menit sebelum berangkat"
+      },
+      {
+        "id": 2,
+        "doc_id": 1,
+        "step_number": 2,
+        "phase": "Fase Tiba di Lapangan",
+        "title": "Izin Tokoh Lokal & Asesmen Etis",
+        "actor": "Fotografer / Reporter",
+        "action": "Menghubungi ketua posko setempat, memperkenalkan diri sebagai tim kemanusiaan resmi, dan meminta persetujuan lisan sebelum merekam aktivitas warga.",
+        "output": "Izin akses liputan & catatan etika budaya setempat.",
+        "sla_time": "Maksimal 15 menit pasca tiba"
+      }
+    ],
+    "doc_proposals": [
+      {
+        "id": 1,
+        "proposal_code": "USUL-2026-001",
+        "type": "revision",
+        "title": "Pembaruan Batas Waktu Unggah Dokumentasi Tanggap Darurat Bencana",
+        "category": "SOP",
+        "target_doc_code": "SOP-HUM-01",
+        "target_doc_title": "SOP Peliputan dan Dokumentasi Bencana di Lapangan",
+        "submitter_name": "Rian Pratama",
+        "submitter_role": "staff",
+        "urgency": "penting",
+        "reason": "Koneksi internet di posko bencana sering mengalami kendala bandwidth saat jam malam sehingga batas unggah jam 21.00 WIB sulit dipenuhi.",
+        "suggested_content": "Menambahkan opsi kelonggaran pengunggahan bertahap (priority batching: foto resolusi sedang untuk siaran pers dahulu, file RAW pagi hari).",
+        "status": "menunggu_tinjauan",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "review_notes": null,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06"
+      },
+      {
+        "id": 2,
+        "proposal_code": "USUL-2026-002",
+        "type": "new",
+        "title": "Panduan Penanganan Hak Jawab dan Klarifikasi Berita Viral Medsos",
+        "category": "Panduan Teknis",
+        "target_doc_code": null,
+        "target_doc_title": null,
+        "submitter_name": "Dewi Lestari",
+        "submitter_role": "staff",
+        "urgency": "mendesak",
+        "reason": "Belum ada panduan resmi tata cara merespons misinformasi penyaluran bantuan di platform X dan TikTok saat isu sedang bergulir cepat.",
+        "suggested_content": "Membuat matriks respon krisis medsos, format template pernyataan klarifikasi resmi, dan pembatasan wewenang admin akun.",
+        "status": "menunggu_tinjauan",
+        "reviewed_by": null,
+        "reviewed_at": null,
+        "review_notes": null,
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06"
+      },
+      {
+        "id": 3,
+        "proposal_code": "USUL-2026-003",
+        "type": "revision",
+        "title": "Penyesuaian Aturan Perlindungan Wajah Penerima Manfaat Dhuafa Lansia",
+        "category": "SOP",
+        "target_doc_code": "SOP-DON-02",
+        "target_doc_title": "Etika Publikasi Donatur dan Penerima Manfaat",
+        "submitter_name": "Ahmad Fauzi",
+        "submitter_role": "admin",
+        "urgency": "normal",
+        "reason": "Menegaskan batas persetujuan dokumentasi untuk lansia yang hidup sebatang kara dan menjaga harkat martabat keluarga.",
+        "suggested_content": "Penambahan klausul persetujuan berbasis saksi aparat desa setempat bila penerima manfaat berhalangan tanda tangan.",
+        "status": "disetujui",
+        "reviewed_by": "Dr. Hendra Gunawan (Ketua Bidang Humas)",
+        "reviewed_at": "06 Oktober 2026, 16:45 WIB",
+        "review_notes": "Disetujui untuk diintegrasikan pada revisi SOP v1.9 bulan depan.",
+        "created_at": "2026-10-11 11:31:06",
+        "updated_at": "2026-10-11 11:31:06"
+      },
+      {
+        "id": 4,
+        "proposal_code": "USUL-2026-004",
+        "type": "new",
+        "title": "SOP Peliputan Drone Ketinggian Rendah",
+        "category": "SOP",
+        "target_doc_code": null,
+        "target_doc_title": null,
+        "submitter_name": "Rian Pratama",
+        "submitter_role": "head",
+        "urgency": "normal",
+        "reason": "Kebutuhan panduan keselamatan baterai dan izin udara lokal",
+        "suggested_content": "Klausul jarak aman 30 meter dari kerumunan warga.",
+        "status": "disetujui",
+        "reviewed_by": "Dr. Hendra Gunawan (Ketua Bidang Humas)",
+        "reviewed_at": "11 Oktober 2026, 18.44 WIB",
+        "review_notes": "Disetujui untuk dimasukkan dalam agenda revisi SOP kuartal depan.",
+        "created_at": "2026-10-11 11:43:59",
+        "updated_at": "2026-10-11 11:44:16"
+      }
+    ],
+    "knowledge_categories": [
+      {
+        "id": 1,
+        "name": "SOP",
+        "slug": "sop",
+        "description": "Standar operasional baku prosedur kerja lapangan dan tata kelola internal",
+        "icon": "📋",
+        "color": "#dc2626"
+      },
+      {
+        "id": 2,
+        "name": "Panduan Teknis",
+        "slug": "panduan-teknis",
+        "description": "Petunjuk operasional teknis sistem, IT, dan perlengkapan",
+        "icon": "🛠️",
+        "color": "#2563eb"
+      },
+      {
+        "id": 3,
+        "name": "Pedoman Brand",
+        "slug": "pedoman-brand",
+        "description": "Identitas visual, tata letak logo, dan standarisasi publikasi",
+        "icon": "🎨",
+        "color": "#7c3aed"
+      },
+      {
+        "id": 4,
+        "name": "Alur Kerja",
+        "slug": "alur-kerja",
+        "description": "Diagram alir proses bertahap dari pra hingga pasca kegiatan",
+        "icon": "🔄",
+        "color": "#059669"
+      },
+      {
+        "id": 5,
+        "name": "Template",
+        "slug": "template",
+        "description": "Berkas acuan baku dokumen kerja dan pelaporan",
+        "icon": "📑",
+        "color": "#d97706"
+      }
+    ],
+    "doc_proposal_logs": [
+      {
+        "id": 1,
+        "proposal_id": 4,
+        "action": "created",
+        "previous_status": null,
+        "new_status": "menunggu_tinjauan",
+        "actor_name": "Rian Pratama",
+        "actor_role": "head",
+        "notes": "Pengajuan usulan dokumen baru/revisi melalui sistem.",
+        "created_at": "2026-10-11 11:43:59"
+      },
+      {
+        "id": 2,
+        "proposal_id": 4,
+        "action": "status_changed",
+        "previous_status": "menunggu_tinjauan",
+        "new_status": "disetujui",
+        "actor_name": "Dr. Hendra Gunawan (Ketua Bidang Humas)",
+        "actor_role": "head",
+        "notes": "Disetujui untuk dimasukkan dalam agenda revisi SOP kuartal depan.",
+        "created_at": "2026-10-11 11:44:16"
+      }
+    ],
+    "permissions": [
+      {
+        "id": 1,
+        "key": "content_create_edit",
+        "label": "Buat & Sunting Draft Konten",
+        "description": "Menyusun naskah, aset visual, dan draf jadwal publikasi",
+        "module": "content",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 2,
+        "key": "content_approve_publish",
+        "label": "Persetujuan & Publikasi Resmi",
+        "description": "Mengesahkan draf materi dan menerbitkan ke kanal resmi media sosial",
+        "module": "content",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 3,
+        "key": "budget_manage",
+        "label": "Kelola Rencana & Realisasi Anggaran",
+        "description": "Mengubah alokasi pagu, mengunggah SPJ, dan merevisi baris anggaran",
+        "module": "budget",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 4,
+        "key": "knowledge_publish",
+        "label": "Pengesahan Dokumen SOP & Pedoman",
+        "description": "Menyetujui usulan revisi dokumen dan mengarsipkan versi lama",
+        "module": "knowledge",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 5,
+        "key": "system_settings_manage",
+        "label": "Konfigurasi Sistem & Integrasi NAS/Cloud",
+        "description": "Mengatur token API, kredensial penyimpanan DAM, dan manajemen akun",
+        "module": "system",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 6,
+        "key": "audit_logs_read",
+        "label": "Akses Jejak Audit & Keamanan",
+        "description": "Membaca log aktivitas menyeluruh pengguna dan kegagalan autentikasi",
+        "module": "audit",
+        "created_at": "2026-10-11 14:07:39"
+      }
+    ],
+    "role_permissions": [
+      {
+        "id": 1,
+        "role_id": 1,
+        "permission_id": 1,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 2,
+        "role_id": 1,
+        "permission_id": 2,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 3,
+        "role_id": 1,
+        "permission_id": 3,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 4,
+        "role_id": 1,
+        "permission_id": 4,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 5,
+        "role_id": 1,
+        "permission_id": 5,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 6,
+        "role_id": 1,
+        "permission_id": 6,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 7,
+        "role_id": 2,
+        "permission_id": 1,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 8,
+        "role_id": 2,
+        "permission_id": 2,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 9,
+        "role_id": 2,
+        "permission_id": 3,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 10,
+        "role_id": 2,
+        "permission_id": 4,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 11,
+        "role_id": 2,
+        "permission_id": 5,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 12,
+        "role_id": 2,
+        "permission_id": 6,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 13,
+        "role_id": 3,
+        "permission_id": 1,
+        "granted": 1,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 14,
+        "role_id": 3,
+        "permission_id": 2,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 15,
+        "role_id": 3,
+        "permission_id": 3,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 16,
+        "role_id": 3,
+        "permission_id": 4,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 17,
+        "role_id": 3,
+        "permission_id": 5,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 18,
+        "role_id": 3,
+        "permission_id": 6,
+        "granted": 0,
+        "created_at": "2026-10-11 14:07:39"
+      }
+    ],
+    "system_settings": [
+      {
+        "id": 1,
+        "key": "org_name",
+        "value": "Yayasan Kemanusiaan Peduli Negeri",
+        "category": "organization",
+        "description": "Nama resmi organisasi kemanusiaan",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 2,
+        "key": "org_short_name",
+        "value": "Peduli Negeri",
+        "category": "organization",
+        "description": "Nama singkat tampilan header",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 3,
+        "key": "org_tagline",
+        "value": "Menebar Manfaat, Membangun Martabat Negeri Bersama",
+        "category": "organization",
+        "description": "Slogan resmi",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 4,
+        "key": "org_contact_email",
+        "value": "humas@pedulinegeri.org",
+        "category": "contact",
+        "description": "Email resmi kontak media",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 5,
+        "key": "org_contact_phone",
+        "value": "+62 21 4288 9910",
+        "category": "contact",
+        "description": "Hotline narahubung media",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 6,
+        "key": "fiscal_year",
+        "value": "2026",
+        "category": "finance",
+        "description": "Tahun pembukuan anggaran aktif",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 7,
+        "key": "timezone",
+        "value": "Asia/Jakarta",
+        "category": "localization",
+        "description": "Zona waktu operasional sistem",
+        "updated_by": null,
+        "updated_at": "2026-10-11 14:07:39"
+      }
+    ],
+    "system_integrations": [
+      {
+        "id": 1,
+        "service_key": "dam_nas",
+        "name": "DAM Server Lokal (Synology NAS)",
+        "category": "storage",
+        "status": "connected",
+        "endpoint": "smb://192.168.1.200/dam-humas/arsip-media",
+        "config_json": "{\"protocol\":\"smb3\",\"host\":\"192.168.1.200\",\"serviceUser\":\"dam-agent-srv\"}",
+        "last_sync_at": "2026-10-11 20:30:00",
+        "last_status_message": "Sinkronisasi normal (1,420 aset terindeks)",
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 2,
+        "service_key": "google_workspace",
+        "name": "Akun Google (SSO, AI Pro, Drive & Calendar)",
+        "category": "cloud",
+        "status": "connected",
+        "endpoint": "https://www.googleapis.com/drive/v3/files",
+        "config_json": "{\"accountEmail\":\"humas.pedulinegeri@gmail.com\",\"plan\":\"Google AI Pro (Gemini Advanced & 2TB Drive)\",\"authMethod\":\"Google SSO OAuth2\"}",
+        "last_sync_at": "2026-10-11 20:44:00",
+        "last_status_message": "Terhubung via Google SSO (Paket Google AI Pro Aktif)",
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 3,
+        "service_key": "meta_ads",
+        "name": "Meta Graph API (Instagram & Facebook)",
+        "category": "social",
+        "status": "connected",
+        "endpoint": "https://graph.facebook.com/v19.0",
+        "config_json": "{\"accountId\":\"act_99812401\",\"pageName\":\"Peduli Negeri ID\"}",
+        "last_sync_at": "2026-10-11 20:00:00",
+        "last_status_message": "Metrik jangkauan dan performa diperbarui",
+        "updated_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 4,
+        "service_key": "telegram_bot",
+        "name": "Telegram Bot Siaga Humas",
+        "category": "messaging",
+        "status": "warning",
+        "endpoint": "https://api.telegram.org/bot[TOKEN]",
+        "config_json": "{\"botUsername\":\"@PeduliHumasAlertBot\",\"chatId\":\"-10018829910\"}",
+        "last_sync_at": "2026-10-10 21:05:00",
+        "last_status_message": "Peringatan: Webhook memerlukan validasi ulang SSL",
+        "updated_at": "2026-10-11 14:07:39"
+      }
+    ],
+    "audit_logs": [
+      {
+        "id": 1,
+        "user_id": 2,
+        "user_name": "Budi Santoso",
+        "user_role": "admin",
+        "action": "Perbaruan Konfigurasi Integrasi",
+        "target": "Google Workspace Service Account Token",
+        "ip_address": "192.168.1.45",
+        "status": "success",
+        "details": "Token diperbarui otomatis melalui konsol",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 2,
+        "user_id": 1,
+        "user_name": "Rani Maulida",
+        "user_role": "head",
+        "action": "Pengesahan Revisi SOP Humas",
+        "target": "SOP-HUM-01 (Kanal Krisis Bencana)",
+        "ip_address": "180.252.16.89",
+        "status": "success",
+        "details": "Revisi disahkan per rapat pimpinan",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 3,
+        "user_id": null,
+        "user_name": "Sistem Otomatis DAM",
+        "user_role": "service_agent",
+        "action": "Sinkronisasi Folder SMB",
+        "target": "48 Berkas Foto Dokumentasi Baru Dipindai",
+        "ip_address": "192.168.1.200",
+        "status": "success",
+        "details": "Penambahan metadata EXIF",
+        "created_at": "2026-10-11 14:07:39"
+      },
+      {
+        "id": 4,
+        "user_id": null,
+        "user_name": "Percobaan Masuk Tamu",
+        "user_role": "anonymous",
+        "action": "Gagal Autentikasi Pengguna",
+        "target": "admin.backup@pedulinegeri.org (Salah Sandi)",
+        "ip_address": "114.124.201.33",
+        "status": "failed",
+        "details": "3x percobaan salah sandi berurutan",
+        "created_at": "2026-10-11 14:07:39"
+      }
+    ],
+    "dam_shares": [],
+    "integration_sync_jobs": []
+  }
+}

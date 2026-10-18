@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Donasi Pendidikan Anak",
+    "platform": "Meta",
+    "objective": "Konversi",
+    "status": "Aktif",
+    "spend": 7800000,
+    "reach": 198400,
+    "conversions": 342,
+    "period": "30d",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "name": "Sembako Korban Banjir",
+    "platform": "Meta",
+    "objective": "Konversi",
+    "status": "Aktif",
+    "spend": 6200000,
+    "reach": 151200,
+    "conversions": 281,
+    "period": "30d",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "name": "Awareness Program Air Bersih",
+    "platform": "Meta",
+    "objective": "Jangkauan",
+    "status": "Aktif",
+    "spend": 4600000,
+    "reach": 132900,
+    "conversions": 96,
+    "period": "30d",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 4,
+    "name": "Rekrut Relawan Oktober",
+    "platform": "Meta",
+    "objective": "Prospek",
+    "status": "Selesai",
+    "spend": 3800000,
+    "reach": 57700,
+    "conversions": 145,
+    "period": "30d",
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

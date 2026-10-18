@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "key": "org_name",
+    "value": "Yayasan Kemanusiaan Peduli Negeri",
+    "category": "organization",
+    "description": "Nama resmi organisasi kemanusiaan",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 2,
+    "key": "org_short_name",
+    "value": "Peduli Negeri",
+    "category": "organization",
+    "description": "Nama singkat tampilan header",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 3,
+    "key": "org_tagline",
+    "value": "Menebar Manfaat, Membangun Martabat Negeri Bersama",
+    "category": "organization",
+    "description": "Slogan resmi",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 4,
+    "key": "org_contact_email",
+    "value": "humas@pedulinegeri.org",
+    "category": "contact",
+    "description": "Email resmi kontak media",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 5,
+    "key": "org_contact_phone",
+    "value": "+62 21 4288 9910",
+    "category": "contact",
+    "description": "Hotline narahubung media",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 6,
+    "key": "fiscal_year",
+    "value": "2026",
+    "category": "finance",
+    "description": "Tahun pembukuan anggaran aktif",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 7,
+    "key": "timezone",
+    "value": "Asia/Jakarta",
+    "category": "localization",
+    "description": "Zona waktu operasional sistem",
+    "updated_by": null,
+    "updated_at": "2026-10-11 14:07:39"
+  }
+]

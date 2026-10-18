@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "name": "Kampanye Respons Bencana Cianjur",
+    "owner": "Dewi (Ketua Tim Lapangan)",
+    "owner_id": 3,
+    "start_date": "2026-10-01",
+    "end_date": "2026-10-25",
+    "progress": 65,
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "name": "Revitalisasi Portal Donasi Digital",
+    "owner": "Budi (Admin IT & Humas)",
+    "owner_id": 2,
+    "start_date": "2026-10-05",
+    "end_date": "2026-11-10",
+    "progress": 35,
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "name": "Penyusunan Laporan Tahunan Kemanusiaan 2026",
+    "owner": "Rani (Ketua Bidang Humas)",
+    "owner_id": 1,
+    "start_date": "2026-10-10",
+    "end_date": "2026-12-15",
+    "progress": 15,
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

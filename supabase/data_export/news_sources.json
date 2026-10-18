@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1,
+    "name": "BNPB Info Bencana",
+    "type": "rss",
+    "url_or_handle": "https://bnpb.go.id/feed",
+    "category": "Bencana",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "name": "BMKG Cuaca & Gempa",
+    "type": "rss",
+    "url_or_handle": "https://bmkg.go.id/rss",
+    "category": "Bencana",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 2,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "name": "Antara Humaniora",
+    "type": "rss",
+    "url_or_handle": "https://antaranews.com/rss/humaniora",
+    "category": "Bantuan Kemanusiaan",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 6,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 4,
+    "name": "Google News: Penyaluran Bantuan",
+    "type": "google_news",
+    "url_or_handle": "q=bantuan+kemanusiaan+indonesia",
+    "category": "Bantuan Kemanusiaan",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 8,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 5,
+    "name": "Google News: Banjir & Longsor",
+    "type": "google_news",
+    "url_or_handle": "q=bencana+banjir+longsor",
+    "category": "Bencana",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 5,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 6,
+    "name": "Telegram Siaga Bencana Relawan",
+    "type": "telegram",
+    "url_or_handle": "@siagabencana_id",
+    "category": "Bencana",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 11,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 7,
+    "name": "Telegram Info Logistik Kemanusiaan",
+    "type": "telegram",
+    "url_or_handle": "@infologistik_ngo",
+    "category": "Bantuan Kemanusiaan",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 3,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 8,
+    "name": "Telegram Forum Relawan Nusantara",
+    "type": "telegram",
+    "url_or_handle": "@forumrelawan_nusantara",
+    "category": "Sosial",
+    "is_active": 1,
+    "last_synced": "2026-10-10 21:02:32",
+    "unread_count": 7,
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

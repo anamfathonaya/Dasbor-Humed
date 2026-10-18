@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "gap_topic": "Prosedur & Keamanan Distribusi Logistik di Zona Rawan Gempa Susulan",
+    "target_pillar": "Edukasi Bencana & Humaniora",
+    "suggested_format": "Carousel Edukasi",
+    "potential_audience": "Relawan muda & komunitas donor daerah",
+    "reason": "Audiens sering bertanya bagaimana relawan tetap aman saat bertugas, namun belum pernah ada konten panduan SOP keselamatan lapangan yang dipublikasikan.",
+    "urgency": "Tinggi",
+    "is_adopted": 0,
+    "adopted_at": null,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 2,
+    "gap_topic": "Lika-Liku Pengelolaan Gudang Donasi Barang Bekas Layak Pakai vs Pangan Darurat",
+    "target_pillar": "Transparansi & Akuntabilitas",
+    "suggested_format": "Reels / Video Singkat",
+    "potential_audience": "Masyarakat umum & calon donatur perseorangan",
+    "reason": "Sering terjadi penumpukan pakaian yang tidak sesuai kebutuhan darurat. Konten ini penting untuk mengedukasi donatur agar memprioritaskan bantuan higienis dan dana tunai.",
+    "urgency": "Tinggi",
+    "is_adopted": 0,
+    "adopted_at": null,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 3,
+    "gap_topic": "Dukungan Psikososial Anak Pascabencana (Trauma Healing Sederhana)",
+    "target_pillar": "Sosial & Relawan",
+    "suggested_format": "Carousel Edukasi",
+    "potential_audience": "Guru, orang tua, & relawan pendamping tenda ramah anak",
+    "reason": "Konten lembaga saat ini 85% terfokus pada logistik fisik; aspek pemulihan mental dan keceriaan anak belum terdokumentasikan secara terstruktur.",
+    "urgency": "Sedang",
+    "is_adopted": 0,
+    "adopted_at": null,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 4,
+    "gap_topic": "Akuntabilitas Donasi Non-Tunai: Alur Pemanfaatan QRIS dan Pembayaran Otomatis",
+    "target_pillar": "Transparansi & Akuntabilitas",
+    "suggested_format": "Artikel Website & Press",
+    "potential_audience": "Donatur milenial & mitra teknologi perbankan",
+    "reason": "Laporan audit digital perbankan dan settlement fee gateway belum pernah dirinci secara infografis padahal 60% donasi masuk via channel ini.",
+    "urgency": "Sedang",
+    "is_adopted": 0,
+    "adopted_at": null,
+    "created_at": "2026-10-10 21:20:02"
+  }
+]

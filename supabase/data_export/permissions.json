@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "key": "content_create_edit",
+    "label": "Buat & Sunting Draft Konten",
+    "description": "Menyusun naskah, aset visual, dan draf jadwal publikasi",
+    "module": "content",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 2,
+    "key": "content_approve_publish",
+    "label": "Persetujuan & Publikasi Resmi",
+    "description": "Mengesahkan draf materi dan menerbitkan ke kanal resmi media sosial",
+    "module": "content",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 3,
+    "key": "budget_manage",
+    "label": "Kelola Rencana & Realisasi Anggaran",
+    "description": "Mengubah alokasi pagu, mengunggah SPJ, dan merevisi baris anggaran",
+    "module": "budget",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 4,
+    "key": "knowledge_publish",
+    "label": "Pengesahan Dokumen SOP & Pedoman",
+    "description": "Menyetujui usulan revisi dokumen dan mengarsipkan versi lama",
+    "module": "knowledge",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 5,
+    "key": "system_settings_manage",
+    "label": "Konfigurasi Sistem & Integrasi NAS/Cloud",
+    "description": "Mengatur token API, kredensial penyimpanan DAM, dan manajemen akun",
+    "module": "system",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 6,
+    "key": "audit_logs_read",
+    "label": "Akses Jejak Audit & Keamanan",
+    "description": "Membaca log aktivitas menyeluruh pengguna dan kegagalan autentikasi",
+    "module": "audit",
+    "created_at": "2026-10-11 14:07:39"
+  }
+]

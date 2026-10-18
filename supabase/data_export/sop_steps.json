@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "doc_id": 1,
+    "step_number": 1,
+    "phase": "Fase Pra-Keberangkatan",
+    "title": "Briefing Keamanan & Pembagian Zona",
+    "actor": "Koordinator Liputan & Tim Dokumentasi",
+    "action": "Menghadiri briefing komando di posko induk, mencatat titik kumpul aman (assembly point), serta mengecek fungsi APD dan alat komunikasi satelit.",
+    "output": "Surat tugas peliputan terverifikasi & peta zona bahaya.",
+    "sla_time": "30 menit sebelum berangkat"
+  },
+  {
+    "id": 2,
+    "doc_id": 1,
+    "step_number": 2,
+    "phase": "Fase Tiba di Lapangan",
+    "title": "Izin Tokoh Lokal & Asesmen Etis",
+    "actor": "Fotografer / Reporter",
+    "action": "Menghubungi ketua posko setempat, memperkenalkan diri sebagai tim kemanusiaan resmi, dan meminta persetujuan lisan sebelum merekam aktivitas warga.",
+    "output": "Izin akses liputan & catatan etika budaya setempat.",
+    "sla_time": "Maksimal 15 menit pasca tiba"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "share_token": "2b6f1bb5d75d908d928bd56b",
+    "report_type": "budget",
+    "title": "Laporan Realisasi Anggaran 2026",
+    "target_recipient": "auditor@ngo.or.id",
+    "recipient_channel": "link",
+    "download_url": "/api/reports/export?type=budget&year=2026&period=30d",
+    "year": 2026,
+    "period": "30d",
+    "expires_at": "2026-11-10T11:28:31.939Z",
+    "access_count": 0,
+    "last_accessed_at": null,
+    "created_by": null,
+    "notes": "",
+    "created_at": "2026-10-11 11:28:31"
+  }
+]

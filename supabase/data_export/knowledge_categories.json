@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "SOP",
+    "slug": "sop",
+    "description": "Standar operasional baku prosedur kerja lapangan dan tata kelola internal",
+    "icon": "📋",
+    "color": "#dc2626"
+  },
+  {
+    "id": 2,
+    "name": "Panduan Teknis",
+    "slug": "panduan-teknis",
+    "description": "Petunjuk operasional teknis sistem, IT, dan perlengkapan",
+    "icon": "🛠️",
+    "color": "#2563eb"
+  },
+  {
+    "id": 3,
+    "name": "Pedoman Brand",
+    "slug": "pedoman-brand",
+    "description": "Identitas visual, tata letak logo, dan standarisasi publikasi",
+    "icon": "🎨",
+    "color": "#7c3aed"
+  },
+  {
+    "id": 4,
+    "name": "Alur Kerja",
+    "slug": "alur-kerja",
+    "description": "Diagram alir proses bertahap dari pra hingga pasca kegiatan",
+    "icon": "🔄",
+    "color": "#059669"
+  },
+  {
+    "id": 5,
+    "name": "Template",
+    "slug": "template",
+    "description": "Berkas acuan baku dokumen kerja dan pelaporan",
+    "icon": "📑",
+    "color": "#d97706"
+  }
+]

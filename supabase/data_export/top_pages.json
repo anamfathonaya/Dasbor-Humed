@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "path": "/program/pendidikan-anak",
+    "views": 9120,
+    "avg_time": "3m 05d",
+    "period": "30d"
+  },
+  {
+    "id": 2,
+    "path": "/berita/penyaluran-cianjur",
+    "views": 7480,
+    "avg_time": "2m 12d",
+    "period": "30d"
+  },
+  {
+    "id": 3,
+    "path": "/tentang-kami",
+    "views": 5260,
+    "avg_time": "1m 48d",
+    "period": "30d"
+  },
+  {
+    "id": 4,
+    "path": "/laporan-tahunan",
+    "views": 3940,
+    "avg_time": "4m 20d",
+    "period": "30d"
+  }
+]

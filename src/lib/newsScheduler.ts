@@ -22,12 +22,33 @@ export async function runAutoSyncCycle() {
     // 2. Tarik kabar saluran Telegram
     const telegramResults = await syncTelegramSources();
 
+    const totalItems = (rssResults?.reduce((acc: number, curr: any) => acc + (curr.inserted || 0), 0) || 0) +
+      (telegramResults?.reduce((acc: number, curr: any) => acc + (curr.inserted || 0), 0) || 0);
+
+    // Catat log hasil jalan jadwal ke database
+    try {
+      db.prepare(`
+        INSERT INTO integration_sync_jobs (service_key, target_object, status, items_processed, details, triggered_by, finished_at)
+        VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).run(
+        'cron_news_sync',
+        'Pusat Pantauan Berita & Telegram',
+        'success',
+        totalItems,
+        `Sinkronisasi otomatis berhasil: ${totalItems} berita & pesan baru terproses.`,
+        'cron_scheduler'
+      );
+    } catch (dbErr) {
+      console.warn('[newsScheduler] Gagal mencatat log ke SQLite:', dbErr);
+    }
+
     lastExecutedAt = startedAt;
     lastSyncReport = {
       startedAt,
       completedAt: new Date().toISOString(),
       rss: rssResults,
       telegram: telegramResults,
+      totalItems,
     };
 
     return {
@@ -36,6 +57,20 @@ export async function runAutoSyncCycle() {
       report: lastSyncReport,
     };
   } catch (error: any) {
+    try {
+      db.prepare(`
+        INSERT INTO integration_sync_jobs (service_key, target_object, status, items_processed, details, triggered_by, finished_at)
+        VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      `).run(
+        'cron_news_sync',
+        'Pusat Pantauan Berita & Telegram',
+        'failed',
+        0,
+        `Gagal sinkronisasi berita: ${error.message}`,
+        'cron_scheduler'
+      );
+    } catch {}
+
     return {
       success: false,
       error: error.message,
@@ -47,24 +82,14 @@ export async function runAutoSyncCycle() {
 }
 
 /**
- * Memulai penjadwal pembaruan otomatis berkala (default interval: 15 menit)
+ * Penjadwal interval memori lokal dinonaktifkan (deprecate) karena arsitektur beralih ke Vercel Cron
  */
 export function startNewsAutoScheduler(intervalMinutes: number = 15) {
-  if (schedulerIntervalId) {
-    return { message: 'Penjadwal pembaruan otomatis sudah aktif', intervalMinutes };
-  }
-
-  const ms = intervalMinutes * 60 * 1000;
-  schedulerIntervalId = setInterval(() => {
-    runAutoSyncCycle().catch(() => {});
-  }, ms);
-
-  // Jangan blok event loop Node.js jika proses selesai
-  if (schedulerIntervalId.unref) {
-    schedulerIntervalId.unref();
-  }
-
-  return { message: 'Penjadwal pembaruan otomatis berhasil dimulai', intervalMinutes };
+  return {
+    message: 'Penjadwal in-process lokal telah digantikan oleh Vercel Cron (/api/cron/news-sync)',
+    intervalMinutes,
+    isVercelCron: true,
+  };
 }
 
 /**
@@ -74,9 +99,11 @@ export function stopNewsAutoScheduler() {
   if (schedulerIntervalId) {
     clearInterval(schedulerIntervalId);
     schedulerIntervalId = null;
-    return { message: 'Penjadwal pembaruan otomatis berhasil dihentikan' };
   }
-  return { message: 'Penjadwal tidak sedang aktif' };
+  return {
+    message: 'Penjadwal lama in-process dihentikan. Jadwal terkelola lewat vercel.json.',
+    isVercelCron: true,
+  };
 }
 
 /**
@@ -84,7 +111,8 @@ export function stopNewsAutoScheduler() {
  */
 export function getNewsSchedulerStatus() {
   return {
-    isRunning: schedulerIntervalId !== null,
+    isRunning: true,
+    engine: 'vercel_cron',
     isSyncingNow: isJobRunning,
     lastExecutedAt,
     lastReport: lastSyncReport,

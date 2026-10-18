@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Aksi Kemanusiaan",
+    "description": "Distribusi bantuan dan respon bencana",
+    "color": "#e11d48"
+  },
+  {
+    "id": 2,
+    "name": "Edukasi",
+    "description": "Tips, wawasan kemanusiaan, dan SOP kerelawanan",
+    "color": "#2563eb"
+  },
+  {
+    "id": 3,
+    "name": "Donasi & Galang Dana",
+    "description": "Kampanye donasi dan transparansi penghimpunan",
+    "color": "#16a34a"
+  },
+  {
+    "id": 4,
+    "name": "Laporan & Transparansi",
+    "description": "Laporan penyaluran dan audit program berkala",
+    "color": "#d97706"
+  }
+]

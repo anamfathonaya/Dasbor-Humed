@@ -53,6 +53,28 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
+  // CUTOVER READ-ONLY ENFORCEMENT:
+  // Jika CUTOVER_READ_ONLY diaktifkan (atau header x-legacy-cutover aktif),
+  // kunci seluruh mutasi data pada server legacy ke mode read-only
+  const isCutoverReadOnly = process.env.CUTOVER_READ_ONLY === 'true';
+  const method = context.request.method.toUpperCase();
+  if (isCutoverReadOnly && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    if (pathname.startsWith('/api/')) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          statusCode: 423,
+          error: 'Sistem sedang dalam mode Cutover (Read-Only). Mutasi data dialihkan ke Next.js & Supabase.',
+          cutover: true,
+        }),
+        {
+          status: 423,
+          headers: { 'Content-Type': 'application/json', 'X-System-Cutover': 'read-only' },
+        }
+      );
+    }
+  }
+
   // Identifikasi peran aktif dari request (cookie, header x-user-role, bearer token, atau query ?role=)
   const role = getUserRole(context.request, url);
 
@@ -86,3 +108,53 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   return next();
 });
+
+// Kompatibilitas Next.js Middleware terintegrasi Supabase Auth & Role RBAC
+export async function middleware(request: any) {
+  const { pathname } = request.nextUrl || new URL(request.url);
+
+  // Lewati static assets, internal files, dan halaman login
+  if (
+    pathname === '/masuk' ||
+    pathname === '/set-ulang-kata-sandi' ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon')
+  ) {
+    return;
+  }
+
+  // 1. Dapatkan role dari cookie sesi Supabase / user_role
+  let userRole: UserRole = 'head';
+  const roleCookie = request.cookies?.get('user_role')?.value;
+  if (roleCookie === 'head' || roleCookie === 'admin' || roleCookie === 'staff' || roleCookie === 'reviewer') {
+    userRole = roleCookie;
+  }
+
+  // 2. Evaluasi proteksi rute RBAC
+  for (const rule of routePermissions) {
+    if (rule.pattern.test(pathname)) {
+      if (!rule.allowedRoles.includes(userRole)) {
+        if (pathname.startsWith('/api/')) {
+          return new Response(
+            JSON.stringify({
+              success: false,
+              statusCode: 403,
+              message: `Akses ditolak (403 Forbidden): Peran '${userRole}' tidak diizinkan mengakses ${rule.description}.`
+            }),
+            {
+              status: 403,
+              headers: { 'Content-Type': 'application/json' }
+            }
+          );
+        }
+        // Redirect ke dasbor bila rute web tidak berizin
+        const redirectUrl = new URL('/dasbor', request.url);
+        redirectUrl.searchParams.set('forbidden', '1');
+        redirectUrl.searchParams.set('role', userRole);
+        return Response.redirect(redirectUrl);
+      }
+    }
+  }
+}
+

@@ -6,35 +6,15 @@ initDatabase();
 // GET: Ambil daftar seluruh konten kalender
 export const GET: APIRoute = async ({ url }) => {
   try {
-    const channel = url.searchParams.get('channel');
-    const pillarId = url.searchParams.get('pillarId');
-    const assigneeId = url.searchParams.get('assigneeId');
+    const channel = url.searchParams.get('channel') || undefined;
+    const pillarIdStr = url.searchParams.get('pillarId');
+    const assigneeIdStr = url.searchParams.get('assigneeId');
+    const pillarId = pillarIdStr ? Number(pillarIdStr) : undefined;
+    const assigneeId = assigneeIdStr ? Number(assigneeIdStr) : undefined;
 
-    let query = `
-      SELECT c.*, p.name as pillar_name, p.color as pillar_color, u.name as assignee_name
-      FROM content_calendar c
-      LEFT JOIN content_pillars p ON c.pillar_id = p.id
-      LEFT JOIN users u ON c.assignee_id = u.id
-      WHERE 1=1
-    `;
-    const params: any[] = [];
+    const { supabaseQueries } = await import('../../../lib/supabaseDb');
+    const rows = await supabaseQueries.content.getAll({ channel, pillarId, assigneeId });
 
-    if (channel) {
-      query += ` AND c.channel = ?`;
-      params.push(channel);
-    }
-    if (pillarId) {
-      query += ` AND c.pillar_id = ?`;
-      params.push(Number(pillarId));
-    }
-    if (assigneeId) {
-      query += ` AND c.assignee_id = ?`;
-      params.push(Number(assigneeId));
-    }
-
-    query += ` ORDER BY c.scheduled_at ASC`;
-
-    const rows = db.prepare(query).all(...params);
     return new Response(JSON.stringify({ success: true, data: rows }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "service_key": "dam_nas",
+    "name": "DAM Server Lokal (Synology NAS)",
+    "category": "storage",
+    "status": "connected",
+    "endpoint": "smb://192.168.1.200/dam-humas/arsip-media",
+    "config_json": "{\"protocol\":\"smb3\",\"host\":\"192.168.1.200\",\"serviceUser\":\"dam-agent-srv\"}",
+    "last_sync_at": "2026-10-11 20:30:00",
+    "last_status_message": "Sinkronisasi normal (1,420 aset terindeks)",
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 2,
+    "service_key": "google_workspace",
+    "name": "Akun Google (SSO, AI Pro, Drive & Calendar)",
+    "category": "cloud",
+    "status": "connected",
+    "endpoint": "https://www.googleapis.com/drive/v3/files",
+    "config_json": "{\"accountEmail\":\"humas.pedulinegeri@gmail.com\",\"plan\":\"Google AI Pro (Gemini Advanced & 2TB Drive)\",\"authMethod\":\"Google SSO OAuth2\"}",
+    "last_sync_at": "2026-10-11 20:44:00",
+    "last_status_message": "Terhubung via Google SSO (Paket Google AI Pro Aktif)",
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 3,
+    "service_key": "meta_ads",
+    "name": "Meta Graph API (Instagram & Facebook)",
+    "category": "social",
+    "status": "connected",
+    "endpoint": "https://graph.facebook.com/v19.0",
+    "config_json": "{\"accountId\":\"act_99812401\",\"pageName\":\"Peduli Negeri ID\"}",
+    "last_sync_at": "2026-10-11 20:00:00",
+    "last_status_message": "Metrik jangkauan dan performa diperbarui",
+    "updated_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 4,
+    "service_key": "telegram_bot",
+    "name": "Telegram Bot Siaga Humas",
+    "category": "messaging",
+    "status": "warning",
+    "endpoint": "https://api.telegram.org/bot[TOKEN]",
+    "config_json": "{\"botUsername\":\"@PeduliHumasAlertBot\",\"chatId\":\"-10018829910\"}",
+    "last_sync_at": "2026-10-10 21:05:00",
+    "last_status_message": "Peringatan: Webhook memerlukan validasi ulang SSL",
+    "updated_at": "2026-10-11 14:07:39"
+  }
+]

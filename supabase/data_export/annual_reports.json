@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "year": 2026,
+    "theme": "Menjangkau yang Terjauh: Inovasi Penyaluran Bantuan Darurat & Berkelanjutan",
+    "executive_summary": "Pada tahun berjalan 2026, Humas dan Media NGO memprioritaskan akselerasi digital kampanye kemanusiaan terintegrasi, respons tanggap darurat bencana hidrometeorologi, dan transparansi penyaluran donasi publik.",
+    "total_donors": 48500,
+    "total_beneficiaries": 124000,
+    "total_funds_raised": 14500000000,
+    "total_funds_distributed": 11800000000,
+    "milestones": "[{\"title\":\"Respons Darurat Gempa & Banjir Bandang\",\"date\":\"Maret 2026\",\"impact\":\"Distribusi 8.500 paket pangan & shelter sementara di 4 kabupaten terdampak.\"},{\"title\":\"Kampanye Terpadu Ramadan 1447H\",\"date\":\"April 2026\",\"impact\":\"Penggalangan dana donasi mencapai 118% dari target kuartal pertama.\"},{\"title\":\"Peluncuran Mobile Water Treatment\",\"date\":\"Juni 2026\",\"impact\":\"Akses 50.000 liter air minum bersih harian untuk pengungsi.\"},{\"title\":\"Audit Publik & Dasbor Terbuka\",\"date\":\"September 2026\",\"impact\":\"Penyajian laporan keuangan wajar tanpa pengecualian (WTP).\"}]",
+    "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Kampanye Ramadan, respons bencana awal tahun, & audit donasi Q1\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Penyaluran qurban pelosok nusantara & laporan semester\",\"progress\":85,\"status\":\"Berjalan\"},{\"quarter\":\"Q3\",\"target\":\"Program pemulihan pascabencana & beasiswa yatim dhuafa\",\"progress\":55,\"status\":\"Berjalan\"},{\"quarter\":\"Q4\",\"target\":\"Penyusunan laporan tahunan, evaluasi dampak, & audit eksternal\",\"progress\":15,\"status\":\"Direncanakan\"}]",
+    "status": "published",
+    "created_at": "2026-10-11 11:25:25",
+    "updated_at": "2026-10-11 11:25:25"
+  },
+  {
+    "id": 2,
+    "year": 2025,
+    "theme": "Ketangguhan Bersama: Kolaborasi Lintas Lembaga untuk Kemanusiaan",
+    "executive_summary": "Tahun 2025 berhasil ditutup dengan peningkatan serapan anggaran kemanusiaan sebesar 94.2% dan pembukaan 12 posko wilayah respon cepat di Indonesia timur.",
+    "total_donors": 62400,
+    "total_beneficiaries": 185000,
+    "total_funds_raised": 19800000000,
+    "total_funds_distributed": 18650000000,
+    "milestones": "[{\"title\":\"Ekspedisi Kemanusiaan Pulau Terluar\",\"date\":\"Mei 2025\",\"impact\":\"Penyaluran fasilitas kesehatan & genset surya untuk 15 pulau terluar.\"},{\"title\":\"Dapur Gizi Balita & Ibu Hamil\",\"date\":\"Agustus 2025\",\"impact\":\"Penurunan angka risiko stunting pada 3.200 balita binaan.\"},{\"title\":\"Penghargaan Transparansi Lembaga Filantropi\",\"date\":\"November 2025\",\"impact\":\"Meraih predikat Akuntabilitas Terbaik Nasional.\"}]",
+    "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Eksplorasi wilayah sasaran 3T & kampanye donasi awal tahun\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Distribusi bantuan pangan darurat & logistik pertengahan tahun\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q3\",\"target\":\"Pembangunan infrastruktur air bersih & sanitasi\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q4\",\"target\":\"Konsolidasi laporan tahunan & audit tahunan final\",\"progress\":100,\"status\":\"Tuntas\"}]",
+    "status": "published",
+    "created_at": "2026-10-11 11:25:25",
+    "updated_at": "2026-10-11 11:25:25"
+  },
+  {
+    "id": 3,
+    "year": 2024,
+    "theme": "Fondasi Kepedulian: Memperkuat Kapasitas Relawan & Jejaring Donatur",
+    "executive_summary": "Transformasi digital sistem informasi donasi dan integrasi pelaporan keuangan berbasis dasbor terpusat pertama kali diresmikan di tahun 2024.",
+    "total_donors": 51200,
+    "total_beneficiaries": 142000,
+    "total_funds_raised": 16200000000,
+    "total_funds_distributed": 15100000000,
+    "milestones": "[{\"title\":\"Digitalisasi CRM Donatur Lembaga\",\"date\":\"April 2024\",\"impact\":\"Peningkatan retensi donatur rutin bulanan hingga 35%.\"},{\"title\":\"Respons Tanggap Darurat Lahar Dingin\",\"date\":\"Juli 2024\",\"impact\":\"Evakuasi & suplai logistik bagi 6.000 jiwa warga terdampak.\"}]",
+    "quarterly_progress": "[{\"quarter\":\"Q1\",\"target\":\"Inisiasi integrasi dasbor sistem IT lembaga\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q2\",\"target\":\"Operasionalisasi pos siaga bencana wilayah barat\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q3\",\"target\":\"Pengadaan armada ambulans dan mobil logistik\",\"progress\":100,\"status\":\"Tuntas\"},{\"quarter\":\"Q4\",\"target\":\"Laporan tahunan konsolidasi 2024\",\"progress\":100,\"status\":\"Tuntas\"}]",
+    "status": "published",
+    "created_at": "2026-10-11 11:25:25",
+    "updated_at": "2026-10-11 11:25:25"
+  }
+]

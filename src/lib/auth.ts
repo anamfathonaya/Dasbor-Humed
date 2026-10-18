@@ -1,27 +1,29 @@
 import type { Request } from 'node-fetch';
 
-export type UserRole = 'head' | 'admin' | 'staff';
+export type UserRole = 'head' | 'admin' | 'staff' | 'reviewer';
 
 /**
  * Ekstrak peran pengguna dari Request header, cookie, atau query param.
  * Mendukung:
- * - Header 'x-user-role': 'head' | 'admin' | 'staff'
- * - Query param '?role=...': 'head' | 'admin' | 'staff'
+ * - Header 'x-user-role': 'head' | 'admin' | 'staff' | 'reviewer'
+ * - Query param '?role=...': 'head' | 'admin' | 'staff' | 'reviewer'
  * - Header 'Authorization': 'Bearer <role>'
  * Default: 'head' (untuk kompatibilitas preview lokal jika tidak ditentukan).
  */
 export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
+  const validRoles: UserRole[] = ['head', 'admin', 'staff', 'reviewer'];
+
   // 1. Cek query param jika url disediakan
   if (url) {
     const roleParam = url.searchParams.get('role');
-    if (roleParam && ['head', 'admin', 'staff'].includes(roleParam)) {
+    if (roleParam && (validRoles as string[]).includes(roleParam)) {
       return roleParam as UserRole;
     }
   }
 
   // 2. Cek custom header
   const headerRole = request.headers.get('x-user-role')?.toLowerCase();
-  if (headerRole && ['head', 'admin', 'staff'].includes(headerRole)) {
+  if (headerRole && (validRoles as string[]).includes(headerRole)) {
     return headerRole as UserRole;
   }
 
@@ -29,7 +31,7 @@ export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
   const authHeader = request.headers.get('authorization');
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '').trim().toLowerCase();
-    if (['head', 'admin', 'staff'].includes(token)) {
+    if ((validRoles as string[]).includes(token)) {
       return token as UserRole;
     }
   }
@@ -38,7 +40,7 @@ export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
   const cookieHeader = request.headers.get('cookie');
   if (cookieHeader) {
     const match = cookieHeader.match(/user_role=([a-zA-Z]+)/);
-    if (match && ['head', 'admin', 'staff'].includes(match[1])) {
+    if (match && (validRoles as string[]).includes(match[1])) {
       return match[1] as UserRole;
     }
   }

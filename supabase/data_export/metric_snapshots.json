@@ -1,0 +1,322 @@
+[
+  {
+    "id": 1,
+    "source": "sosmed",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "followers_total",
+    "metric_value": 48320,
+    "delta": 3.4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "source": "sosmed",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "reach",
+    "metric_value": 312500,
+    "delta": 8.1,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "source": "sosmed",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "engagement_rate",
+    "metric_value": 4.6,
+    "delta": -0.6,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 4,
+    "source": "sosmed",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "posts_published",
+    "metric_value": 38,
+    "delta": 5,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 5,
+    "source": "sosmed",
+    "channel": "Instagram",
+    "period": "30d",
+    "metric_name": "followers",
+    "metric_value": 21400,
+    "delta": 4.2,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 6,
+    "source": "sosmed",
+    "channel": "Instagram",
+    "period": "30d",
+    "metric_name": "reach",
+    "metric_value": 148200,
+    "delta": 9.8,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 7,
+    "source": "sosmed",
+    "channel": "Instagram",
+    "period": "30d",
+    "metric_name": "engagement",
+    "metric_value": 5.2,
+    "delta": 0.4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 8,
+    "source": "sosmed",
+    "channel": "Instagram",
+    "period": "30d",
+    "metric_name": "posts",
+    "metric_value": 14,
+    "delta": 2,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 9,
+    "source": "sosmed",
+    "channel": "Facebook",
+    "period": "30d",
+    "metric_name": "followers",
+    "metric_value": 14900,
+    "delta": 1.8,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 10,
+    "source": "sosmed",
+    "channel": "Facebook",
+    "period": "30d",
+    "metric_name": "reach",
+    "metric_value": 76400,
+    "delta": 2.4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 11,
+    "source": "sosmed",
+    "channel": "Facebook",
+    "period": "30d",
+    "metric_name": "engagement",
+    "metric_value": 3.1,
+    "delta": -0.2,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 12,
+    "source": "sosmed",
+    "channel": "Facebook",
+    "period": "30d",
+    "metric_name": "posts",
+    "metric_value": 10,
+    "delta": 0,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 13,
+    "source": "sosmed",
+    "channel": "TikTok",
+    "period": "30d",
+    "metric_name": "followers",
+    "metric_value": 8300,
+    "delta": 12.1,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 14,
+    "source": "sosmed",
+    "channel": "TikTok",
+    "period": "30d",
+    "metric_name": "reach",
+    "metric_value": 61900,
+    "delta": 21.5,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 15,
+    "source": "sosmed",
+    "channel": "TikTok",
+    "period": "30d",
+    "metric_name": "engagement",
+    "metric_value": 6.7,
+    "delta": 1.5,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 16,
+    "source": "sosmed",
+    "channel": "TikTok",
+    "period": "30d",
+    "metric_name": "posts",
+    "metric_value": 8,
+    "delta": 4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 17,
+    "source": "sosmed",
+    "channel": "YouTube",
+    "period": "30d",
+    "metric_name": "followers",
+    "metric_value": 3720,
+    "delta": 0.8,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 18,
+    "source": "sosmed",
+    "channel": "YouTube",
+    "period": "30d",
+    "metric_name": "reach",
+    "metric_value": 26000,
+    "delta": -1.7,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 19,
+    "source": "sosmed",
+    "channel": "YouTube",
+    "period": "30d",
+    "metric_name": "engagement",
+    "metric_value": 4,
+    "delta": -0.1,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 20,
+    "source": "sosmed",
+    "channel": "YouTube",
+    "period": "30d",
+    "metric_name": "posts",
+    "metric_value": 6,
+    "delta": 1,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 21,
+    "source": "website",
+    "channel": "Website",
+    "period": "30d",
+    "metric_name": "visitors",
+    "metric_value": 21480,
+    "delta": 6.2,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 22,
+    "source": "website",
+    "channel": "Website",
+    "period": "30d",
+    "metric_name": "pageviews",
+    "metric_value": 63910,
+    "delta": 4.8,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 23,
+    "source": "website",
+    "channel": "Website",
+    "period": "30d",
+    "metric_name": "avg_session_seconds",
+    "metric_value": 161,
+    "delta": 1.9,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 24,
+    "source": "website",
+    "channel": "Website",
+    "period": "30d",
+    "metric_name": "bounce_rate",
+    "metric_value": 48,
+    "delta": -2.3,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 25,
+    "source": "donasi",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "total_donations",
+    "metric_value": 184600000,
+    "delta": 12.7,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 26,
+    "source": "donasi",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "donors_count",
+    "metric_value": 1268,
+    "delta": 9.4,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 27,
+    "source": "donasi",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "avg_donation",
+    "metric_value": 145000,
+    "delta": 3,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 28,
+    "source": "donasi",
+    "channel": "all",
+    "period": "30d",
+    "metric_name": "active_campaigns",
+    "metric_value": 7,
+    "delta": 0,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 29,
+    "source": "meta",
+    "channel": "Meta",
+    "period": "30d",
+    "metric_name": "spend",
+    "metric_value": 22400000,
+    "delta": 4.5,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 30,
+    "source": "meta",
+    "channel": "Meta",
+    "period": "30d",
+    "metric_name": "ad_reach",
+    "metric_value": 540200,
+    "delta": 10.3,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 31,
+    "source": "meta",
+    "channel": "Meta",
+    "period": "30d",
+    "metric_name": "conversions",
+    "metric_value": 864,
+    "delta": 14.1,
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 32,
+    "source": "meta",
+    "channel": "Meta",
+    "period": "30d",
+    "metric_name": "cost_per_conversion",
+    "metric_value": 25900,
+    "delta": -8.2,
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

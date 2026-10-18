@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "user_id": 2,
+    "user_name": "Budi Santoso",
+    "user_role": "admin",
+    "action": "Perbaruan Konfigurasi Integrasi",
+    "target": "Google Workspace Service Account Token",
+    "ip_address": "192.168.1.45",
+    "status": "success",
+    "details": "Token diperbarui otomatis melalui konsol",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 2,
+    "user_id": 1,
+    "user_name": "Rani Maulida",
+    "user_role": "head",
+    "action": "Pengesahan Revisi SOP Humas",
+    "target": "SOP-HUM-01 (Kanal Krisis Bencana)",
+    "ip_address": "180.252.16.89",
+    "status": "success",
+    "details": "Revisi disahkan per rapat pimpinan",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 3,
+    "user_id": null,
+    "user_name": "Sistem Otomatis DAM",
+    "user_role": "service_agent",
+    "action": "Sinkronisasi Folder SMB",
+    "target": "48 Berkas Foto Dokumentasi Baru Dipindai",
+    "ip_address": "192.168.1.200",
+    "status": "success",
+    "details": "Penambahan metadata EXIF",
+    "created_at": "2026-10-11 14:07:39"
+  },
+  {
+    "id": 4,
+    "user_id": null,
+    "user_name": "Percobaan Masuk Tamu",
+    "user_role": "anonymous",
+    "action": "Gagal Autentikasi Pengguna",
+    "target": "admin.backup@pedulinegeri.org (Salah Sandi)",
+    "ip_address": "114.124.201.33",
+    "status": "failed",
+    "details": "3x percobaan salah sandi berurutan",
+    "created_at": "2026-10-11 14:07:39"
+  }
+]

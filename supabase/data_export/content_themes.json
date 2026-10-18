@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "pillar_id": 1,
+    "name": "Tanggap Bencana",
+    "description": "Respon cepat logistik dan evakuasi"
+  },
+  {
+    "id": 2,
+    "pillar_id": 1,
+    "name": "Distribusi Wilayah Terpencil",
+    "description": "Penyaluran logistik daerah 3T"
+  },
+  {
+    "id": 3,
+    "pillar_id": 2,
+    "name": "Literasi Kebencanaan",
+    "description": "Mitigasi dan kesiapsiagaan masyarakat"
+  },
+  {
+    "id": 4,
+    "pillar_id": 2,
+    "name": "SOP Relawan",
+    "description": "Protokol perlindungan anak dan keselamatan tim"
+  },
+  {
+    "id": 5,
+    "pillar_id": 3,
+    "name": "Galang Dana Darurat",
+    "description": "Campaign cepat respon krisis"
+  },
+  {
+    "id": 6,
+    "pillar_id": 3,
+    "name": "Sedekah Program Rutin",
+    "description": "Program bulanan beasiswa dan pangan"
+  },
+  {
+    "id": 7,
+    "pillar_id": 4,
+    "name": "Laporan Penyaluran",
+    "description": "Akuntabilitas penggunaan dana donasi"
+  },
+  {
+    "id": 8,
+    "pillar_id": 4,
+    "name": "Audit Publik & Dampak",
+    "description": "Cerita dampak dan transparansi keuangan"
+  }
+]

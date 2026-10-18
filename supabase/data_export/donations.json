@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "campaign_name": "Bantu Pendidikan Anak",
+    "platform": "Kitabisa",
+    "amount": 72400000,
+    "donors_count": 512,
+    "target_amount": 100000000,
+    "period": "30d",
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "campaign_name": "Sembako untuk Korban Banjir",
+    "platform": "Website Lembaga",
+    "amount": 58200000,
+    "donors_count": 396,
+    "target_amount": 75000000,
+    "period": "30d",
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "campaign_name": "Air Bersih Desa",
+    "platform": "Kitabisa",
+    "amount": 31800000,
+    "donors_count": 241,
+    "target_amount": 60000000,
+    "period": "30d",
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 4,
+    "campaign_name": "Layanan Kesehatan Keliling",
+    "platform": "Website Lembaga",
+    "amount": 22200000,
+    "donors_count": 119,
+    "target_amount": 50000000,
+    "period": "30d",
+    "status": "active",
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

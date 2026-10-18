@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "hook_title": "Kenapa 1 Jeriken Air Bersih Berarti Hidup dan Harapan Bagi 50 Jiwa?",
+    "source_context": "Tren Topik",
+    "pillar": "Edukasi Bencana & Humaniora",
+    "suggested_channel": "Instagram",
+    "expected_impact": "Tinggi (Konversi Donasi)",
+    "rationale": "Topik air bersih sedang memuncak (+182%). Mengaitkannya dengan narasi mikro 1 jeriken mengubah empati publik menjadi tindakan transfer donasi langsung.",
+    "key_points": "[\"Visual kontras: sumber air keruh vs instalasi filter air bergerak\",\"Data infografis kebutuhan harian satu keluarga di tenda darurat\",\"Call to action paket donasi sedekah air bersih Rp 50.000/keluarga\"]",
+    "is_skipped": 0,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 2,
+    "hook_title": "POV Relawan: 12 Jam di Bak Truk Logistik Menembus Jalur Berlumpur",
+    "source_context": "Pola Performa Lampau",
+    "pillar": "Transparansi & Akuntabilitas",
+    "suggested_channel": "TikTok",
+    "expected_impact": "Tinggi (Viral / Emosional)",
+    "rationale": "Reels logistik sebelumnya meraup engagement 9.2%. Format storytelling orang pertama (POV) memiliki retention rate 3.1x lipat di platform video pendek.",
+    "key_points": "[\"Hook 3 detik pertama: ban truk amblas dan kerja bakti warga menarik tali tambang\",\"Suara natural lapangan tanpa musik berlebih untuk kesan otentik\",\"Penutup: apresiasi kepada semua donatur yang mendanai bahan bakar armada\"]",
+    "is_skipped": 0,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 3,
+    "hook_title": "3 Mitos Bantuan Barang Bekas: Mengapa Sumbangan Pakaian Sering Terbengkalai?",
+    "source_context": "Celah Konten",
+    "pillar": "Edukasi Bencana & Humaniora",
+    "suggested_channel": "Instagram",
+    "expected_impact": "Stabil (Edukasi)",
+    "rationale": "Mengisi celah konten prioritas tinggi mengenai edukasi jenis bantuan yang paling tepat sasaran dan mengurangi beban pilah logistik di posko.",
+    "key_points": "[\"Foto realita tumpukan baju basah yang tidak terpakai di posko\",\"Penjelasan biaya sortir & angkut vs bantuan pangan instan\",\"Solusi cerdas: alihkan ke infaq tunai terukur\"]",
+    "is_skipped": 0,
+    "created_at": "2026-10-10 21:20:02"
+  },
+  {
+    "id": 4,
+    "hook_title": "Mini Dokumenter: Senyum Pertama di Tenda Sekolah Darurat",
+    "source_context": "Hari Besar Kemanusiaan",
+    "pillar": "Sosial & Relawan",
+    "suggested_channel": "YouTube",
+    "expected_impact": "Tinggi (Viral / Emosional)",
+    "rationale": "Menjelang Hari Anak Sedunia, peliputan pemulihan psikososial anak akan menyentuh donatur institusi dan CSR perusahaan.",
+    "key_points": "[\"Wawancara singkat relawan psikolog anak\",\"Aktivitas menggambar dan permainan interaktif anak-anak posko\",\"Pesan harapan masa depan pendidikan pascabencana\"]",
+    "is_skipped": 0,
+    "created_at": "2026-10-10 21:20:02"
+  }
+]

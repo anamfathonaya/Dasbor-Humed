@@ -136,6 +136,23 @@ export function processScheduledReminders() {
     `).run(now, reminder.id);
   }
 
+  // Catat hasil jalan tugas pengingat ke integration_sync_jobs
+  try {
+    db.prepare(`
+      INSERT INTO integration_sync_jobs (service_key, target_object, status, items_processed, details, triggered_by, finished_at)
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+    `).run(
+      'cron_reminders',
+      'Pengingat Tenggat Jadwal Konten',
+      'success',
+      due.length,
+      `Berhasil memproses ${due.length} pengingat tenggat konten dan tugas peliputan.`,
+      'cron_scheduler'
+    );
+  } catch (err) {
+    console.warn('[reminderService] Gagal mencatat log ke integration_sync_jobs:', err);
+  }
+
   return {
     processedCount: due.length,
     sentReminders: due.map(r => ({

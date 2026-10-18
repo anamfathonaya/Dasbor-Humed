@@ -1,431 +1,437 @@
 {
-  ".astro/content-assets.mjs": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
-  },
-  ".astro/content-modules.mjs": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
-  },
-  ".astro/content.d.ts": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
-  },
-  ".astro/data-store.json": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
-  },
-  ".astro/settings.json": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
-  },
-  ".astro/types.d.ts": {
-    "summary": "Berkas metadata build dan tipe konten yang dihasilkan secara otomatis oleh framework Astro."
+  ".gitignore": {
+    "summary": "Konfigurasi Git untuk mengabaikan direktori build, pustaka node_modules, basis data lokal dasbor.db, dan berkas lingkungan konfigurasi."
   },
   ".ngodingpakeaiignore": {
-    "summary": "Berkas modul .ngodingpakeaiignore mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Daftar aturan pengabaian berkas untuk proses indexing CLI NgodingPakeAI agar tidak memindai cache dan berkas biner."
   },
   "AGENTS.md": {
-    "summary": "Berkas modul AGENTS.md mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Instruksi dan aturan integrasi agen AI untuk sinkronisasi konteks proyek, PRD, dan memori repositori ke NgodingPakeAI."
   },
   "astro.config.mjs": {
-    "summary": "Berkas modul astro.config.mjs mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Konfigurasi proyek Astro yang mengaktifkan adapter server-side rendering Node.js dan integrasi React."
   },
   "migrate.ts": {
-    "summary": "Berkas modul migrate.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Skrip eksekusi migrasi skema tabel basis data SQLite lokal dasbor.db menggunakan pustaka better-sqlite3."
   },
   "package-lock.json": {
-    "summary": "Berkas modul package-lock.json mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Berkas pengunci dependensi npm yang mencatat versi eksak paket pustaka Astro, React, SQLite, dan modul pendukung."
   },
   "package.json": {
-    "summary": "Berkas modul package.json mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Manifest npm proyek dasbor-humas-media yang mendefinisikan dependensi runtime, pustaka dev, dan skrip build serta dev server."
+  },
+  "push-to-neon.ts": {
+    "summary": "Skrip migrasi dan sinkronisasi skema serta data dari basis data SQLite lokal ke layanan cloud PostgreSQL Neon serverless."
   },
   "src/components/ContentGaps.astro": {
-    "summary": "Berkas modul src/components/ContentGaps.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro untuk menganalisis kekosongan jadwal konten berdasarkan pilar komunikasi dan usulan topik pengganti."
+  },
+  "src/components/DashboardGrid.tsx": {
+    "summary": "Komponen React interaktif untuk menampilkan kisi metrik capaian, kartu ringkasan kinerja media, dan status proyek."
   },
   "src/components/IdeaRecommendations.astro": {
-    "summary": "Berkas modul src/components/IdeaRecommendations.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro penyaji daftar rekomendasi ide konten berbasis analisis tren dan topik populer terkini."
   },
   "src/components/NewsStream.astro": {
-    "summary": "Berkas modul src/components/NewsStream.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro untuk menampilkan arus pemantauan berita humas dari berbagai media online dan kanal komunikasi."
   },
   "src/components/PeriodComparison.astro": {
-    "summary": "Berkas modul src/components/PeriodComparison.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro untuk memvisualisasikan perbandingan metrik kinerja antar periode waktu mingguan atau bulanan."
+  },
+  "src/components/react/RealtimeIntegrationStatus.tsx": {
+    "summary": "Komponen React interaktif untuk memantau status kesehatan koneksi integrasi DAM dan layanan pihak ketiga secara berkala."
+  },
+  "src/components/react/RealtimeNewsFeed.tsx": {
+    "summary": "Komponen React umpan berita waktu nyata dengan fitur penyaringan kategori, pembaruan otomatis, dan penanda berita favorit."
   },
   "src/components/RoleMatrixTable.astro": {
-    "summary": "Komponen tabel matriks pembagian hak akses pengguna berdasarkan peran dan modul operasional lembaga."
+    "summary": "Komponen Astro penyaji tabel matriks hak akses dan peran pengguna terhadap menu serta fitur di dasbor."
   },
   "src/components/RoleNavigation.astro": {
-    "summary": "Komponen navigasi header adaptif yang menyaring menu berdasarkan tingkat otorisasi peran pengguna (RBAC)."
+    "summary": "Komponen Astro untuk merender menu navigasi dinamis yang disesuaikan dengan izin peran pengguna yang sedang aktif."
   },
   "src/components/SavedIdeas.astro": {
-    "summary": "Berkas modul src/components/SavedIdeas.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro penyimpan daftar ide konten yang ditandai pengguna dengan opsi transfer langsung ke kalender konten."
   },
   "src/components/TrendingTopics.astro": {
-    "summary": "Berkas modul src/components/TrendingTopics.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Komponen Astro untuk menampilkan tren topik terhangat di media massa dan media sosial sebagai rujukan konten."
   },
-  "src/data/mockBudget.ts": {
-    "summary": "Berkas modul src/data/mockBudget.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockContent.ts": {
-    "summary": "Berkas modul src/data/mockContent.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockInsights.ts": {
-    "summary": "Berkas modul src/data/mockInsights.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockKnowledge.ts": {
-    "summary": "Berkas modul src/data/mockKnowledge.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockMetrics.ts": {
-    "summary": "Berkas modul src/data/mockMetrics.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockNews.ts": {
-    "summary": "Berkas modul src/data/mockNews.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockProjects.ts": {
-    "summary": "Berkas modul src/data/mockProjects.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockReport.ts": {
-    "summary": "Berkas modul src/data/mockReport.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/data/mockSettings.ts": {
-    "summary": "Data tiruan profil organisasi, akun personil tim, matriks izin, integrasi DAM/Cloud, dan audit log."
+  "src/layouts/HumasLayout.astro": {
+    "summary": "Tata letak kanonis halaman Dasbor Humas yang memuat navigasi bilah sisi, bilah atas profil, dan pembungkus konten utama."
   },
   "src/lib/auditService.ts": {
-    "summary": "Service terpusat untuk mencatat dan membaca jejak audit aktivitas penting ke basis data."
+    "summary": "Modul layanan pencatatan dan pembacaan jejak aktivitas audit sistem pada tabel audit_logs untuk kebutuhan kepatuhan."
   },
   "src/lib/auth.ts": {
-    "summary": "Modul utilitas otentikasi peran pengguna dan validasi hak akses RBAC (Least Privilege)."
+    "summary": "Modul fungsi autentikasi untuk pembuatan hash kata sandi, validasi sesi login, dan pemeriksaan peran otorisasi pengguna."
+  },
+  "src/lib/clientDataFetcher.ts": {
+    "summary": "Klien pengambil data sisi peramban untuk memanggil API internal dasbor dengan penanganan galat dan respons JSON."
   },
   "src/lib/damHealthService.ts": {
-    "summary": "Service pemantauan kesehatan konektivitas server DAM NAS lokal, latency, dan panduan galat."
+    "summary": "Layanan pemantau kondisi koneksi antarmuka Digital Asset Management (DAM) untuk memastikan ketersediaan aset media."
   },
   "src/lib/db.ts": {
-    "summary": "Inisialisasi SQLite database, migrasi tabel, dan penyemaian data awal dasbor humas media."
+    "summary": "Konfigurasi koneksi SQLite better-sqlite3, pembuatan skema tabel dasbor, dan kumpulan fungsi akses data CRUD utama."
+  },
+  "src/lib/defaultData.ts": {
+    "summary": "Data inisialisasi awal (default seed) yang memuat pilar konten, peran pengguna, tema, dan metrik demonstrasi dasbor."
   },
   "src/lib/exportService.ts": {
-    "summary": "Berkas modul src/lib/exportService.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Layanan pembuat berkas ekspor laporan kinerja dan anggaran dalam format cetak atau spreadsheet siap unduh."
   },
   "src/lib/format.ts": {
-    "summary": "Berkas modul src/lib/format.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Kumpulan fungsi pembantu untuk memformat nilai mata uang Rupiah, tanggal lokal Indonesia, persentase, dan angka statistik."
   },
   "src/lib/googleSyncService.ts": {
-    "summary": "Service sinkronisasi agenda kalender konten ke Google Calendar dan rekap anggaran ke Google Sheets."
+    "summary": "Layanan sinkronisasi dua arah untuk menghubungkan data kalender dan dokumen dasbor dengan Google Drive serta Google Calendar."
   },
   "src/lib/newsFetcher.ts": {
-    "summary": "Berkas modul src/lib/newsFetcher.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Layanan pengambil artikel berita eksternal dari berbagai portal berita melalui umpan RSS dan web scraping terstruktur."
   },
   "src/lib/newsScheduler.ts": {
-    "summary": "Berkas modul src/lib/newsScheduler.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Penjadwal tugas latar belakang untuk menjalankan penarikan berita pemantauan media secara otomatis pada interval tertentu."
   },
   "src/lib/reminderService.ts": {
-    "summary": "Berkas modul src/lib/reminderService.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Layanan pengiriman pengingat tenggat waktu pengerjaan tugas proyek dan jadwal rilis publikasi konten yang tertunda."
   },
   "src/lib/seedMetrics.ts": {
-    "summary": "Berkas modul src/lib/seedMetrics.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Skrip pengisian data simulasi metrik analitik media sosial, performa iklan Meta Ads, dan tren donasi ke basis data."
+  },
+  "src/lib/seedProduction.ts": {
+    "summary": "Skrip inisialisasi data lingkungan produksi yang menyiapkan akun administrator awal dan pilar konten resmi."
   },
   "src/lib/telegramFetcher.ts": {
-    "summary": "Berkas modul src/lib/telegramFetcher.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Layanan integrasi Telegram API untuk menarik pembaruan berita dan siaran pers dari kanal publik terpilih."
+  },
+  "src/lib/verifyConsistency.ts": {
+    "summary": "Skrip verifikasi konsistensi relasi data antar tabel kalender, proyek, pengguna, dan pilar konten dalam database."
   },
   "src/middleware.ts": {
-    "summary": "Astro middleware untuk pembatasan akses rute halaman dan API berdasarkan prinsip least privilege."
+    "summary": "Middleware aplikasi Astro untuk memvalidasi token sesi pengguna, otentikasi rute terlindungi, dan pengalihan ke rute masuk."
+  },
+  "src/pages/akun.astro": {
+    "summary": "Halaman pengaturan akun pengguna yang sedang masuk untuk memperbarui informasi dasar profil dan sesi aktif."
   },
   "src/pages/api/audit/logs.ts": {
-    "summary": "Endpoint pengambilan dan pencatatan jejak audit aktivitas sistem untuk akuntabilitas operasional."
+    "summary": "Endpoint API /api/audit/logs untuk mengambil riwayat log aktivitas audit pengguna dari tabel audit_logs dengan dukungan paginasi dan filter."
+  },
+  "src/pages/api/auth/google.ts": {
+    "summary": "Endpoint API /api/auth/google untuk memulai alur otentikasi Single Sign-On menggunakan Google OAuth 2.0."
   },
   "src/pages/api/auth/login.ts": {
-    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+    "summary": "Endpoint API /api/auth/login untuk memvalidasi kredensial login email dan kata sandi serta membuat sesi pengguna baru."
   },
   "src/pages/api/auth/logout.ts": {
-    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+    "summary": "Endpoint API /api/auth/logout untuk menghapus cookie sesi otentikasi pengguna saat keluar dari sistem dasbor."
   },
   "src/pages/api/auth/session.ts": {
-    "summary": "Endpoint autentikasi akun pengguna untuk login, logout, dan verifikasi status sesi dasbor."
+    "summary": "Endpoint API /api/auth/session untuk memeriksa status validitas sesi login pengguna dan mengembalikan data profil pengguna aktif."
   },
   "src/pages/api/content/index.ts": {
-    "summary": "Berkas modul src/pages/api/content/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/content/index untuk mengambil daftar jadwal konten kalender (tabel content_calendar) dan menambahkan entri konten baru."
   },
   "src/pages/api/content/summary/pillars.ts": {
-    "summary": "Berkas modul src/pages/api/content/summary/pillars.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/content/summary/pillars untuk menghitung ringkasan distribusi dan kuota konten berdasarkan pilar komunikasi (tabel content_pillars)."
   },
   "src/pages/api/content/[id]/assign.ts": {
-    "summary": "Berkas modul src/pages/api/content/[id]/assign.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/content/[id]/assign untuk menugaskan penanggung jawab konten (assignee_id) pada entri kalender konten tertentu."
   },
   "src/pages/api/content/[id]/reschedule.ts": {
-    "summary": "Berkas modul src/pages/api/content/[id]/reschedule.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/content/[id]/reschedule untuk memperbarui waktu jadwal tayang (scheduled_at) entri konten pada tabel content_calendar."
   },
   "src/pages/api/content/[id].ts": {
-    "summary": "Berkas modul src/pages/api/content/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/content/[id] untuk membaca detail, memperbarui data editorial, atau menghapus entri konten berdasarkan ID uniknya."
   },
   "src/pages/api/insights/gaps/index.ts": {
-    "summary": "Berkas modul src/pages/api/insights/gaps/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/gaps/index untuk mengambil daftar temuan celah pilar konten yang belum terpenuhi pada periode aktif."
   },
   "src/pages/api/insights/gaps/[id]/adopt.ts": {
-    "summary": "Berkas modul src/pages/api/insights/gaps/[id]/adopt.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/gaps/[id]/adopt untuk mengadopsi usulan celah konten terpilih menjadi draf rencana rilis pada kalender konten."
   },
   "src/pages/api/insights/ideas/index.ts": {
-    "summary": "Berkas modul src/pages/api/insights/ideas/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/ideas/index untuk mengambil daftar usulan ide konten dan rekomendasi sudut pandang berita untuk tim humas."
   },
   "src/pages/api/insights/ideas/saved/index.ts": {
-    "summary": "Berkas modul src/pages/api/insights/ideas/saved/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/ideas/saved/index untuk melihat dan menyimpan ide-ide konten favorit pengguna ke dalam koleksi tersimpan."
   },
   "src/pages/api/insights/ideas/saved/[id]/to-calendar.ts": {
-    "summary": "Berkas modul src/pages/api/insights/ideas/saved/[id]/to-calendar.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/ideas/saved/[id]/to-calendar untuk mentransformasikan ide konten yang disimpan langsung ke dalam tabel jadwal content_calendar."
   },
   "src/pages/api/insights/ideas/saved/[id].ts": {
-    "summary": "Berkas modul src/pages/api/insights/ideas/saved/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/ideas/saved/[id] untuk memperbarui catatan atau menghapus ide konten tersimpan berdasarkan identitas ID."
   },
   "src/pages/api/insights/trends/index.ts": {
-    "summary": "Berkas modul src/pages/api/insights/trends/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/trends/index untuk mengambil daftar kata kunci dan topik yang sedang mengalami tren kenaikan di media."
   },
   "src/pages/api/insights/trends/refresh.ts": {
-    "summary": "Berkas modul src/pages/api/insights/trends/refresh.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/insights/trends/refresh untuk memicu pembaruan ulang komputasi tren topik dan agregasi kata kunci berita terkini."
   },
   "src/pages/api/integrations/dam/config.ts": {
-    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+    "summary": "Endpoint API /api/integrations/dam/config untuk membaca dan menyimpan parameter konfigurasi kredensial Digital Asset Management (DAM)."
   },
   "src/pages/api/integrations/dam/health.ts": {
-    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+    "summary": "Endpoint API /api/integrations/dam/health untuk memeriksa status konektivitas dan waktu respons server repositori aset DAM."
   },
   "src/pages/api/integrations/dam/test.ts": {
-    "summary": "Endpoint konfigurasi DAM NAS lokal, validasi jalur folder SMB, dan diagnostik healthcheck latency."
+    "summary": "Endpoint API /api/integrations/dam/test untuk menjalankan pengujian otentikasi koneksi ke API server DAM secara langsung."
   },
   "src/pages/api/integrations/google/callback.ts": {
-    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+    "summary": "Endpoint API /api/integrations/google/callback untuk menangani callback pengalihan OAuth dari Google dan menyimpan token otorisasi."
   },
   "src/pages/api/integrations/google/connect.ts": {
-    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+    "summary": "Endpoint API /api/integrations/google/connect untuk menginisialisasi alur otorisasi koneksi akun Google untuk sinkronisasi layanan kalender."
   },
   "src/pages/api/integrations/google/disconnect.ts": {
-    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+    "summary": "Endpoint API /api/integrations/google/disconnect untuk mencabut izin akses integrasi Google dan membersihkan token tersimpan di sistem."
   },
   "src/pages/api/integrations/google/sync.ts": {
-    "summary": "Endpoint integrasi OAuth2 Google Workspace, callback otorisasi, pemutusan token, dan pemicu sinkronisasi."
+    "summary": "Endpoint API /api/integrations/google/sync untuk memicu sinkronisasi berkas dan jadwal antara dasbor dengan Google Workspace."
   },
   "src/pages/api/integrations/status/index.ts": {
-    "summary": "Endpoint pemantauan status koneksi layanan eksternal serta panduan langkah perbaikan konektivitas."
+    "summary": "Endpoint API /api/integrations/status/index untuk merangkum status aktif atau nonaktif seluruh layanan integrasi pihak ketiga."
   },
   "src/pages/api/knowledge/docs/index.ts": {
-    "summary": "Berkas modul src/pages/api/knowledge/docs/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/knowledge/docs/index untuk mengambil daftar dokumen basis pengetahuan dan membuat entri arsip dokumen baru."
   },
   "src/pages/api/knowledge/docs/[id].ts": {
-    "summary": "Berkas modul src/pages/api/knowledge/docs/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/knowledge/docs/[id] untuk mengambil detail konten, memperbarui berkas, atau menghapus arsip dokumen berdasarkan ID."
   },
   "src/pages/api/knowledge/proposals/index.ts": {
-    "summary": "Berkas modul src/pages/api/knowledge/proposals/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/knowledge/proposals/index untuk mencatat dan mendaftar proposal dokumen baru yang diajukan oleh pengguna tim humas."
   },
   "src/pages/api/knowledge/proposals/[id].ts": {
-    "summary": "Berkas modul src/pages/api/knowledge/proposals/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/knowledge/proposals/[id] untuk memperbarui status persetujuan atau menolak usulan proposal dokumen basis pengetahuan."
   },
   "src/pages/api/knowledge/search.ts": {
-    "summary": "Berkas modul src/pages/api/knowledge/search.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/knowledge/search untuk melakukan pencarian teks penuh (full-text search) terhadap kumpulan dokumen basis pengetahuan."
   },
   "src/pages/api/metrics/donations.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/donations.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/donations untuk mengambil data metrik perolehan donasi publik berdasarkan tanggal dan kampanye media."
   },
   "src/pages/api/metrics/highlights.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/highlights.ts mendukung fungsionalitas aplikasi dasbor humas media."
-  },
-  "src/pages/api/metrics/index.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/highlights untuk menyajikan sorotan metrik performa utama (KPI) yang ditampilkan di kartu dasbor depan."
   },
   "src/pages/api/metrics/meta-ads.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/meta-ads.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/meta-ads untuk mengembalikan data capaian belanja iklan, jangkauan, dan klik kampanye Meta Ads."
   },
   "src/pages/api/metrics/seed.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/seed.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/seed untuk memasukkan sampel data metrik analitik ke dalam tabel basis data pengujian."
   },
   "src/pages/api/metrics/social.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/social.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/social untuk mengambil statistik performa kanal media sosial seperti pengikut, interaksi, dan tayangan."
   },
   "src/pages/api/metrics/website.ts": {
-    "summary": "Berkas modul src/pages/api/metrics/website.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/metrics/website untuk menyajikan data analitik pengunjung situs web, tayangan halaman, dan rasio pentalan."
+  },
+  "src/pages/api/metrics.ts": {
+    "summary": "Endpoint API /api/metrics untuk mengembalikan gabungan ringkasan data metrik analitik dari berbagai sumber pelaporan."
   },
   "src/pages/api/news/bookmark/index.ts": {
-    "summary": "Berkas modul src/pages/api/news/bookmark/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/bookmark/index untuk menambah atau menghapus tanda bookmark pada artikel berita di tabel news_items."
   },
   "src/pages/api/news/reference/index.ts": {
-    "summary": "Berkas modul src/pages/api/news/reference/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/reference/index untuk mengaitkan artikel berita tertentu sebagai referensi ide atau rilis konten kehumasan."
   },
   "src/pages/api/news/scheduler/index.ts": {
-    "summary": "Berkas modul src/pages/api/news/scheduler/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/scheduler/index untuk memeriksa dan mengatur status jadwal otomatisasi penarikan berita berkala."
   },
   "src/pages/api/news/sources/index.ts": {
-    "summary": "Berkas modul src/pages/api/news/sources/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/sources/index untuk mengelola daftar sumber saluran berita dan tautan feed RSS yang dipantau."
   },
   "src/pages/api/news/sources/sync.ts": {
-    "summary": "Berkas modul src/pages/api/news/sources/sync.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/sources/sync untuk memicu proses sinkronisasi penarikan artikel baru dari seluruh sumber media aktif."
   },
   "src/pages/api/news/sources/[id].ts": {
-    "summary": "Berkas modul src/pages/api/news/sources/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/sources/[id] untuk melihat detail, memperbarui konfigurasi, atau menghapus kanal sumber berita berdasarkan ID."
   },
   "src/pages/api/news/stream/index.ts": {
-    "summary": "Berkas modul src/pages/api/news/stream/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/stream/index untuk mengambil aliran artikel berita hasil pemantauan terkini dengan filter topik dan tanggal."
   },
   "src/pages/api/news/telegram/sync.ts": {
-    "summary": "Berkas modul src/pages/api/news/telegram/sync.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/news/telegram/sync untuk memicu sinkronisasi manual penarikan siaran berita dari saluran Telegram terdaftar."
   },
   "src/pages/api/pillars/index.ts": {
-    "summary": "Berkas modul src/pages/api/pillars/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/pillars/index untuk mengelola daftar pilar komunikasi humas pada tabel content_pillars beserta konfigurasinya."
   },
   "src/pages/api/pillars/[id].ts": {
-    "summary": "Berkas modul src/pages/api/pillars/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/pillars/[id] untuk membaca rincian, memperbarui nama atau warna, serta menghapus entri pilar komunikasi."
   },
   "src/pages/api/projects/index.ts": {
-    "summary": "Berkas modul src/pages/api/projects/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/index untuk mengambil daftar proyek kerja kehumasan dari tabel projects dan membuat proyek baru."
   },
   "src/pages/api/projects/overview.ts": {
-    "summary": "Berkas modul src/pages/api/projects/overview.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/overview untuk menyajikan ikhtisar statistik status proyek aktif, selesai, dan tertunda."
   },
   "src/pages/api/projects/people.ts": {
-    "summary": "Berkas modul src/pages/api/projects/people.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/people untuk mengambil daftar anggota tim yang terlibat dalam penugasan proyek dan tugas."
   },
   "src/pages/api/projects/tasks/index.ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/index untuk mengambil seluruh daftar tugas kerja (tabel tasks) atau membuat penugasan tugas baru."
   },
   "src/pages/api/projects/tasks/reorder.ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/reorder.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/reorder untuk memperbarui urutan posisi kartu tugas pada kolom tahapan alur papan Kanban."
   },
   "src/pages/api/projects/tasks/[id]/assignee.ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/assignee.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/[id]/assignee untuk mengubah penanggung jawab staf yang ditugaskan pada suatu tugas kerja."
   },
   "src/pages/api/projects/tasks/[id]/due-date.ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/due-date.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/[id]/due-date untuk memperbarui tenggat waktu tanggal jatuh tempo penyelesaian suatu tugas."
   },
   "src/pages/api/projects/tasks/[id]/stage.ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/[id]/stage.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/[id]/stage untuk memindahkan tahapan alur pengerjaan tugas (misalnya dari Todo ke In Progress atau Done)."
   },
   "src/pages/api/projects/tasks/[id].ts": {
-    "summary": "Berkas modul src/pages/api/projects/tasks/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/tasks/[id] untuk membaca detail deskripsi tugas, menyunting isi tugas, atau menghapus tugas bersangkutan."
   },
   "src/pages/api/projects/[id].ts": {
-    "summary": "Berkas modul src/pages/api/projects/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/projects/[id] untuk mengelola detail informasi proyek, progres pencapaian, serta menghapus entri proyek."
   },
   "src/pages/api/reminders/index.ts": {
-    "summary": "Berkas modul src/pages/api/reminders/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reminders/index untuk mengambil dan mendaftar data pengingat tenggat waktu tugas yang perlu dikirimkan."
   },
   "src/pages/api/reminders/process.ts": {
-    "summary": "Berkas modul src/pages/api/reminders/process.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reminders/process untuk memproses dan mengeksekusi antrean pengiriman pesan pengingat yang jatuh tempo."
   },
   "src/pages/api/reminders/[id]/sent.ts": {
-    "summary": "Berkas modul src/pages/api/reminders/[id]/sent.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reminders/[id]/sent untuk menandai bahwa notifikasi pengingat tertentu telah berhasil dikirimkan ke penerima."
   },
   "src/pages/api/reminders/[id].ts": {
-    "summary": "Berkas modul src/pages/api/reminders/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reminders/[id] untuk memperbarui detail pengingat atau menghapus jadwal pengingat tugas tertentu."
   },
   "src/pages/api/reports/annual/index.ts": {
-    "summary": "Berkas modul src/pages/api/reports/annual/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/annual/index untuk mengumpulkan dan menyajikan data statistik tahunan untuk kompilasi laporan tahunan."
   },
   "src/pages/api/reports/budget/index.ts": {
-    "summary": "Berkas modul src/pages/api/reports/budget/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/budget/index untuk mengelola entri pencatatan anggaran program dan realisasi penyerapan dana media."
   },
   "src/pages/api/reports/budget/[id].ts": {
-    "summary": "Berkas modul src/pages/api/reports/budget/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/budget/[id] untuk menyunting atau menghapus data alokasi anggaran program humas berdasarkan ID."
   },
   "src/pages/api/reports/export.ts": {
-    "summary": "Berkas modul src/pages/api/reports/export.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/export untuk memicu pembuatan dan pengunduhan berkas laporan kinerja atau anggaran dalam format dokumen."
   },
   "src/pages/api/reports/performance/aggregate.ts": {
-    "summary": "Berkas modul src/pages/api/reports/performance/aggregate.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/performance/aggregate untuk menghasilkan agregasi angka capaian kinerja publikasi lintas kanal dalam kurun waktu terpilih."
   },
   "src/pages/api/reports/performance/index.ts": {
-    "summary": "Berkas modul src/pages/api/reports/performance/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/performance/index untuk mengambil rincian data kinerja publikasi konten humas untuk periode laporan tertentu."
   },
   "src/pages/api/reports/performance/notes/index.ts": {
-    "summary": "Berkas modul src/pages/api/reports/performance/notes/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/performance/notes/index untuk mengelola catatan evaluasi kualitatif tim terkait capaian laporan kinerja publikasi."
   },
   "src/pages/api/reports/performance/notes/[id].ts": {
-    "summary": "Berkas modul src/pages/api/reports/performance/notes/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/performance/notes/[id] untuk mengubah atau menghapus butir catatan evaluasi kinerja yang tersimpan."
   },
   "src/pages/api/reports/share.ts": {
-    "summary": "Berkas modul src/pages/api/reports/share.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/reports/share untuk membuat tautan publik atau token akses berbagi tampilan laporan kepada pemangku kepentingan."
   },
   "src/pages/api/team/index.ts": {
-    "summary": "Berkas modul src/pages/api/team/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/team/index untuk mengambil daftar anggota tim pelaksana kehumasan beserta peran dan keahliannya."
   },
   "src/pages/api/team/workload.ts": {
-    "summary": "Berkas modul src/pages/api/team/workload.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/team/workload untuk menganalisis beban kerja masing-masing personel berdasarkan jumlah tugas aktif di papan proyek."
   },
   "src/pages/api/themes/index.ts": {
-    "summary": "Berkas modul src/pages/api/themes/index.ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/themes/index untuk mendaftar dan menambah tema konten spesifik yang bernaung di bawah pilar komunikasi."
   },
   "src/pages/api/themes/[id].ts": {
-    "summary": "Berkas modul src/pages/api/themes/[id].ts mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Endpoint API /api/themes/[id] untuk menyunting atau menghapus tema turunan pilar konten berdasarkan ID entri."
+  },
+  "src/pages/api/user/avatar.ts": {
+    "summary": "Endpoint API /api/user/avatar untuk menangani pengunggahan dan pembaruan foto avatar profil pengguna yang sedang login."
   },
   "src/pages/api/user/change-password.ts": {
-    "summary": "Endpoint data profil pribadi pengguna dan penggantian kata sandi akun terverifikasi."
+    "summary": "Endpoint API /api/user/change-password untuk memvalidasi kata sandi lama dan memperbarui hash kata sandi baru milik akun pengguna."
   },
   "src/pages/api/user/profile.ts": {
-    "summary": "Endpoint data profil pribadi pengguna dan penggantian kata sandi akun terverifikasi."
+    "summary": "Endpoint API /api/user/profile untuk membaca dan memperbarui informasi identitas profil pengguna yang sedang aktif."
   },
   "src/pages/api/users/index.ts": {
-    "summary": "Endpoint manajemen akun personil, penugasan peran RBAC, dan pembaruan hak akses sistem."
+    "summary": "Endpoint API /api/users/index untuk mengelola data seluruh pengguna sistem pada tabel users dan mendaftarkan akun baru."
   },
   "src/pages/api/users/[id].ts": {
-    "summary": "Endpoint manajemen akun personil, penugasan peran RBAC, dan pembaruan hak akses sistem."
+    "summary": "Endpoint API /api/users/[id] untuk membaca profil spesifik pengguna, mengubah peran hak akses, atau menonaktifkan akun."
   },
   "src/pages/bagikan-cetak.astro": {
-    "summary": "Berkas modul src/pages/bagikan-cetak.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman tata letak khusus untuk pencetakan dokumen dasbor atau pembagian tampilan laporan ke format PDF."
   },
   "src/pages/basis-pengetahuan/status-usulan.astro": {
-    "summary": "Berkas modul src/pages/basis-pengetahuan/status-usulan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman pemantau status usulan dokumen dan proposal baru dalam basis pengetahuan humas."
   },
   "src/pages/basis-pengetahuan/[id].astro": {
-    "summary": "Berkas modul src/pages/basis-pengetahuan/[id].astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman detail pembaca dokumen basis pengetahuan berdasarkan ID dengan penampil konten dan metadata dokumen."
   },
   "src/pages/basis-pengetahuan.astro": {
-    "summary": "Berkas modul src/pages/basis-pengetahuan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman pusat basis pengetahuan yang menyimpan dokumentasi, arsip rilis, dan pedoman komunikasi kehumasan."
   },
   "src/pages/daftar-rab-lra.astro": {
-    "summary": "Berkas modul src/pages/daftar-rab-lra.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman penyajian rincian Rencana Anggaran Biaya (RAB) dan Laporan Realisasi Anggaran (LRA) divisi humas."
   },
   "src/pages/dasbor-metrik.astro": {
-    "summary": "Berkas modul src/pages/dasbor-metrik.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman dasbor analitik mendalam untuk memantau metrik media sosial, kunjungan situs web, Meta Ads, dan capaian donasi."
+  },
+  "src/pages/dasbor.astro": {
+    "summary": "Halaman dasbor ringkasan eksekutif yang menyajikan metrik kinerja utama, status proyek aktif, dan umpan berita terbaru."
   },
   "src/pages/index.astro": {
-    "summary": "Berkas modul src/pages/index.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman beranda utama yang mengarahkan pengguna ke dasbor analitik atau formulir masuk sesuai status autentikasi sesi."
   },
   "src/pages/insight-konten.astro": {
-    "summary": "Berkas modul src/pages/insight-konten.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman wawasan konten yang menampilkan analisis kekosongan pilar, rekomendasi topik AI, dan performa ide konten."
   },
   "src/pages/integrasi-google.astro": {
-    "summary": "Halaman pemantauan dan pengelolaan koneksi Google Workspace Calendar, Drive, dan Sheets."
+    "summary": "Halaman otorisasi OAuth dan pengelolaan integrasi akun Google Workspace untuk sinkronisasi kalender dan drive."
   },
   "src/pages/jejak-audit.astro": {
-    "summary": "Halaman jejak audit keamanan dan tata kelola sistem dengan pencarian, filter status, dan ekspor CSV."
+    "summary": "Halaman peninjauan rekaman jejak audit aktivitas sistem untuk melacak perubahan data yang dilakukan oleh para pengguna."
   },
   "src/pages/kalender-konten.astro": {
-    "summary": "Berkas modul src/pages/kalender-konten.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman manajemen kalender konten editorial untuk menjadwalkan, memfilter, dan meninjau status produksi konten humas."
   },
   "src/pages/laporan-anggaran.astro": {
-    "summary": "Berkas modul src/pages/laporan-anggaran.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman monitoring realisasi anggaran program humas dan pelaporan belanja operasional media."
   },
   "src/pages/laporan-kinerja.astro": {
-    "summary": "Berkas modul src/pages/laporan-kinerja.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman penyusun dan penampil laporan kinerja publikasi media dengan grafik statistik capaian pembaca."
   },
   "src/pages/laporan-tahunan.astro": {
-    "summary": "Berkas modul src/pages/laporan-tahunan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman kompilasi laporan tahunan kinerja kehumasan untuk pelaporan akuntabilitas institusi."
+  },
+  "src/pages/laporan.astro": {
+    "summary": "Halaman ikhtisar pelaporan kehumasan yang menyediakan akses ke laporan kinerja bulanan, tahunan, dan anggaran."
   },
   "src/pages/manajemen-akun.astro": {
-    "summary": "Halaman manajemen personil tim humas, alokasi peran pengguna, serta pembekuan akun."
+    "summary": "Halaman administrasi pengguna untuk mengelola data akun staf, penetapan peran (role), dan hak izin akses dasbor."
   },
   "src/pages/masuk.astro": {
-    "summary": "Halaman login autentikasi pengguna dengan email, kata sandi, dan sakelar cepat peran demo."
+    "summary": "Halaman antarmuka masuk (login) yang menyediakan formulir otentikasi kredensial email dan tautan SSO Google."
   },
   "src/pages/pantauan-berita/sumber.astro": {
-    "summary": "Berkas modul src/pages/pantauan-berita/sumber.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman konfigurasi sumber media untuk menambah, mengedit, atau menonaktifkan feed RSS dan kanal pemantauan berita."
   },
   "src/pages/pantauan-berita/tersimpan.astro": {
-    "summary": "Berkas modul src/pages/pantauan-berita/tersimpan.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman daftar artikel berita terpilih yang disimpan sebagai rujukan atau bahan tindak lanjut konten kehumasan."
   },
   "src/pages/pantauan-berita.astro": {
-    "summary": "Berkas modul src/pages/pantauan-berita.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman pemantau berita terkini dari ragam media massa dan kanal Telegram dengan kemampuan filter sentimen dan topik."
   },
   "src/pages/papan-proyek.astro": {
-    "summary": "Berkas modul src/pages/papan-proyek.astro mendukung fungsionalitas aplikasi dasbor humas media."
+    "summary": "Halaman papan manajemen proyek bergaya Kanban untuk melacak alur kerja tugas produksi media humas."
   },
   "src/pages/pengaturan-dam.astro": {
-    "summary": "Halaman antarmuka pusat pengaturan lembaga, manajemen peran pengguna, integrasi sistem, dan log audit."
+    "summary": "Halaman konfigurasi integrasi sistem Digital Asset Management (DAM) untuk penyimpanan berkas media."
   },
   "src/pages/pengaturan.astro": {
-    "summary": "Halaman antarmuka pusat pengaturan lembaga, manajemen peran pengguna, integrasi sistem, dan log audit."
+    "summary": "Halaman konfigurasi umum sistem dasbor yang mencakup pengaturan tema, preferensi tampilan, dan pilar konten."
   },
   "src/pages/profil-akun.astro": {
-    "summary": "Halaman profil akun pribadi, perubahan kata sandi, dan preferensi notifikasi kerja pengguna."
+    "summary": "Halaman detail profil pengguna untuk menyunting identitas pribadi, foto avatar, dan kredensial login."
+  },
+  "src/pages/sop.astro": {
+    "summary": "Halaman pedoman Standar Operasional Prosedur (SOP) tata kelola media, alur persetujuan, dan protokol publikasi."
+  },
+  "src/styles/humas-theme.css": {
+    "summary": "Lembar gaya tema utama Dasbor Humas yang mendefinisikan variabel CSS untuk palet warna, tipografi, dan gaya tata letak responsif."
   }
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "content_id": 4,
+    "task_id": null,
+    "remind_at": "2026-10-10 09:00:00",
+    "is_sent": 0,
+    "title": "Siapkan aset visual Kampanye Bantu Pendidikan Anak",
+    "message": "Jadwal tayang jam 10:00 di Website. Pastikan link donasi aktif.",
+    "channel": "in_app",
+    "sent_at": null,
+    "status": "pending",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 2,
+    "content_id": 6,
+    "task_id": null,
+    "remind_at": "2026-10-13 08:00:00",
+    "is_sent": 0,
+    "title": "Review draft copy: Update donasi pekan ke-2",
+    "message": "Tayang besok jam 08:00 di Facebook. Cek nominal penghimpunan terbaru.",
+    "channel": "in_app",
+    "sent_at": null,
+    "status": "pending",
+    "created_at": "2026-10-10 21:12:32"
+  },
+  {
+    "id": 3,
+    "content_id": 7,
+    "task_id": null,
+    "remind_at": "2026-10-16 10:00:00",
+    "is_sent": 0,
+    "title": "Verifikasi narasi Tips tanggap bencana banjir",
+    "message": "Tayang 16 Oktober jam 11:00 di Instagram. Koordinasi dengan tim lapangan.",
+    "channel": "in_app",
+    "sent_at": null,
+    "status": "pending",
+    "created_at": "2026-10-10 21:12:32"
+  }
+]

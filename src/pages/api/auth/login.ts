@@ -17,7 +17,40 @@ export const POST: APIRoute = async ({ request }) => {
 
     const cleanEmail = String(email).trim().toLowerCase();
 
-    // Cari user di database
+    // 1. Jika Supabase terkonfigurasi, autentikasi melalui Supabase Auth
+    try {
+      const { supabase, isSupabaseConfigured } = await import('../../../lib/supabase');
+      if (isSupabaseConfigured) {
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password
+        });
+        if (!authError && authData?.user) {
+          const userRole = (authData.user.user_metadata?.role as string) || 'head';
+          const maxAge = rememberMe ? 2592000 : 86400;
+          const headers = new Headers({
+            'Content-Type': 'application/json',
+            'Set-Cookie': `user_role=${userRole}; Path=/; Max-Age=${maxAge}; SameSite=Lax`
+          });
+          return new Response(
+            JSON.stringify({
+              success: true,
+              message: 'Autentikasi Supabase berhasil.',
+              user: {
+                id: authData.user.id,
+                email: authData.user.email,
+                role: userRole
+              }
+            }),
+            { status: 200, headers }
+          );
+        }
+      }
+    } catch (e: any) {
+      console.warn('[login.ts] Supabase auth try failed, falling back to local credentials:', e.message);
+    }
+
+    // 2. Cari user di database lokal (coexistence mode)
     const user = db.prepare(`
       SELECT u.id, u.name, u.email, u.password_hash, u.role_id, r.name as role_name
       FROM users u

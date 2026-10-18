@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "doc_id": 1,
+    "position": 1,
+    "heading": "1. Tujuan dan Ruang Lingkup",
+    "content": "Dokumen ini mengatur tata laksana standar bagi seluruh personil Humas, fotografer, videografer, dan relawan dokumentasi saat bertugas di lokasi bencana alam maupun tanggap darurat krisis kemanusiaan.",
+    "checklist": null,
+    "notes": "Berlaku wajib sejak hari pertama fase tanggap darurat dideklarasikan oleh komandan posko operasi."
+  },
+  {
+    "id": 2,
+    "doc_id": 1,
+    "position": 2,
+    "heading": "2. Protokol Keselamatan dan Alat Pelindung Diri (APD)",
+    "content": "Keselamatan jiwa personil selalu menjadi prioritas di atas materi liputan. Tim dilarang memasuki radius zona merah aktif tanpa izin resmi Basarnas atau TNI/Polri.",
+    "checklist": "[\"Rompi identitas kemanusiaan lembaga dan helm keselamatan wajib dipakai setiap saat di lapangan.\",\"Sepatu bot keselamatan dan kartu identitas darurat (tertera golongan darah dan kontak darurat keluarga).\",\"Perangkat komunikasi radio dua arah (HT) cadangan baterai penuh serta powerbank.\",\"Pouch kedap air untuk kartu memori cadangan dan paspor/dokumen resmi relawan.\"]",
+    "notes": null
+  }
+]
