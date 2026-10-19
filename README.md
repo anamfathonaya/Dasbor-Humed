@@ -41,6 +41,14 @@ Dasboard Humed adalah platform operasional lengkap yang dirancang untuk tim huma
 - **cPanel**: Disk, bandwidth, email quotas, SSL certificates
 - **Synology NAS**: Storage, backup jobs, user access
 
+### Phase 4: Alert & Notification System ✅
+- **Telegram Bot**: Real-time alert ke HP via @BotFather integration
+- **In-app History**: Pusat notifikasi dengan filter & read state
+- **Alert Engine**: Threshold evaluator untuk infrastruktur & OAuth tokens
+- **Notification Bell**: Badge unread di header (semua halaman)
+- **Preferences Matrix**: Per channel × kategori, minimum severity configurable
+- **Auto-alert triggers**: CPU/RAM/Disk/SSL expiring/Token < 7 hari
+
 ---
 
 ## 🚀 Quick Start
@@ -105,6 +113,7 @@ Open http://localhost:3000
 - **[README_PHASE1.md](./README_PHASE1.md)** - GA4 & YouTube integration
 - **[README_PHASE2.md](./README_PHASE2.md)** - Dashboard & workflows
 - **[README_PHASE3.md](./README_PHASE3.md)** - Infrastructure & Meta
+- **[README_PHASE4.md](./README_PHASE4.md)** - Alert & notification system
 - **[PHASE1_SUMMARY.md](./PHASE1_SUMMARY.md)** - Technical implementation details
 
 ### Key Sections
@@ -319,6 +328,7 @@ See `SETUP.md` for complete list and setup instructions.
 - Infrastructure monitoring (VPS, cPanel, NAS)
 - Project kanban board
 - Enhanced dashboard
+- **Alert & notification system (Telegram + in-app)**
 
 ### 🔜 Future Enhancements
 
