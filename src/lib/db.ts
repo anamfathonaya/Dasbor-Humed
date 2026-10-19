@@ -880,6 +880,78 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_notif_category ON notifications(category, created_at);
     CREATE INDEX IF NOT EXISTS idx_notif_severity ON notifications(severity, created_at);
     CREATE INDEX IF NOT EXISTS idx_notif_pref_user ON notification_preferences(user_id, channel);
+
+    -- 19. Google Analytics 4 integration tables
+    CREATE TABLE IF NOT EXISTS google_analytics_properties (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id TEXT NOT NULL UNIQUE,
+      property_name TEXT NOT NULL,
+      website_url TEXT,
+      account_id TEXT,
+      account_name TEXT,
+      connected_by INTEGER,
+      oauth_status TEXT NOT NULL DEFAULT 'connected',
+      last_synced_at DATETIME,
+      sync_enabled INTEGER NOT NULL DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (connected_by) REFERENCES users(id) ON DELETE SET NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      encrypted_access_token TEXT NOT NULL,
+      encrypted_refresh_token TEXT NOT NULL,
+      token_expires_at DATETIME NOT NULL,
+      scopes TEXT NOT NULL,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_daily_metrics (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      metric_date TEXT NOT NULL,
+      users INTEGER DEFAULT 0,
+      sessions INTEGER DEFAULT 0,
+      pageviews INTEGER DEFAULT 0,
+      avg_session_duration REAL DEFAULT 0,
+      bounce_rate REAL DEFAULT 0,
+      new_users INTEGER DEFAULT 0,
+      engaged_sessions INTEGER DEFAULT 0,
+      event_count INTEGER DEFAULT 0,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE,
+      UNIQUE(property_id, metric_date)
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_top_pages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      page_path TEXT NOT NULL,
+      page_title TEXT,
+      views INTEGER DEFAULT 0,
+      unique_users INTEGER DEFAULT 0,
+      avg_time_on_page REAL DEFAULT 0,
+      period_start TEXT NOT NULL,
+      period_end TEXT NOT NULL,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_traffic_sources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      source_medium TEXT NOT NULL,
+      sessions INTEGER DEFAULT 0,
+      users INTEGER DEFAULT 0,
+      new_users INTEGER DEFAULT 0,
+      period_start TEXT NOT NULL,
+      period_end TEXT NOT NULL,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
   `);
 
   // Safe migrations for social_channels & channel_daily_metrics

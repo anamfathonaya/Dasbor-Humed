@@ -64,7 +64,7 @@ export default function RealtimeNewsFeed() {
 
   const fetchNews = useCallback(async () => {
     try {
-      const url = `/api/news/stream?type=${filterType}&limit=6`;
+      const url = `/api/news/items?limit=6${filterType !== 'all' ? `&sourceType=${filterType}` : ''}`;
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();

@@ -285,3 +285,20 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Verifikasi Visual & Aturan Tampilan UI
+
+### Alur Wajib Verifikasi UI
+- Setiap perubahan UI wajib menjalankan `npm run screenshot` setelah dev server berjalan.
+- Buka hasil screenshot yang relevan (di folder `screenshots/desktop/` dan `screenshots/mobile/`) dan periksa terhadap aturan tampilan di bawah.
+- Jika ada rute yang gagal (tercatat di `screenshots/report.txt` atau error konsol/HTTP), perbaiki sebelum melapor selesai.
+
+### Prinsip & Aturan Tampilan
+- **Nilai tunggal dengan perubahan**: Tampilkan angka besar dengan selisih periode (persentase & nominal), bukan grafik.
+- **Deret waktu**: Gunakan grafik garis (line chart).
+- **Perbandingan antar kanal**: Gunakan grafik batang horizontal yang diurutkan (sorted horizontal bar chart).
+- **Detail per item**: Gunakan tabel yang rapi dan terstruktur.
+- **Status integrasi**: Tampilkan badge status dengan waktu sinkronisasi terakhir, tanpa grafik.
+- **Hierarki visual**: Satu fokus utama per layar/kartu; angka penting harus terlihat lebih besar dan kontras dibandingkan label metadata.
+- **Data percontohan**: Setiap data demo/mock harus diberi penanda label "DEMO" yang terlihat jelas.
+

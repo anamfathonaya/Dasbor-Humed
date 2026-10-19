@@ -164,14 +164,14 @@ export function ChannelSyncHistoryTable({
                   </td>
                   <td style={{ fontSize: '0.82rem', color: 'var(--color-muted, #475569)' }}>
                     <div>{item.message}</div>
-                    {item.status !== 'success' && onRetrySync && (
+                    {item.status !== 'success' && onRetrySync && item.provider && (
                       <button
                         type="button"
                         className="dasbor__btn"
                         style={{ marginTop: '0.35rem', padding: '0.2rem 0.55rem', fontSize: '0.74rem' }}
                         onClick={() => onRetrySync(item.provider)}
                       >
-                        Ulangi Tarik {item.provider.toUpperCase()}
+                        Ulangi Tarik {(item.provider || '').toUpperCase()}
                       </button>
                     )}
                   </td>

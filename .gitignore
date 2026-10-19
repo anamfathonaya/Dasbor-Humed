@@ -28,4 +28,5 @@ pnpm-debug.log*
 
 .next/
 
-.next/
+# Screenshots
+screenshots/
