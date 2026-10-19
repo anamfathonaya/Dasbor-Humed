@@ -51,7 +51,7 @@ export default function IntegrasiYouTubePage() {
   const loadChannels = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/channels/youtube/route');
+      const response = await fetch('/api/channels/youtube');
       const data = await response.json();
 
       if (data.ok) {

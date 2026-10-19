@@ -880,6 +880,78 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_notif_category ON notifications(category, created_at);
     CREATE INDEX IF NOT EXISTS idx_notif_severity ON notifications(severity, created_at);
     CREATE INDEX IF NOT EXISTS idx_notif_pref_user ON notification_preferences(user_id, channel);
+
+    -- 19. Google Analytics 4 integration tables
+    CREATE TABLE IF NOT EXISTS google_analytics_properties (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id TEXT NOT NULL UNIQUE,
+      property_name TEXT NOT NULL,
+      website_url TEXT,
+      account_id TEXT,
+      account_name TEXT,
+      connected_by INTEGER,
+      oauth_status TEXT NOT NULL DEFAULT 'connected',
+      last_synced_at DATETIME,
+      sync_enabled INTEGER NOT NULL DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (connected_by) REFERENCES users(id) ON DELETE SET NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_credentials (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      encrypted_access_token TEXT NOT NULL,
+      encrypted_refresh_token TEXT NOT NULL,
+      token_expires_at DATETIME NOT NULL,
+      scopes TEXT NOT NULL,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_daily_metrics (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      metric_date TEXT NOT NULL,
+      users INTEGER DEFAULT 0,
+      sessions INTEGER DEFAULT 0,
+      pageviews INTEGER DEFAULT 0,
+      avg_session_duration REAL DEFAULT 0,
+      bounce_rate REAL DEFAULT 0,
+      new_users INTEGER DEFAULT 0,
+      engaged_sessions INTEGER DEFAULT 0,
+      event_count INTEGER DEFAULT 0,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE,
+      UNIQUE(property_id, metric_date)
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_top_pages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      page_path TEXT NOT NULL,
+      page_title TEXT,
+      views INTEGER DEFAULT 0,
+      unique_users INTEGER DEFAULT 0,
+      avg_time_on_page REAL DEFAULT 0,
+      period_start TEXT NOT NULL,
+      period_end TEXT NOT NULL,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS google_analytics_traffic_sources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      property_id INTEGER NOT NULL,
+      source_medium TEXT NOT NULL,
+      sessions INTEGER DEFAULT 0,
+      users INTEGER DEFAULT 0,
+      new_users INTEGER DEFAULT 0,
+      period_start TEXT NOT NULL,
+      period_end TEXT NOT NULL,
+      recorded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (property_id) REFERENCES google_analytics_properties(id) ON DELETE CASCADE
+    );
   `);
 
   // Safe migrations for social_channels & channel_daily_metrics
@@ -2224,6 +2296,91 @@ export function initDatabase() {
         '2026-10-18 19:00:00',
         '2026-10-18 19:00:08'
       );
+    }
+
+    // Seeding youtube_connected_channels jika kosong
+    const ytCount = (db.prepare('SELECT COUNT(*) as count FROM youtube_connected_channels').get() as { count: number }).count;
+    if (ytCount === 0) {
+      const insertYt = db.prepare(`
+        INSERT INTO youtube_connected_channels (
+          social_channel_id, youtube_channel_id, channel_title, custom_url,
+          avatar_url, subscriber_count, total_views_count, video_count,
+          analytics_views_30d, analytics_watch_time_minutes_30d, analytics_engagements_30d,
+          oauth_status, token_expires_at, last_health_check_at, last_synced_at, connected_by_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertYt.run(
+        4,
+        'UC_PeduliNegeriTV_01',
+        'Peduli Negeri TV',
+        '@PeduliNegeriTV',
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+        185000,
+        14820400,
+        420,
+        521600,
+        148900,
+        48200,
+        'connected',
+        '2026-11-18 08:35:00',
+        '2026-10-19 08:35:00',
+        '2026-10-19 08:35:00',
+        'admin.humas@kemensos.go.id'
+      );
+    }
+
+    // Seeding google_analytics_properties & daily metrics jika kosong
+    const gaPropCount = (db.prepare('SELECT COUNT(*) as count FROM google_analytics_properties').get() as { count: number }).count;
+    if (gaPropCount === 0) {
+      const insertGaProp = db.prepare(`
+        INSERT INTO google_analytics_properties (
+          property_id, property_name, website_url, account_id, account_name,
+          connected_by, oauth_status, last_synced_at, sync_enabled
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const propRes = insertGaProp.run(
+        'properties/3982410',
+        'Portal Informasi Resmi Humas & Media Terpadu',
+        'https://humas.kemensos.go.id',
+        'accounts/9871234',
+        'Kementerian Sosial Republik Indonesia',
+        1,
+        'connected',
+        '2026-10-19 08:30:00',
+        1
+      );
+      const propDbId = Number(propRes.lastInsertRowid);
+
+      const insertGaMetric = db.prepare(`
+        INSERT INTO google_analytics_daily_metrics (
+          property_id, metric_date, users, sessions, pageviews,
+          avg_session_duration, bounce_rate, new_users, engaged_sessions, event_count
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      // Generate 30 days of metrics ending at 2026-10-19
+      const baseDate = new Date('2026-10-19T00:00:00Z');
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(baseDate.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = d.toISOString().split('T')[0];
+        const dayUsers = 850 + Math.round(Math.sin(i) * 120 + (29 - i) * 15);
+        const daySessions = Math.round(dayUsers * 1.45);
+        const dayPageviews = Math.round(daySessions * 3.7);
+        insertGaMetric.run(
+          propDbId,
+          dateStr,
+          dayUsers,
+          daySessions,
+          dayPageviews,
+          184.5,
+          0.423,
+          Math.round(dayUsers * 0.72),
+          Math.round(daySessions * 0.68),
+          dayPageviews * 4
+        );
+      }
     }
   } catch {}
 }

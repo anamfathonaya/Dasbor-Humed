@@ -3,6 +3,40 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useLayout } from '@/components/layout/LayoutContext';
+import {
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  RefreshCw,
+  ExternalLink,
+  Calendar,
+  Layers,
+  ArrowUpRight,
+  ShieldCheck,
+  Clock,
+  Radio,
+  Zap,
+} from 'lucide-react';
+
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/table';
 
 export interface ChannelIntegrationStatusItem {
   id: string;
@@ -102,7 +136,7 @@ export const SAMPLE_INTEGRATION_STATUS: ChannelIntegrationStatusItem[] = [
     handle: '@PeduliNegeriTV',
     officialApi: 'YouTube Data API v3 & YouTube Analytics API',
     status: 'connected',
-    lastSyncedAt: 'Hari ini, 06:00 WIB',
+    lastSyncedAt: 'Hari ini, 08:35 WIB',
     lastHealthCheck: 'Hari ini, 08:35 WIB (200 OK)',
     healthLatencyMs: 184,
     tokenExpiresAt: '2026-11-18 08:35 WIB (29 hari lagi)',
@@ -220,21 +254,21 @@ export const SAMPLE_CHANNEL_SYNC_HISTORY: ChannelSyncHistoryRecord[] = [
     channelId: 'status-ig-01',
     provider: 'instagram',
     channelName: 'Instagram Resmi Kemensos RI',
-    syncedAt: 'Hari ini, 06:00:18 WIB',
+    syncedAt: 'Hari ini, 06:00:08 WIB',
     status: 'success',
-    metricsPulled: { views: 184500, reach: 98200, engagements: 14200 },
+    metricsPulled: { views: 88400, reach: 54100, engagements: 9320 },
     durationMs: 380,
     syncType: 'scheduled_daily',
-    notes: 'Penarikan data wawasan Instagram Graph API berhasil normal.'
+    notes: 'Penarikan metrik Instagram Insights API sukses (200 OK).'
   },
   {
     id: 'sync-hist-03',
     channelId: 'status-fb-01',
     provider: 'facebook',
     channelName: 'Kementerian Sosial Republik Indonesia',
-    syncedAt: 'Hari ini, 06:00:22 WIB',
+    syncedAt: 'Hari ini, 06:00:05 WIB',
     status: 'success',
-    metricsPulled: { views: 76400, reach: 41000, engagements: 3400 },
+    metricsPulled: { views: 56200, reach: 39100, engagements: 4150 },
     durationMs: 510,
     syncType: 'scheduled_daily',
     notes: 'Penarikan metrik Facebook Page Insights API sukses.'
@@ -321,553 +355,432 @@ export function ChannelIntegrationStatusView() {
     }, 600);
   };
 
+  const handleRefresh = (id: string, provider: string) => {
+    handleTestSingle(id);
+  };
+
   const connectedCount = channels.filter((c) => c.status === 'connected').length;
   const warningCount = channels.filter((c) => c.status === 'token_expiring').length;
   const disconnectedCount = channels.filter((c) => c.status === 'disconnected').length;
   const troubledChannels = channels.filter((c) => c.status !== 'connected');
 
   return (
-    <div className="dasbor" data-testid="channel-integration-status-view">
+    <div className="flex flex-col gap-6 w-full" data-testid="channel-integration-status-view">
       {/* Banner Pemberitahuan Aksi */}
       {bannerNotice && (
-        <div
-          role="status"
-          className={`dasbor__banner dasbor__banner--${bannerNotice.type}`}
+        <Alert
           data-testid="status-banner-notice"
-          style={{ marginBottom: '1rem' }}
+          className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 flex items-center justify-between"
         >
-          <span>{bannerNotice.text}</span>
-          <button
-            type="button"
-            className="dasbor__banner-close"
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="size-4 text-emerald-400" />
+            <span className="text-xs font-medium">{bannerNotice.text}</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => setBannerNotice(null)}
+            className="h-6 w-6 p-0 text-emerald-400 hover:text-emerald-300"
             aria-label="Tutup pemberitahuan"
           >
             ✕
-          </button>
-        </div>
+          </Button>
+        </Alert>
       )}
 
-      {/* Ringkasan Kanal Bermasalah (Peringatan & Terputus) di Atas Halaman */}
+      {/* Ringkasan Kanal Bermasalah (Peringatan & Terputus) */}
       {troubledChannels.length > 0 ? (
-        <div
-          className="dasbor__banner dasbor__banner--warning"
+        <Alert
           data-testid="troubled-channels-summary-banner"
-          style={{
-            marginBottom: '1.25rem',
-            padding: '0.85rem 1.15rem',
-            borderRadius: '0.55rem',
-            background: 'rgba(245, 158, 11, 0.08)',
-            border: '1px solid rgba(245, 158, 11, 0.3)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.45rem'
-          }}
+          className="border-amber-500/40 bg-amber-500/10 text-amber-500"
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '1.2rem' }}>⚠️</span>
-              <strong style={{ fontSize: '0.9rem', color: '#f59e0b' }}>
-                Perhatian: Terdapat {troubledChannels.length} kanal membutuhkan tindakan pembaruan izin/koneksi
-              </strong>
-            </div>
-            <span
-              className="dasbor__badge dasbor__badge--warn"
-              data-testid="troubled-channels-count-badge"
-              style={{ fontSize: '0.74rem' }}
-            >
-              {troubledChannels.length} Kanal Butuh Perhatian
-            </span>
-          </div>
-
-          <div
-            data-testid="connection-warnings-list"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              marginTop: '0.4rem'
-            }}
-          >
-            {troubledChannels.map((c) => (
-              <div
-                key={c.id}
-                data-testid={`troubled-channel-item-${c.provider}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '0.4rem',
-                  background: 'rgba(245, 158, 11, 0.12)',
-                  border: '1px solid rgba(245, 158, 11, 0.25)',
-                  fontSize: '0.8rem'
-                }}
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="size-4 text-amber-500" />
+                <AlertTitle className="text-sm font-semibold">
+                  Perhatian: Terdapat {troubledChannels.length} kanal membutuhkan tindakan pembaruan izin/koneksi
+                </AlertTitle>
+              </div>
+              <Badge
+                variant="outline"
+                className="border-amber-500/40 bg-amber-500/20 text-amber-500 text-xs"
+                data-testid="troubled-channels-count-badge"
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '1.6rem',
-                      height: '1.6rem',
-                      borderRadius: '0.3rem',
-                      background:
-                        c.provider === 'youtube'
-                          ? '#ef4444'
-                          : c.provider === 'instagram'
-                          ? '#e1306c'
-                          : c.provider === 'facebook'
-                          ? '#1877f2'
-                          : '#00f2fe',
-                      color: '#ffffff',
-                      fontWeight: 700,
-                      fontSize: '0.7rem'
-                    }}
-                  >
-                    {c.provider === 'youtube' ? 'YT' : c.provider === 'instagram' ? 'IG' : c.provider === 'facebook' ? 'FB' : 'TT'}
-                  </span>
-                  <div>
-                    <span style={{ fontWeight: 600, color: 'var(--color-text, #f1f5f9)' }} data-testid={`warning-channel-name-${c.provider}`}>
-                      {c.channelName}
-                    </span>{' '}
-                    <span className="dasbor__muted">({c.handle})</span>
-                    <div style={{ color: '#f59e0b', fontSize: '0.74rem', marginTop: '0.1rem' }}>
-                      Penyebab: {c.errorMessage || c.tokenExpiresAt}
+                {troubledChannels.length} Kanal Butuh Perhatian
+              </Badge>
+            </div>
+
+            <div data-testid="connection-warnings-list" className="flex flex-col gap-2 mt-1">
+              {troubledChannels.map((c) => (
+                <div
+                  key={c.id}
+                  data-testid={`troubled-channel-item-${c.provider}`}
+                  className="flex items-center justify-between flex-wrap gap-3 p-2.5 rounded-md border border-amber-500/25 bg-amber-500/5 text-xs"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex items-center justify-center size-7 rounded font-bold text-white text-[11px] bg-cyan-500">
+                      TT
+                    </span>
+                    <div>
+                      <span className="font-semibold text-foreground" data-testid={`warning-channel-name-${c.provider}`}>
+                        {c.channelName}
+                      </span>{' '}
+                      <span className="text-muted-foreground">({c.handle})</span>
+                      <div className="text-amber-500 text-[11px] mt-0.5">
+                        Penyebab: {c.errorMessage || c.tokenExpiresAt}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <ChannelConditionBadge status={c.status} testId={`warning-badge-${c.provider}`} />
-                  {isAdminOrHead && (
-                    <button
-                      type="button"
-                      className="dasbor__btn dasbor__btn--primary"
-                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.74rem' }}
-                      onClick={() => handleRefresh(c.id, c.provider)}
-                      data-testid={`btn-resolve-warning-${c.provider}`}
-                    >
-                      Segarkan Izin
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <ChannelConditionBadge status={c.status} testId={`warning-badge-${c.provider}`} />
+                    {isAdminOrHead && (
+                      <Button
+                        size="sm"
+                        variant="default"
+                        className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+                        onClick={() => handleRefresh(c.id, c.provider)}
+                        data-testid={`btn-resolve-warning-${c.provider}`}
+                      >
+                        Segarkan Izin
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </Alert>
       ) : (
-        <div
-          className="dasbor__banner dasbor__banner--success"
+        <Alert
           data-testid="all-channels-healthy-banner"
-          style={{
-            marginBottom: '1.25rem',
-            padding: '0.75rem 1.15rem',
-            borderRadius: '0.55rem',
-            background: 'rgba(34, 197, 94, 0.08)',
-            border: '1px solid rgba(34, 197, 94, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
+          className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400"
         >
-          <span style={{ color: '#22c55e', fontSize: '1.1rem' }}>✓</span>
-          <span style={{ fontSize: '0.84rem', color: '#86efac' }}>
-            <strong>Semua Kanal Sehat:</strong> Seluruh 4 kanal media sosial terhubung normal dengan kredensial aktif.
-          </span>
-        </div>
+          <div className="flex items-center gap-2 text-xs">
+            <CheckCircle2 className="size-4 text-emerald-400" />
+            <span>
+              <strong>Semua Kanal Sehat:</strong> Seluruh 4 kanal media sosial terhubung normal dengan kredensial aktif.
+            </span>
+          </div>
+        </Alert>
       )}
 
-      {/* Ringkasan Status Keseluruhan */}
-      <section className="dasbor__card" style={{ marginBottom: '1.25rem' }}>
-        <div className="dasbor__card-head">
-          <div>
-            <p className="dasbor__eyebrow">Status Sambungan Terpadu</p>
-            <h1 className="dasbor__card-title" style={{ fontSize: '1.35rem' }}>
-              Status Integrasi Kanal Media Sosial
-            </h1>
-            <p className="dasbor__muted" style={{ fontSize: '0.86rem', marginTop: '0.2rem' }}>
-              Pemantauan kesehatan koneksi API resmi 4 platform (YouTube Data &amp; Analytics API, Meta Graph API, TikTok Display API).
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-            {isAdminOrHead && (
-              <button
-                type="button"
-                className="dasbor__btn dasbor__btn--primary"
-                disabled={testingId !== null}
-                onClick={handleTestAll}
-                data-testid="btn-test-all-channels"
-              >
-                {testingId === 'all' ? 'Menguji Semua...' : 'Uji Semua Koneksi'}
-              </button>
-            )}
-            <Link
-              href="/penarikan-metrik-terjadwal"
-              className="dasbor__btn"
-              data-testid="link-to-schedule-from-status"
-            >
-              Jadwal Tarik Harian
-            </Link>
-          </div>
-        </div>
-
-        {/* Kartu Ringkasan Kebugaran Koneksi */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1rem',
-            marginTop: '1rem'
-          }}
-        >
-          <div
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'var(--color-surface-muted, #1e293b)',
-              border: '1px solid var(--color-border, #334155)'
-            }}
-          >
-            <span className="dasbor__muted" style={{ fontSize: '0.78rem' }}>Total Kanal Terintegrasi</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.25rem' }}>
-              {channels.length} Kanal
-            </div>
-            <span style={{ fontSize: '0.74rem', color: '#38bdf8' }}>4 Platform Resmi</span>
-          </div>
-
-          <div
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(34, 197, 94, 0.08)',
-              border: '1px solid rgba(34, 197, 94, 0.25)'
-            }}
-          >
-            <span style={{ fontSize: '0.78rem', color: '#22c55e', fontWeight: 600 }}>Tersambung Normal</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.25rem', color: '#22c55e' }}>
-              {connectedCount} Kanal
-            </div>
-            <span style={{ fontSize: '0.74rem', color: '#86efac' }}>Kredensial Aktif</span>
-          </div>
-
-          <div
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.25)'
-            }}
-          >
-            <span style={{ fontSize: '0.78rem', color: '#f59e0b', fontWeight: 600 }}>Perlu Perhatian</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.25rem', color: '#f59e0b' }}>
-              {warningCount} Kanal
-            </div>
-            <span style={{ fontSize: '0.74rem', color: '#fde68a' }}>Token Segera Kedaluwarsa</span>
-          </div>
-
-          <div
-            style={{
-              padding: '0.85rem 1rem',
-              borderRadius: '0.5rem',
-              background: 'rgba(239, 68, 68, 0.08)',
-              border: '1px solid rgba(239, 68, 68, 0.25)'
-            }}
-          >
-            <span style={{ fontSize: '0.78rem', color: '#ef4444', fontWeight: 600 }}>Terputus</span>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, marginTop: '0.25rem', color: '#ef4444' }}>
-              {disconnectedCount} Kanal
-            </div>
-            <span style={{ fontSize: '0.74rem', color: '#fca5a5' }}>0 Gangguan Kritis</span>
-          </div>
-        </div>
-      </section>
-
-      {/* Grid Kartu Status Kanal Terpadu */}
-      <section className="dasbor__card" data-testid="channel-status-grid-card">
-        <div className="dasbor__card-head">
-          <div>
-            <p className="dasbor__eyebrow">Daftar Detail Konektor</p>
-            <h2 className="dasbor__card-title">Kesehatan &amp; Metrik Tarikan Harian</h2>
-          </div>
-        </div>
-
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '1rem',
-            marginTop: '0.75rem'
-          }}
-          data-testid="status-cards-container"
-        >
-          {channels.map((ch) => (
-            <article
-              key={ch.id}
-              className="dasbor__card"
-              style={{
-                background: 'var(--color-surface-muted, #1e293b)',
-                border: '1px solid var(--color-border, #334155)',
-                margin: 0
-              }}
-              data-testid={`channel-status-card-${ch.provider}`}
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.5rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      width: '2.4rem',
-                      height: '2.4rem',
-                      borderRadius: '0.5rem',
-                      background:
-                        ch.provider === 'youtube'
-                          ? '#ef444422'
-                          : ch.provider === 'instagram'
-                          ? '#e1306c22'
-                          : ch.provider === 'facebook'
-                          ? '#1877f222'
-                          : '#00f2fe22',
-                      color:
-                        ch.provider === 'youtube'
-                          ? '#ef4444'
-                          : ch.provider === 'instagram'
-                          ? '#e1306c'
-                          : ch.provider === 'facebook'
-                          ? '#1877f2'
-                          : '#00f2fe',
-                      fontWeight: 700,
-                      fontSize: '0.82rem'
-                    }}
-                  >
-                    {ch.provider === 'youtube' ? 'YT' : ch.provider === 'instagram' ? 'IG' : ch.provider === 'facebook' ? 'FB' : 'TT'}
-                  </span>
-                  <div>
-                    <h3 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 600 }}>{ch.channelName}</h3>
-                    <div className="dasbor__muted" style={{ fontSize: '0.78rem' }}>
-                      {ch.handle}
-                    </div>
-                  </div>
-                </div>
-
-                <ChannelConditionBadge
-                  status={ch.status}
-                  testId={`badge-status-${ch.provider}`}
-                />
+      {/* Header Halaman & Aksi Cepat */}
+      <Card className="border-border/80 bg-card shadow-xs">
+        <CardHeader className="pb-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                  Arsitektur Multi-Kanal Terpadu
+                </span>
+                <Badge variant="outline" className="border-amber-500/30 text-amber-500 text-[10px]">
+                  DEMO
+                </Badge>
               </div>
+              <CardTitle className="text-lg font-bold">
+                Status Integrasi Kanal Media Sosial
+              </CardTitle>
+              <CardDescription className="text-xs text-muted-foreground mt-0.5">
+                Pemantauan kesehatan koneksi API resmi 4 platform (YouTube Data & Analytics, Meta Graph API, TikTok Display API).
+              </CardDescription>
+            </div>
 
-              <div style={{ marginTop: '0.85rem', fontSize: '0.78rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-                <div>
-                  <span className="dasbor__muted">API Resmi:</span> <strong>{ch.officialApi}</strong>
-                </div>
-                <div>
-                  <span className="dasbor__muted">Masa Berlaku Token:</span> {ch.tokenExpiresAt}
-                </div>
-                <div>
-                  <span className="dasbor__muted">Pemeriksaan Terakhir:</span> {ch.lastHealthCheck}
-                </div>
-              </div>
-
-              {/* Angka Tarikan Metrik Harian */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: '0.5rem',
-                  marginTop: '0.85rem',
-                  padding: '0.6rem',
-                  borderRadius: '0.45rem',
-                  background: 'var(--color-surface, #0f172a)',
-                  border: '1px solid var(--color-border, #334155)',
-                  textAlign: 'center'
-                }}
-              >
-                <div>
-                  <span className="dasbor__muted" style={{ fontSize: '0.72rem' }}>Tayangan</span>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>
-                    {ch.metricsRollupToday.views.toLocaleString('id-ID')}
-                  </div>
-                </div>
-                <div>
-                  <span className="dasbor__muted" style={{ fontSize: '0.72rem' }}>Jangkauan</span>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>
-                    {ch.metricsRollupToday.reach.toLocaleString('id-ID')}
-                  </div>
-                </div>
-                <div>
-                  <span className="dasbor__muted" style={{ fontSize: '0.72rem' }}>Interaksi</span>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>
-                    {ch.metricsRollupToday.engagements.toLocaleString('id-ID')}
-                  </div>
-                </div>
-              </div>
-
-              {ch.errorMessage && (
-                <div
-                  style={{
-                    marginTop: '0.65rem',
-                    padding: '0.45rem 0.65rem',
-                    borderRadius: '0.4rem',
-                    background: 'rgba(245, 158, 11, 0.08)',
-                    border: '1px solid rgba(245, 158, 11, 0.25)',
-                    fontSize: '0.74rem',
-                    color: '#f59e0b'
-                  }}
+            <div className="flex items-center gap-2">
+              {isAdminOrHead && (
+                <Button
+                  size="sm"
+                  variant="default"
+                  disabled={testingId !== null}
+                  onClick={handleTestAll}
+                  data-testid="btn-test-all-channels"
+                  className="h-8 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
                 >
-                  ⚠️ {ch.errorMessage}
-                </div>
+                  <RefreshCw className={`size-3.5 ${testingId === 'all' ? 'animate-spin' : ''}`} />
+                  <span>{testingId === 'all' ? 'Menguji Semua...' : 'Uji Semua Koneksi'}</span>
+                </Button>
               )}
+              <Link href="/penarikan-metrik-terjadwal">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 text-xs gap-1.5"
+                  data-testid="link-to-schedule-from-status"
+                >
+                  <Calendar className="size-3.5" />
+                  <span>Jadwal Tarik Harian</span>
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </CardHeader>
 
-              {/* Tombol Aksi */}
-              <div style={{ marginTop: '0.85rem', display: 'flex', justifyContent: 'flex-end', gap: '0.4rem' }}>
-                {isAdminOrHead ? (
-                  <>
-                    <button
-                      type="button"
-                      className="dasbor__btn"
-                      style={{ padding: '0.28rem 0.6rem', fontSize: '0.75rem' }}
-                      disabled={testingId === ch.id || testingId === 'all'}
-                      onClick={() => handleTestSingle(ch.id)}
-                      data-testid={`btn-test-channel-${ch.provider}`}
-                    >
-                      {testingId === ch.id ? 'Menguji...' : 'Uji Koneksi'}
-                    </button>
-                    {ch.provider === 'youtube' && (
-                      <Link
-                        href="/integrasi-youtube"
-                        className="dasbor__btn"
-                        style={{ padding: '0.28rem 0.6rem', fontSize: '0.75rem' }}
-                      >
-                        Kelola YouTube
-                      </Link>
-                    )}
-                    {(ch.provider === 'instagram' || ch.provider === 'facebook') && (
-                      <Link
-                        href="/integrasi-meta"
-                        className="dasbor__btn"
-                        style={{ padding: '0.28rem 0.6rem', fontSize: '0.75rem' }}
-                      >
-                        Kelola Meta
-                      </Link>
-                    )}
-                    {ch.provider === 'tiktok' && (
-                      <Link
-                        href="/integrasi-tiktok"
-                        className="dasbor__btn"
-                        style={{ padding: '0.28rem 0.6rem', fontSize: '0.75rem' }}
-                      >
-                        Kelola TikTok
-                      </Link>
-                    )}
-                  </>
-                ) : (
-                  <span className="dasbor__muted" style={{ fontSize: '0.74rem', fontStyle: 'italic' }}>
-                    Mode Hanya-baca (Kontrol Dikelola Admin)
-                  </span>
-                )}
+        {/* PRINSIP 6 & 1: Kartu Ringkasan Kebugaran Koneksi (Angka Besar, Hierarki Tegas) */}
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-lg border border-border bg-muted/20">
+              <span className="text-xs text-muted-foreground">Total Kanal Terintegrasi</span>
+              <div className="text-2xl font-bold font-mono tracking-tight text-foreground mt-1">
+                {channels.length} Kanal
               </div>
-            </article>
-          ))}
-        </div>
-      </section>
+              <span className="text-[11px] text-cyan-400 font-medium">4 Platform Resmi</span>
+            </div>
 
-      {/* Panel Riwayat Sinkron Per Kanal di Halaman Status */}
-      <section className="dasbor__card" data-testid="channel-sync-history-panel" style={{ marginTop: '1.25rem' }}>
-        <div className="dasbor__card-head" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
-          <div>
-            <p className="dasbor__eyebrow">Log Eksekusi Penarikan Metrik</p>
-            <h2 className="dasbor__card-title" style={{ fontSize: '1.15rem' }}>
-              Riwayat Sinkronisasi Metrik Per Kanal
-            </h2>
-            <p className="dasbor__muted" style={{ fontSize: '0.8rem', marginTop: '0.15rem' }}>
-              Jejak riwayat penarikan otomatis harian dan manual tiap kanal, durasi eksekusi, serta metrik yang berhasil ditarik.
-            </p>
+            <div className="p-3.5 rounded-lg border border-emerald-500/30 bg-emerald-500/5">
+              <span className="text-xs text-emerald-400 font-semibold">Tersambung Normal</span>
+              <div className="text-2xl font-bold font-mono tracking-tight text-emerald-400 mt-1">
+                {connectedCount} Kanal
+              </div>
+              <span className="text-[11px] text-emerald-400/80">Kredensial Aktif</span>
+            </div>
+
+            <div className="p-3.5 rounded-lg border border-amber-500/30 bg-amber-500/5">
+              <span className="text-xs text-amber-500 font-semibold">Perlu Perhatian</span>
+              <div className="text-2xl font-bold font-mono tracking-tight text-amber-500 mt-1">
+                {warningCount} Kanal
+              </div>
+              <span className="text-[11px] text-amber-500/80">Token Segera Kedaluwarsa</span>
+            </div>
+
+            <div className="p-3.5 rounded-lg border border-red-500/30 bg-red-500/5">
+              <span className="text-xs text-red-400 font-semibold">Terputus</span>
+              <div className="text-2xl font-bold font-mono tracking-tight text-red-400 mt-1">
+                {disconnectedCount} Kanal
+              </div>
+              <span className="text-[11px] text-red-400/80">0 Gangguan Kritis</span>
+            </div>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Filter Kanal */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-muted, #94a3b8)', marginRight: '0.2rem' }}>
-              Filter Kanal:
-            </span>
-            <button
-              type="button"
-              className={`dasbor__btn ${historyChannelFilter === 'all' ? 'dasbor__btn--primary' : ''}`}
-              style={{ padding: '0.25rem 0.65rem', fontSize: '0.76rem' }}
-              onClick={() => setHistoryChannelFilter('all')}
-              data-testid="filter-sync-all"
-            >
-              Semua ({SAMPLE_CHANNEL_SYNC_HISTORY.length})
-            </button>
-            {channels.map((ch) => (
-              <button
-                key={ch.provider}
-                type="button"
-                className={`dasbor__btn ${historyChannelFilter === ch.provider ? 'dasbor__btn--primary' : ''}`}
-                style={{ padding: '0.25rem 0.65rem', fontSize: '0.76rem' }}
-                onClick={() => setHistoryChannelFilter(ch.provider)}
-                data-testid={`filter-sync-${ch.provider}`}
-              >
-                {ch.provider === 'youtube'
-                  ? 'YouTube'
+      {/* PRINSIP 5: Status integrasi: badge status dengan waktu sinkron terakhir, TANPA GRAFIK */}
+      <Card className="border-border/80 bg-card shadow-xs" data-testid="channel-status-grid-card">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold">
+            Kesehatan & Metrik Tarikan Harian
+          </CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
+            Daftar detail status konektor per kanal resmi dilengkapi waktu sinkronisasi terakhir
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            data-testid="status-cards-container"
+          >
+            {channels.map((ch) => {
+              const providerColor =
+                ch.provider === 'youtube'
+                  ? 'text-red-500 bg-red-500/10'
                   : ch.provider === 'instagram'
-                  ? 'Instagram'
+                  ? 'text-pink-500 bg-pink-500/10'
                   : ch.provider === 'facebook'
-                  ? 'Facebook'
-                  : 'TikTok'}
-              </button>
-            ))}
-          </div>
-        </div>
+                  ? 'text-blue-500 bg-blue-500/10'
+                  : 'text-cyan-400 bg-cyan-400/10';
 
-        <div style={{ overflowX: 'auto', marginTop: '0.75rem' }}>
-          <table className="dasbor__table" data-testid="channel-sync-history-table">
-            <thead>
-              <tr>
-                <th>Waktu Sinkron</th>
-                <th>Kanal &amp; Platform</th>
-                <th>Tipe Tarikan</th>
-                <th>Status</th>
-                <th>Metrik Ditarik</th>
-                <th>Latensi</th>
-                <th>Catatan / Detail</th>
-              </tr>
-            </thead>
-            <tbody>
+              const providerLabel =
+                ch.provider === 'youtube'
+                  ? 'YT'
+                  : ch.provider === 'instagram'
+                  ? 'IG'
+                  : ch.provider === 'facebook'
+                  ? 'FB'
+                  : 'TT';
+
+              return (
+                <Card
+                  key={ch.id}
+                  className="border-border/80 bg-muted/20 shadow-none flex flex-col justify-between"
+                  data-testid={`channel-status-card-${ch.provider}`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <span className={`flex items-center justify-center size-9 rounded-lg font-bold text-xs ${providerColor}`}>
+                          {providerLabel}
+                        </span>
+                        <div>
+                          <CardTitle className="text-sm font-semibold">{ch.channelName}</CardTitle>
+                          <CardDescription className="text-xs text-muted-foreground">{ch.handle}</CardDescription>
+                        </div>
+                      </div>
+
+                      <ChannelConditionBadge
+                        status={ch.status}
+                        testId={`badge-status-${ch.provider}`}
+                      />
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="space-y-3 pt-0">
+                    <div className="text-xs space-y-1.5 text-muted-foreground">
+                      <div className="flex items-center justify-between">
+                        <span>API Resmi:</span>
+                        <strong className="text-foreground text-[11px] truncate max-w-[200px]">{ch.officialApi}</strong>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Masa Berlaku Token:</span>
+                        <span className="text-foreground text-[11px]">{ch.tokenExpiresAt}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Pemeriksaan Terakhir:</span>
+                        <span className="text-emerald-400 font-medium text-[11px]">{ch.lastHealthCheck}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Sinkronisasi Terakhir:</span>
+                        <span className="text-foreground font-semibold text-[11px]">{ch.lastSyncedAt}</span>
+                      </div>
+                    </div>
+
+                    {/* PRINSIP 1: Metrik ringkas per kanal */}
+                    <div className="grid grid-cols-3 gap-2 p-2.5 rounded-lg border border-border/80 bg-card text-center">
+                      <div>
+                        <div className="text-[10px] text-muted-foreground">Tayangan Hari Ini</div>
+                        <div className="text-xs font-bold font-mono text-foreground mt-0.5">
+                          {ch.metricsRollupToday.views.toLocaleString('id-ID')}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-muted-foreground">Jangkauan</div>
+                        <div className="text-xs font-bold font-mono text-foreground mt-0.5">
+                          {ch.metricsRollupToday.reach.toLocaleString('id-ID')}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] text-muted-foreground">Interaksi</div>
+                        <div className="text-xs font-bold font-mono text-foreground mt-0.5">
+                          {ch.metricsRollupToday.engagements.toLocaleString('id-ID')}
+                        </div>
+                      </div>
+                    </div>
+
+                    {ch.errorMessage && (
+                      <div className="p-2 rounded border border-amber-500/30 bg-amber-500/10 text-amber-500 text-xs flex items-center gap-1.5">
+                        <AlertTriangle className="size-3.5 shrink-0" />
+                        <span>{ch.errorMessage}</span>
+                      </div>
+                    )}
+                  </CardContent>
+
+                  <CardFooter className="pt-2 border-t border-border/60 flex items-center justify-end gap-2">
+                    {isAdminOrHead ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={testingId === ch.id || testingId === 'all'}
+                          onClick={() => handleTestSingle(ch.id)}
+                          data-testid={`btn-test-channel-${ch.provider}`}
+                          className="h-7 text-xs"
+                        >
+                          {testingId === ch.id ? 'Menguji...' : 'Uji Koneksi'}
+                        </Button>
+                        {ch.provider === 'youtube' && (
+                          <Link href="/integrasi-youtube">
+                            <Button size="sm" variant="default" className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+                              Kelola YouTube
+                            </Button>
+                          </Link>
+                        )}
+                        {(ch.provider === 'instagram' || ch.provider === 'facebook') && (
+                          <Link href="/integrasi-meta">
+                            <Button size="sm" variant="default" className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+                              Kelola Meta
+                            </Button>
+                          </Link>
+                        )}
+                        {ch.provider === 'tiktok' && (
+                          <Link href="/integrasi-tiktok">
+                            <Button size="sm" variant="default" className="h-7 text-xs bg-primary text-primary-foreground hover:bg-primary/90">
+                              Kelola TikTok
+                            </Button>
+                          </Link>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-xs text-muted-foreground italic">
+                        Mode Hanya-baca (Kontrol Dikelola Admin)
+                      </span>
+                    )}
+                  </CardFooter>
+                </Card>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* PRINSIP 4: Detail per item: Gunakan tabel yang rapi dan terstruktur */}
+      <Card className="border-border/80 bg-card shadow-xs" data-testid="channel-sync-history-panel">
+        <CardHeader className="pb-3">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-base font-semibold">
+                Riwayat Sinkronisasi Metrik Per Kanal
+              </CardTitle>
+              <CardDescription className="text-xs text-muted-foreground mt-0.5">
+                Jejak riwayat penarikan otomatis harian dan manual tiap kanal, durasi eksekusi, serta metrik yang ditarik
+              </CardDescription>
+            </div>
+
+            {/* Filter Kanal */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-muted-foreground mr-1">Filter:</span>
+              <Button
+                size="sm"
+                variant={historyChannelFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setHistoryChannelFilter('all')}
+                data-testid="filter-sync-all"
+                className={`h-7 text-xs ${historyChannelFilter === 'all' ? 'bg-primary text-primary-foreground' : ''}`}
+              >
+                Semua ({SAMPLE_CHANNEL_SYNC_HISTORY.length})
+              </Button>
+              {channels.map((ch) => (
+                <Button
+                  key={ch.provider}
+                  size="sm"
+                  variant={historyChannelFilter === ch.provider ? 'default' : 'outline'}
+                  onClick={() => setHistoryChannelFilter(ch.provider)}
+                  data-testid={`filter-sync-${ch.provider}`}
+                  className={`h-7 text-xs ${historyChannelFilter === ch.provider ? 'bg-primary text-primary-foreground' : ''}`}
+                >
+                  {ch.provider === 'youtube'
+                    ? 'YouTube'
+                    : ch.provider === 'instagram'
+                    ? 'Instagram'
+                    : ch.provider === 'facebook'
+                    ? 'Facebook'
+                    : 'TikTok'}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table data-testid="channel-sync-history-table">
+            <TableHeader>
+              <TableRow className="border-border hover:bg-transparent">
+                <TableHead className="text-xs font-semibold text-muted-foreground">Waktu Sinkron</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Kanal &amp; Platform</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Tipe Tarikan</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground text-center">Status</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Metrik Ditarik</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground text-right">Latensi</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Catatan / Detail</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {SAMPLE_CHANNEL_SYNC_HISTORY.filter(
                 (h) => historyChannelFilter === 'all' || h.provider === historyChannelFilter
               ).map((record) => (
-                <tr key={record.id} data-testid={`sync-history-row-${record.id}`}>
-                  <td style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
-                    <div style={{ fontWeight: 600 }}>{record.syncedAt}</div>
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: '1.6rem',
-                          height: '1.6rem',
-                          borderRadius: '0.3rem',
-                          background:
-                            record.provider === 'youtube'
-                              ? '#ef4444'
-                              : record.provider === 'instagram'
-                              ? '#e1306c'
-                              : record.provider === 'facebook'
-                              ? '#1877f2'
-                              : '#00f2fe',
-                          color: '#ffffff',
-                          fontWeight: 700,
-                          fontSize: '0.7rem'
-                        }}
-                      >
+                <TableRow key={record.id} data-testid={`sync-history-row-${record.id}`} className="border-border/60 hover:bg-muted/40">
+                  <TableCell className="text-xs font-medium text-foreground py-2.5 whitespace-nowrap">
+                    {record.syncedAt}
+                  </TableCell>
+                  <TableCell className="text-xs py-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex items-center justify-center size-5 rounded text-[10px] font-bold text-white bg-primary">
                         {record.provider === 'youtube'
                           ? 'YT'
                           : record.provider === 'instagram'
@@ -876,53 +789,65 @@ export function ChannelIntegrationStatusView() {
                           ? 'FB'
                           : 'TT'}
                       </span>
-                      <strong style={{ fontSize: '0.84rem' }}>{record.channelName}</strong>
+                      <span className="font-semibold text-foreground">{record.channelName}</span>
                     </div>
-                  </td>
-                  <td>
-                    <span
-                      className="dasbor__badge"
-                      style={{
-                        fontSize: '0.72rem',
-                        background: record.syncType === 'manual' ? 'rgba(56, 189, 248, 0.15)' : undefined,
-                        color: record.syncType === 'manual' ? '#38bdf8' : undefined
-                      }}
+                  </TableCell>
+                  <TableCell className="text-xs py-2.5">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0"
                       data-testid={`sync-type-${record.id}`}
                     >
                       {record.syncType === 'manual' ? 'Manual (Ad-Hoc)' : 'Terjadwal Harian'}
-                    </span>
-                  </td>
-                  <td>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center py-2.5">
                     {record.status === 'success' ? (
-                      <span className="dasbor__badge dasbor__badge--up" data-testid={`sync-status-badge-${record.id}`}>
+                      <Badge
+                        variant="outline"
+                        className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] px-1.5 py-0"
+                        data-testid={`sync-status-badge-${record.id}`}
+                      >
                         ● Sukses
-                      </span>
+                      </Badge>
                     ) : record.status === 'warning' ? (
-                      <span className="dasbor__badge dasbor__badge--warn" data-testid={`sync-status-badge-${record.id}`}>
+                      <Badge
+                        variant="outline"
+                        className="border-amber-500/40 bg-amber-500/10 text-amber-500 text-[10px] px-1.5 py-0"
+                        data-testid={`sync-status-badge-${record.id}`}
+                      >
                         ▲ Peringatan
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="dasbor__badge dasbor__badge--down" data-testid={`sync-status-badge-${record.id}`}>
+                      <Badge
+                        variant="outline"
+                        className="border-red-500/40 bg-red-500/10 text-red-400 text-[10px] px-1.5 py-0"
+                        data-testid={`sync-status-badge-${record.id}`}
+                      >
                         ✕ Gagal
-                      </span>
+                      </Badge>
                     )}
-                  </td>
-                  <td style={{ fontSize: '0.78rem' }}>
-                    <div>👁️ {record.metricsPulled.views.toLocaleString('id-ID')} tayangan</div>
-                    <div className="dasbor__muted">👥 {record.metricsPulled.reach.toLocaleString('id-ID')} jangkauan</div>
-                  </td>
-                  <td style={{ fontSize: '0.78rem', color: '#38bdf8' }}>
+                  </TableCell>
+                  <TableCell className="text-xs py-2.5">
+                    <div className="font-mono text-foreground text-[11px]">
+                      {record.metricsPulled.views.toLocaleString('id-ID')} views
+                    </div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {record.metricsPulled.reach.toLocaleString('id-ID')} reach
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs font-mono text-cyan-400 text-right py-2.5">
                     {record.durationMs}ms
-                  </td>
-                  <td style={{ fontSize: '0.78rem', maxWidth: '300px' }} className="dasbor__muted">
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground py-2.5 max-w-[280px] truncate">
                     {record.notes}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }

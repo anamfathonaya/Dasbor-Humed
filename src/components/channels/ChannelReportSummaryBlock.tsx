@@ -4,6 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SAMPLE_CHANNELS_DATA } from './ChannelMonitoringView';
 import { formatCompactMetricValue } from './ChannelUnifiedMetricComparisonTable';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Users, Eye, HeartHandshake, ArrowUpRight } from 'lucide-react';
 
 export interface ChannelReportSummaryBlockProps {
   /** Nama kanal terpilih di filter laporan ("Semua Kanal" atau nama platform) */
@@ -12,7 +16,9 @@ export interface ChannelReportSummaryBlockProps {
 
 /**
  * Blok ringkasan metrik kanal media sosial untuk halaman Laporan Kinerja.
- * Terintegrasi ke /api/channels/aggregate (Supabase PostgreSQL) dengan fallback data contoh.
+ * Mematuhi Aturan Tampilan UI:
+ * - Nilai tunggal: angka besar dengan hierarki tegas (Aturan #1 & #6)
+ * - Penanda label DEMO jelas (Aturan #7)
  */
 export function ChannelReportSummaryBlock({ selectedChannel = 'Semua Kanal' }: ChannelReportSummaryBlockProps) {
   const [channelsData, setChannelsData] = useState<any[]>(SAMPLE_CHANNELS_DATA);
@@ -58,52 +64,96 @@ export function ChannelReportSummaryBlock({ selectedChannel = 'Semua Kanal' }: C
   const topByViews = rows.length ? rows.reduce((a, b) => (b.views > a.views ? b : a)) : null;
 
   return (
-    <article
-      className="dasbor__card"
+    <Card
+      className="border-border/80 bg-card shadow-xs"
       data-testid="report-channel-summary"
       aria-label="Ringkasan metrik kanal media sosial"
-      style={{ padding: '1rem 1.25rem' }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-        <div>
-          <h2 style={{ fontSize: '1rem', margin: 0 }}>Ringkasan Metrik Kanal Media Sosial</h2>
-          <p style={{ margin: '2px 0 0', fontSize: '0.82rem', color: 'var(--color-muted, #64748b)' }}>
-            Pengikut, tayangan, dan interaksi dari kanal resmi (hanya-baca)
-          </p>
-        </div>
-        <Link href="/dasbor-metrik-kanal" className="dasbor__btn">
-          Buka Dasbor Metrik Kanal
-        </Link>
-      </div>
-
-      {rows.length === 0 ? (
-        <p data-testid="report-channel-summary-empty" style={{ margin: '1rem 0 0', fontSize: '0.85rem' }}>
-          Belum ada metrik untuk kanal &quot;{selectedChannel}&quot;. Hubungkan kanal atau jalankan penarikan metrik terlebih dahulu.
-        </p>
-      ) : (
-        <>
-          <div
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.75rem', marginTop: '1rem' }}
-          >
-            {[
-              { label: 'Total Pengikut', value: totals.followers },
-              { label: 'Total Tayangan', value: totals.views },
-              { label: 'Total Interaksi', value: totals.interactions }
-            ].map((k) => (
-              <div key={k.label}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--color-muted, #64748b)' }}>{k.label}</div>
-                <div style={{ fontSize: '1.3rem', fontWeight: 700 }}>{formatCompactMetricValue(k.value)}</div>
-              </div>
-            ))}
+      <CardHeader className="pb-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                Ringkasan Agregat
+              </span>
+              <Badge variant="outline" className="border-amber-500/30 text-amber-500 text-[10px]">
+                DEMO
+              </Badge>
+            </div>
+            <CardTitle className="text-base font-semibold">
+              Ringkasan Metrik Kanal Media Sosial
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">
+              Pengikut, tayangan, dan interaksi dari kanal resmi Kemensos RI (hanya-baca)
+            </CardDescription>
           </div>
-          {topByViews && rows.length > 1 && (
-            <p style={{ margin: '0.75rem 0 0', fontSize: '0.82rem' }}>
-              Tayangan tertinggi: <strong>{topByViews.platformLabel}</strong> ({formatCompactMetricValue(topByViews.views)})
-            </p>
-          )}
-        </>
-      )}
-    </article>
+          <Link href="/dasbor-metrik-kanal">
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+              <span>Buka Dasbor Metrik Kanal</span>
+              <ArrowUpRight className="size-3.5 text-muted-foreground" />
+            </Button>
+          </Link>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {rows.length === 0 ? (
+          <p data-testid="report-channel-summary-empty" className="text-xs text-muted-foreground py-4 text-center">
+            Belum ada metrik untuk kanal &quot;{selectedChannel}&quot;. Hubungkan kanal atau jalankan penarikan metrik terlebih dahulu.
+          </p>
+        ) : (
+          <div className="space-y-4">
+            {/* PRINSIP 1 & 6: Angka besar monospaced dengan hierarki tegas */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="p-3.5 rounded-lg border border-border/80 bg-muted/20">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="text-xs font-medium">Total Pengikut</span>
+                  <Users className="size-3.5 text-emerald-400" />
+                </div>
+                <div className="text-2xl font-bold font-mono tracking-tight text-foreground mt-1.5">
+                  {formatCompactMetricValue(totals.followers)}
+                </div>
+                <span className="text-[11px] text-muted-foreground mt-1 block">Akumulasi audiens</span>
+              </div>
+
+              <div className="p-3.5 rounded-lg border border-border/80 bg-muted/20">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="text-xs font-medium">Total Tayangan</span>
+                  <Eye className="size-3.5 text-primary" />
+                </div>
+                <div className="text-2xl font-bold font-mono tracking-tight text-foreground mt-1.5">
+                  {formatCompactMetricValue(totals.views)}
+                </div>
+                <span className="text-[11px] text-muted-foreground mt-1 block">Views / Jangkauan</span>
+              </div>
+
+              <div className="p-3.5 rounded-lg border border-border/80 bg-muted/20">
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="text-xs font-medium">Total Interaksi</span>
+                  <HeartHandshake className="size-3.5 text-cyan-400" />
+                </div>
+                <div className="text-2xl font-bold font-mono tracking-tight text-foreground mt-1.5">
+                  {formatCompactMetricValue(totals.interactions)}
+                </div>
+                <span className="text-[11px] text-muted-foreground mt-1 block">Likes, comments, shares</span>
+              </div>
+            </div>
+
+            {topByViews && rows.length > 1 && (
+              <div className="p-2.5 rounded-lg border border-primary/20 bg-primary/5 text-xs flex items-center justify-between flex-wrap gap-2">
+                <span className="text-foreground">
+                  Kanal kontributor tayangan terbesar:{' '}
+                  <strong className="text-primary">{topByViews.platformLabel}</strong> ({topByViews.handle})
+                </span>
+                <span className="font-mono text-primary font-semibold">
+                  {formatCompactMetricValue(topByViews.views)} views
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
