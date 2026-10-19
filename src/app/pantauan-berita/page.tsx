@@ -1,17 +1,69 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { HumasShell } from '@/components/layout/HumasShell';
 import { StandardPagePattern, type FilterConfig } from '@/components/layout/StandardPagePattern';
 import RealtimeNewsFeed from '@/components/react/RealtimeNewsFeed';
-import { mockNewsItems } from '@/lib/clientDataFetcher';
+
+interface NewsItem {
+  id: number;
+  title: string;
+  summary: string;
+  sourceType: string;
+  sourceName: string;
+  category: string;
+  publishedAt: string;
+  isImportant: boolean;
+  url: string;
+}
 
 export default function PantauanBeritaPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sourceFilter, setSourceFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([1]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<number[]>([]);
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadNewsItems();
+  }, []);
+
+  const loadNewsItems = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/news/items?limit=200');
+      const data = await response.json();
+
+      if (data.ok) {
+        setNewsItems(data.items);
+      }
+    } catch (error) {
+      console.error('Failed to load news items:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const response = await fetch('/api/news/sync-all', { method: 'POST' });
+      const data = await response.json();
+
+      if (data.ok) {
+        setLastSync(new Date().toLocaleTimeString('id-ID'));
+        await loadNewsItems();
+      }
+    } catch (error) {
+      console.error('Sync failed:', error);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   const toggleBookmark = (id: number) => {
     setBookmarkedIds((prev) =>
@@ -21,7 +73,7 @@ export default function PantauanBeritaPage() {
 
   // Filter data berdasarkan query pencarian dan dropdown filter
   const filteredItems = useMemo(() => {
-    return mockNewsItems.filter((item) => {
+    return newsItems.filter((item) => {
       const matchQuery =
         !searchQuery ||
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -37,7 +89,7 @@ export default function PantauanBeritaPage() {
 
       return matchQuery && matchSource && matchCategory;
     });
-  }, [searchQuery, sourceFilter, categoryFilter]);
+  }, [newsItems, searchQuery, sourceFilter, categoryFilter]);
 
   // Konfigurasi dropdown filter untuk pola halaman baku
   const filters: FilterConfig[] = [
@@ -78,8 +130,8 @@ export default function PantauanBeritaPage() {
         statusBarText={
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%' }}>
             <div>
-              <b>Status Pemantauan:</b> 6 saluran aktif terhubung (Telegram Siaga & RSS BMKG/Media).
-              Sinkronisasi otomatis berjalan.
+              <b>Status Pemantauan:</b> {newsItems.length} kabar terpantau dari sumber RSS dan Telegram.
+              {lastSync && ` Sinkronisasi terakhir: ${lastSync}`}
             </div>
             <RealtimeNewsFeed />
           </div>
@@ -89,15 +141,12 @@ export default function PantauanBeritaPage() {
             <button
               type="button"
               className="dasbor__btn"
-              onClick={() => {
-                setSearchQuery('');
-                setSourceFilter('all');
-                setCategoryFilter('all');
-              }}
+              onClick={handleSync}
+              disabled={syncing}
             >
               {/* @ts-ignore iconify web component */}
-              <iconify-icon icon="lucide:refresh-cw" aria-hidden="true" />
-              <span>Segarkan Feed</span>
+              <iconify-icon icon={syncing ? "lucide:loader-2" : "lucide:refresh-cw"} aria-hidden="true" />
+              <span>{syncing ? 'Sinkronisasi...' : 'Tarik Berita'}</span>
             </button>
             <Link className="dasbor__btn dasbor__btn--primary" href="/kalender-konten">
               {/* @ts-ignore iconify web component */}
@@ -110,7 +159,7 @@ export default function PantauanBeritaPage() {
         searchValue={searchQuery}
         onSearchChange={setSearchQuery}
         filters={filters}
-        totalCountText={`Menampilkan ${filteredItems.length} dari ${mockNewsItems.length} kabar`}
+        totalCountText={loading ? 'Memuat...' : `Menampilkan ${filteredItems.length} dari ${newsItems.length} kabar`}
         allowViewToggle={true}
         defaultViewMode="table"
         isEmpty={filteredItems.length === 0}
