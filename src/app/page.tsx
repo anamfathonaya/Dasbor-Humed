@@ -5,8 +5,8 @@ import { DashboardView } from '@/components/dasbor/DashboardView';
 export default function HomePage() {
   return (
     <HumasShell
-      pageTitle="Dasbor & Metrik"
-      pageSubtitle="Ringkasan operasional humas, akuisisi, dan analitik performa kanal · 2026"
+      pageTitle="Ikhtisar"
+      pageSubtitle="Pembaruan terakhir: 19 Okt 2026, 08:35 WIB"
     >
       <DashboardView />
     </HumasShell>

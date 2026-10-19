@@ -1,10 +1,20 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { HumasShell } from '@/components/layout/HumasShell';
+import { ScheduledMetricsSyncView } from '@/components/channels/ScheduledMetricsSyncView';
 
 const scheduledTasks = [
+  {
+    id: 'cron-social-metrics',
+    name: 'Penarikan Metrik Harian Kanal Sosial (YouTube, Meta, TikTok)',
+    schedule: 'Setiap 06:00 & 18:00 WIB',
+    endpoint: '/api/cron/social-metrics-sync',
+    lastRun: 'Hari ini, 06:00 WIB',
+    nextRun: 'Hari ini, 18:00 WIB',
+    status: 'active',
+    description: 'Menarik metrik harian dari YouTube Data/Analytics API, Instagram/Facebook Graph API, dan TikTok Display API.'
+  },
   {
     id: 'cron-news-sync',
     name: 'Sinkronisasi Berita Berkala (News Sync)',
@@ -40,22 +50,19 @@ const scheduledTasks = [
 export default function PemantauanTugasTerjadwalPage() {
   return (
     <HumasShell
-      pageTitle="Pemantauan Tugas Terjadwal (Cron Jobs)"
-      pageSubtitle="Jadwal otomatisasi latar belakang Vercel Cron & pemrosesan sinkronisasi sistem · 2026"
+      pageTitle="Penarikan Metrik & Tugas Terjadwal (Cron Jobs)"
+      pageSubtitle="Jadwal otomatisasi penarikan metrik harian kanal media sosial & sinkronisasi latar belakang · 2026"
+      pageContentId="dasbor-utama"
     >
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div className="dasbor__bar">
-          <p className="dasbor__bar-text">
-            <b>Status Vercel Cron:</b> 3 tugas latar belakang aktif beroperasi di runtime serverless.
-          </p>
-        </div>
+        <ScheduledMetricsSyncView />
 
         <article className="dasbor__card" style={{ padding: 0, overflow: 'hidden' }}>
           <div className="dasbor__card-head" style={{ padding: '1.25rem' }}>
             <div>
-              <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Daftar Tugas Terjadwal Aktif</h2>
+              <h2 style={{ fontSize: '1.1rem', margin: 0 }}>Daftar Worker Cron Sistem Latar Belakang</h2>
               <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: 'var(--color-muted, #64748b)' }}>
-                Dikonfigurasi otomatis melalui file vercel.json untuk menjamin keberlanjutan proses tanpa server dedicated.
+                Dikonfigurasi otomatis melalui jadwal cron untuk menjamin keberlanjutan proses sinkronisasi.
               </p>
             </div>
           </div>
@@ -65,8 +72,8 @@ export default function PemantauanTugasTerjadwalPage() {
               <thead>
                 <tr>
                   <th scope="col">Nama Otomatisasi</th>
-                  <th scope="col" style={{ width: '150px' }}>Frekuensi</th>
-                  <th scope="col" style={{ width: '180px' }}>Endpoint Rute</th>
+                  <th scope="col" style={{ width: '160px' }}>Frekuensi</th>
+                  <th scope="col" style={{ width: '210px' }}>Endpoint Rute</th>
                   <th scope="col" style={{ width: '140px' }}>Eksekusi Terakhir</th>
                   <th scope="col" style={{ width: '110px', textAlign: 'center' }}>Status</th>
                 </tr>

@@ -1,0 +1,14 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+import { ScheduledMetricsSyncView } from '../components/channels/ScheduledMetricsSyncView';
+---
+
+<HumasLayout
+  title="Penarikan Metrik Terjadwal — Yayasan Peduli Negeri"
+  pageTitle="Penarikan Metrik Terjadwal"
+  pageSubtitle="Jadwal tarik harian otomatis (Cron), tarik manual sekali klik, riwayat sinkronisasi, dan penyamaan nama metrik lintas platform"
+  currentPath="/penarikan-metrik-terjadwal"
+  pageContentId="dasbor-utama"
+>
+  <ScheduledMetricsSyncView client:load />
+</HumasLayout>

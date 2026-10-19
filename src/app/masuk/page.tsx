@@ -120,14 +120,13 @@ export default function MasukPage() {
 
   return (
     <div data-page-content="masuk" style={{ display: 'contents' }}>
-      <main className="masuk" data-node-id="masuk.root" data-theme="light">
+      <main className="masuk" data-node-id="masuk.root" data-theme="dark">
         {/* Kolom Kiri: Pengantar Lembaga */}
         <section className="masuk__intro" aria-labelledby="masuk-statement">
           <div className="masuk__brand">
             <span className="masuk__brand-mark" aria-hidden="true">HM</span>
             <div>
-              <p className="masuk__brand-name">Humas Internal</p>
-              <p className="masuk__brand-sub">Ruang kerja komunikasi lembaga</p>
+              <p className="masuk__brand-name">Humas-Media Dashboard</p>
             </div>
           </div>
 

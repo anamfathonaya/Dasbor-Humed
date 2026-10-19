@@ -4,8 +4,8 @@ import '@/styles/humas-theme.css';
 import { LayoutProvider } from '@/components/layout/LayoutContext';
 
 export const metadata: Metadata = {
-  title: 'Dasbor Humas Media — Yayasan Peduli Negeri',
-  description: 'Ringkasan operasional humas, akuisisi, dan analitik performa kanal'
+  title: 'Humas-Media Dashboard',
+  description: 'Ringkasan operasional humas, pemantauan kanal media sosial, dan analitik performa'
 };
 
 export default function RootLayout({
@@ -20,7 +20,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
         />
       </head>
       <body>

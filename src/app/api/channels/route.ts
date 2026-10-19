@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, initDatabase } from '@/lib/db';
 import { supabase, isSupabaseConfigured, getServiceSupabase } from '@/lib/supabase';
+import { computeChannelConnectionWarnings } from '@/lib/channelConnectionWarningService';
 
 initDatabase();
 
@@ -117,10 +118,13 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    const warningSummary = computeChannelConnectionWarnings();
+
     return NextResponse.json({
       success: true,
       data: channels,
       total: channels.length,
+      warningSummary
     });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -129,6 +133,14 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const role = req.headers.get('x-user-role') || req.nextUrl.searchParams.get('role');
+    if (role && role !== 'admin' && role !== 'head') {
+      return NextResponse.json(
+        { success: false, message: 'Akses ditolak: Hanya peran Admin atau Kepala Humas yang diizinkan mengonfigurasi kanal.' },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
     const { name, platform, handle, followers_count = 0, status = 'connected', platform_url = null } = body;
 

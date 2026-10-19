@@ -255,3 +255,13 @@ export const socialMediaProviders = {
   tiktok: new TikTokProviderStub(),
   telegram: new TelegramProviderStub(),
 };
+
+export function getProvider(platform: string): SocialMediaProvider {
+  const key = (platform || '').toLowerCase() as keyof typeof socialMediaProviders;
+  return socialMediaProviders[key] || socialMediaProviders.youtube;
+}
+
+export function getProviderStub(platform: string): SocialMediaProvider {
+  return getProvider(platform);
+}
+

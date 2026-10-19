@@ -1,0 +1,14 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+import { YouTubeIntegrationView } from '../components/channels/YouTubeIntegrationView';
+---
+
+<HumasLayout
+  title="Penghubung YouTube — Yayasan Peduli Negeri"
+  pageTitle="Penghubung YouTube (OAuth 2.0)"
+  pageSubtitle="Integrasi resmi YouTube Data API v3 & YouTube Analytics API secara hanya-baca"
+  currentPath="/integrasi-youtube"
+  pageContentId="dasbor-utama"
+>
+  <YouTubeIntegrationView client:load />
+</HumasLayout>

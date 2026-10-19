@@ -195,20 +195,20 @@ export default function RoleMatrixTable({
 
       <style jsx>{`
         .matrix-card {
-          background: #ffffff;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
+          background: var(--color-surface, #111315);
+          border: 1px solid var(--color-border, #303236);
+          border-radius: 6px;
           overflow: hidden;
         }
         .matrix-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid #e2e8f0;
+          padding: 1.15rem 1.25rem;
+          border-bottom: 1px solid var(--color-border, #303236);
           flex-wrap: wrap;
           gap: 1rem;
-          background: #f8fafc;
+          background: var(--color-surface-sunken, #090a0c);
         }
         .matrix-title-wrap {
           display: flex;
@@ -216,23 +216,23 @@ export default function RoleMatrixTable({
           gap: 0.75rem;
         }
         .matrix-icon {
-          font-size: 1.5rem;
+          font-size: 1.35rem;
         }
         .matrix-title-wrap h3 {
           margin: 0 0 0.2rem;
-          font-size: 1.15rem;
-          color: #0f172a;
+          font-size: 1rem;
+          color: var(--color-text, #ffffff);
         }
         .muted {
           margin: 0;
-          color: #64748b;
-          font-size: 0.85rem;
+          color: var(--color-text-muted, #a1a1aa);
+          font-size: 0.82rem;
         }
         .matrix-badge-legend {
           display: flex;
           gap: 1rem;
           font-size: 0.78rem;
-          color: #475569;
+          color: var(--color-text-muted, #a1a1aa);
         }
         .legend-item {
           display: flex;
@@ -248,7 +248,7 @@ export default function RoleMatrixTable({
           background: #10b981;
         }
         .legend-dot.gray {
-          background: #94a3b8;
+          background: #71717a;
         }
         .table-wrap {
           overflow-x: auto;
@@ -257,13 +257,14 @@ export default function RoleMatrixTable({
           width: 100%;
           border-collapse: collapse;
           text-align: left;
-          font-size: 0.88rem;
+          font-size: 0.85rem;
         }
         .matrix-table th {
-          background: #ffffff;
-          padding: 0.85rem 1.25rem;
-          border-bottom: 2px solid #e2e8f0;
+          background: var(--color-surface-sunken, #090a0c);
+          padding: 0.85rem 1rem;
+          border-bottom: 1px solid var(--color-border, #303236);
           vertical-align: bottom;
+          color: var(--color-text, #ffffff);
         }
         .th-center,
         .td-center {
@@ -277,81 +278,87 @@ export default function RoleMatrixTable({
         }
         .role-badge {
           padding: 0.15rem 0.5rem;
-          border-radius: 999px;
-          font-size: 0.7rem;
+          border-radius: 4px;
+          font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
         }
         .role-head {
-          background: #e0e7ff;
-          color: #4338ca;
+          background: rgba(99, 102, 241, 0.16);
+          color: #a5b4fc;
+          border: 1px solid rgba(99, 102, 241, 0.3);
         }
         .role-admin {
-          background: #e0f2fe;
-          color: #0369a1;
+          background: rgba(59, 130, 246, 0.16);
+          color: #93c5fd;
+          border: 1px solid rgba(59, 130, 246, 0.3);
         }
         .role-staff {
-          background: #f1f5f9;
-          color: #475569;
+          background: #27272a;
+          color: #e4e4e7;
+          border: 1px solid #3f3f46;
         }
         .role-reviewer {
-          background: #fef3c7;
-          color: #92400e;
+          background: rgba(245, 158, 11, 0.16);
+          color: #fcd34d;
+          border: 1px solid rgba(245, 158, 11, 0.3);
         }
         .role-title {
-          font-size: 0.78rem;
-          color: #64748b;
+          font-size: 0.75rem;
+          color: var(--color-text-muted, #a1a1aa);
           font-weight: 600;
         }
         .group-header-row td {
-          background: #f1f5f9;
-          padding: 0.6rem 1.25rem;
-          font-size: 0.78rem;
+          background: var(--color-surface-sunken, #090a0c);
+          padding: 0.6rem 1rem;
+          font-size: 0.75rem;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.025em;
-          color: #334155;
-          border-top: 1px solid #e2e8f0;
-          border-bottom: 1px solid #e2e8f0;
+          letter-spacing: 0.05em;
+          color: var(--color-text-muted, #a1a1aa);
+          border-top: 1px solid var(--color-border, #303236);
+          border-bottom: 1px solid var(--color-border, #303236);
         }
         .perm-row td {
-          padding: 0.85rem 1.25rem;
-          border-bottom: 1px solid #f1f5f9;
+          padding: 0.85rem 1rem;
+          border-bottom: 1px solid var(--color-border, #303236);
           vertical-align: middle;
         }
         .perm-row:hover td {
-          background: #f8fafc;
+          background: rgba(255, 255, 255, 0.02);
         }
         .perm-label {
           display: block;
-          color: #0f172a;
+          color: var(--color-text, #ffffff);
           font-size: 0.88rem;
         }
         .perm-desc {
           display: block;
-          color: #64748b;
+          color: var(--color-text-muted, #a1a1aa);
           font-size: 0.78rem;
           margin-top: 0.15rem;
         }
         .status-icon {
           display: inline-block;
           padding: 0.25rem 0.65rem;
-          border-radius: 999px;
+          border-radius: 4px;
           font-size: 0.75rem;
           font-weight: 600;
         }
         .status-icon.granted {
-          background: #dcfce7;
-          color: #15803d;
+          background: rgba(16, 185, 129, 0.15);
+          color: #34d399;
+          border: 1px solid rgba(16, 185, 129, 0.3);
         }
         .status-icon.denied {
-          background: #f1f5f9;
-          color: #94a3b8;
+          background: #18181b;
+          color: #a1a1aa;
+          border: 1px solid #27272a;
         }
         .matrix-cb {
-          width: 17px;
-          height: 17px;
-          accent-color: #0284c7;
+          width: 18px;
+          height: 18px;
+          accent-color: #10b981;
           cursor: pointer;
         }
       `}</style>

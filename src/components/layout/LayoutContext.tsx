@@ -65,17 +65,17 @@ interface LayoutContextType {
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
 
 export function LayoutProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState<UserRole>('head');
 
   useEffect(() => {
     try {
-      // 1. Baca tema
+      // 1. Baca tema (default ke dark sesuai desain Humas-Media Dashboard)
       const savedTheme = localStorage.getItem('humas-theme') as 'light' | 'dark' | null;
-      if (savedTheme) {
+      if (savedTheme === 'light' || savedTheme === 'dark') {
         setTheme(savedTheme);
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      } else {
         setTheme('dark');
       }
 

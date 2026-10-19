@@ -41,9 +41,9 @@ export function PageStatusBar({
       }}
     >
       {text && (
-        <p className="dasbor__bar-text" style={{ margin: 0 }}>
+        <div className="dasbor__bar-text" style={{ margin: 0, flex: '1 1 280px' }}>
           {text}
-        </p>
+        </div>
       )}
       {actions && <div className="dasbor__bar-actions">{actions}</div>}
     </section>
@@ -74,7 +74,7 @@ export function StatusBadge({
       : 'dasbor__badge--flat';
 
   return (
-    <span className={`dasbor__badge ${variantClass}`} style={{ fontSize: '11px' }}>
+    <span className={`dasbor__badge ${variantClass}`} style={{ fontSize: '12px' }}>
       {children}
     </span>
   );
@@ -96,22 +96,22 @@ export function EmptyState({
 }) {
   return (
     <div
+      className="dasbor__card"
       style={{
-        padding: '3.5rem 1.5rem',
-        textAlign: 'center',
-        background: 'var(--color-surface, #ffffff)',
-        borderRadius: '8px',
-        border: '1px solid var(--color-border, #e2e8f0)'
+        padding: '3rem 1.5rem',
+        textAlign: 'center'
       }}
     >
       <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>📂</div>
-      <h3 style={{ fontSize: '1.1rem', fontWeight: 600, margin: '0 0 0.5rem' }}>{title}</h3>
+      <h3 style={{ fontSize: '1.05rem', fontWeight: 600, margin: '0 0 0.5rem', color: 'var(--color-text)' }}>
+        {title}
+      </h3>
       <p
         style={{
           margin: '0 auto 1.25rem',
           maxWidth: '420px',
           fontSize: '0.85rem',
-          color: 'var(--color-muted, #64748b)'
+          color: 'var(--color-text-muted)'
         }}
       >
         {description}
@@ -154,17 +154,14 @@ export function PageToolbar({
 }) {
   return (
     <div
-      className="page-toolbar"
+      className="page-toolbar dasbor__card"
       style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1rem',
-        padding: '1rem 1.25rem',
-        background: 'var(--color-surface, #ffffff)',
-        border: '1px solid var(--color-border, #e2e8f0)',
-        borderRadius: '8px'
+        gap: '0.85rem',
+        padding: '0.85rem 1rem'
       }}
     >
       <div
@@ -173,12 +170,13 @@ export function PageToolbar({
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '0.75rem',
-          flex: 1
+          flex: 1,
+          minWidth: 0
         }}
       >
         {/* Kotak Cari */}
         {onSearchChange && (
-          <div style={{ position: 'relative', minWidth: '220px', maxWidth: '360px', flex: 1 }}>
+          <div style={{ position: 'relative', minWidth: '200px', maxWidth: '360px', flex: '1 1 220px' }}>
             <input
               type="search"
               placeholder={searchPlaceholder}
@@ -186,12 +184,13 @@ export function PageToolbar({
               onChange={(e) => onSearchChange(e.target.value)}
               style={{
                 width: '100%',
+                minHeight: '38px',
                 padding: '0.45rem 0.75rem',
                 fontSize: '0.85rem',
-                border: '1px solid var(--color-border, #cbd5e1)',
-                borderRadius: '6px',
-                background: 'var(--color-canvas, #ffffff)',
-                color: 'inherit'
+                border: '1px solid var(--color-border)',
+                borderRadius: '4px',
+                background: 'var(--color-surface-sunken)',
+                color: 'var(--color-text)'
               }}
             />
           </div>
@@ -199,22 +198,14 @@ export function PageToolbar({
 
         {/* Filter Dropdowns */}
         {filters.map((filter) => (
-          <div key={filter.id} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.78rem', color: 'var(--color-muted, #64748b)' }}>
+          <div key={filter.id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               {filter.label}:
             </span>
             <select
               value={filter.value}
               onChange={(e) => filter.onChange(e.target.value)}
-              style={{
-                padding: '0.4rem 0.65rem',
-                fontSize: '0.82rem',
-                border: '1px solid var(--color-border, #cbd5e1)',
-                borderRadius: '6px',
-                background: 'var(--color-canvas, #ffffff)',
-                color: 'inherit',
-                cursor: 'pointer'
-              }}
+              className="dasbor__select"
             >
               {filter.options.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -230,8 +221,9 @@ export function PageToolbar({
           <span
             style={{
               fontSize: '0.78rem',
-              color: 'var(--color-muted, #64748b)',
-              marginLeft: 'auto'
+              color: 'var(--color-text-muted)',
+              marginLeft: 'auto',
+              fontFamily: 'var(--font-mono)'
             }}
           >
             {totalCountText}
@@ -241,45 +233,20 @@ export function PageToolbar({
 
       {/* Toggle Mode Tampilan (Tabel vs Kartu) */}
       {allowViewToggle && onViewModeChange && (
-        <div
-          style={{
-            display: 'flex',
-            gap: '4px',
-            border: '1px solid var(--color-border, #cbd5e1)',
-            borderRadius: '6px',
-            padding: '2px',
-            background: 'var(--color-canvas, #f8fafc)'
-          }}
-        >
+        <div className="dasbor__seg" role="group" aria-label="Mode tampilan">
           <button
             type="button"
+            className="dasbor__seg-btn"
+            aria-pressed={viewMode === 'table'}
             onClick={() => onViewModeChange('table')}
-            style={{
-              padding: '0.3rem 0.6rem',
-              fontSize: '0.78rem',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: viewMode === 'table' ? '#0284c7' : 'transparent',
-              color: viewMode === 'table' ? '#ffffff' : 'inherit',
-              fontWeight: viewMode === 'table' ? 600 : 400
-            }}
           >
             Tabel
           </button>
           <button
             type="button"
+            className="dasbor__seg-btn"
+            aria-pressed={viewMode === 'cards'}
             onClick={() => onViewModeChange('cards')}
-            style={{
-              padding: '0.3rem 0.6rem',
-              fontSize: '0.78rem',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              background: viewMode === 'cards' ? '#0284c7' : 'transparent',
-              color: viewMode === 'cards' ? '#ffffff' : 'inherit',
-              fontWeight: viewMode === 'cards' ? 600 : 400
-            }}
           >
             Kartu
           </button>
@@ -350,8 +317,8 @@ export function StandardPagePattern({
 
   return (
     <div
-      className="standard-page-pattern"
-      style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
+      className="standard-page-pattern dasbor"
+      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
     >
       <PageStatusBar text={statusBarText} actions={headerActions} />
 
@@ -368,16 +335,14 @@ export function StandardPagePattern({
 
       {isLoading ? (
         <div
+          className="dasbor__card"
           style={{
             padding: '3rem',
             textAlign: 'center',
-            background: 'var(--color-surface, #ffffff)',
-            borderRadius: '8px',
-            border: '1px solid var(--color-border, #e2e8f0)',
-            color: 'var(--color-muted, #64748b)'
+            color: 'var(--color-text-muted)'
           }}
         >
-          <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+          <div style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--color-text)' }}>
             Memuat data...
           </div>
           <p style={{ margin: 0, fontSize: '0.85rem' }}>Mohon tunggu sejenak</p>

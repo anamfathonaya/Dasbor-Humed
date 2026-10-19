@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useLayout, type UserRole } from './LayoutContext';
 
@@ -8,12 +9,14 @@ interface HumasHeaderProps {
   pageTitle?: string;
   pageSubtitle?: string;
   headerActions?: React.ReactNode;
+  pageContentId?: string;
 }
 
 export function HumasHeader({
-  pageTitle = 'Dasbor & Metrik',
-  pageSubtitle = 'Ringkasan operasional humas, akuisisi, dan analitik performa kanal',
-  headerActions
+  pageTitle = 'Ikhtisar',
+  pageSubtitle = 'Pembaruan terakhir: 19 Okt 2026, 08:35 WIB',
+  headerActions,
+  pageContentId = 'dasbor-utama'
 }: HumasHeaderProps) {
   const router = useRouter();
   const { theme, toggleTheme, isNavOpen, toggleNav, currentRole, setRole } = useLayout();
@@ -42,6 +45,8 @@ export function HumasHeader({
         router.push('/pengaturan');
       } else if (q.includes('akun') || q.includes('audit')) {
         router.push('/akun');
+      } else if (q.includes('kanal') || q.includes('youtube') || q.includes('instagram') || q.includes('tiktok')) {
+        router.push('/pemantauan-kanal');
       } else {
         router.push('/pantauan-berita?q=' + encodeURIComponent(q));
       }
@@ -50,7 +55,7 @@ export function HumasHeader({
 
   const handleNotificationClick = () => {
     alert(
-      'Peringatan Aktif Humas:\n1. Sinkronisasi Google Sheets terputus (perlu re-auth)\n2. 4 jadwal konten menunggu persetujuan (IG besok)\n3. Refresh token Meta Ads diperlukan'
+      'Peringatan Aktif Humas:\n1. Sinkronisasi Google Sheets terputus (perlu re-auth)\n2. 4 jadwal konten menunggu persetujuan (IG besok)\n3. Refresh token TikTok & Meta Ads diperlukan'
     );
   };
 
@@ -67,6 +72,7 @@ export function HumasHeader({
         >
           {/* @ts-ignore iconify-icon web component */}
           <iconify-icon icon="lucide:menu" aria-hidden="true" />
+          <span className="l-humas__menu-label">Menu</span>
         </button>
 
         <div className="l-humas__heading">
@@ -78,20 +84,10 @@ export function HumasHeader({
           <label className="l-humas__search">
             {/* @ts-ignore iconify-icon web component */}
             <iconify-icon icon="lucide:search" aria-hidden="true" />
-            <span
-              style={{
-                position: 'absolute',
-                width: '1px',
-                height: '1px',
-                overflow: 'hidden',
-                clip: 'rect(0 0 0 0)'
-              }}
-            >
-              Cari modul, dokumen, atau jadwal
-            </span>
+            <span className="sr-only">Cari modul, dokumen, atau jadwal</span>
             <input
               type="search"
-              placeholder="Cari modul, dokumen, jadwal..."
+              placeholder="Cari modul, jadwal, SOP..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleSearchKeyDown}
@@ -99,14 +95,23 @@ export function HumasHeader({
           </label>
 
           {/* Pemilih Peran Tiruan (Mock Role Switcher) */}
-          <span className="l-humas__role" data-testid="header-role-switcher" title={`Peran aktif: ${currentRole === 'head' ? 'Kepala Humas (Wewenang Penuh)' : currentRole === 'admin' ? 'Admin Teknis (Integrasi & Sistem)' : 'Staf Konten (Produksi Konten & Berita)'}`}>
+          <span
+            className="l-humas__role"
+            data-testid="header-role-switcher"
+            title={`Peran aktif: ${
+              currentRole === 'head'
+                ? 'Kepala Humas (Wewenang Penuh)'
+                : currentRole === 'admin'
+                ? 'Admin Teknis (Integrasi & Sistem)'
+                : 'Staf Konten (Produksi Konten & Berita)'
+            }`}
+          >
             <span className="l-humas__role-label">Peran</span>
             <select
               aria-label="Pilih peran pengguna"
               value={currentRole}
               onChange={handleRoleChange}
               data-shell-role
-              style={{ cursor: 'pointer', fontWeight: 500 }}
             >
               <option value="head">Kepala Humas</option>
               <option value="admin">Admin Teknis</option>
@@ -114,6 +119,28 @@ export function HumasHeader({
               <option value="reviewer">Reviewer / Mitra</option>
             </select>
           </span>
+
+          <div className="l-humas__header-divider" aria-hidden="true" />
+
+          <Link
+            href="/laporan"
+            id="cta-download"
+            className="l-humas__action-btn l-humas__action-btn--primary"
+          >
+            {/* @ts-ignore iconify-icon web component */}
+            <iconify-icon icon="lucide:download" aria-hidden="true" />
+            <span>Unduh Laporan</span>
+          </Link>
+
+          <Link
+            href="/penarikan-metrik-terjadwal"
+            id="cta-refresh"
+            className="l-humas__action-btn l-humas__action-btn--outline"
+          >
+            {/* @ts-ignore iconify-icon web component */}
+            <iconify-icon icon="lucide:refresh-cw" aria-hidden="true" />
+            <span>Tarik Ulang Data</span>
+          </Link>
 
           <button
             className="l-humas__icon-btn"
@@ -131,23 +158,26 @@ export function HumasHeader({
           </button>
 
           <button
-            className="l-humas__icon-btn"
+            className="l-humas__icon-btn l-humas__notif-btn"
             type="button"
             onClick={handleNotificationClick}
             aria-label="Peringatan aktif"
             title="3 Peringatan Aktif"
           >
-            <span style={{ position: 'relative', display: 'grid', placeItems: 'center' }}>
+            <span className="l-humas__notif-wrap">
               {/* @ts-ignore iconify-icon web component */}
               <iconify-icon icon="lucide:bell" aria-hidden="true" />
-              <span className="l-humas__badge" style={{ position: 'absolute', top: -6, right: -8 }}>
-                3
-              </span>
+              <span className="l-humas__notif-dot" aria-hidden="true" />
+              <span className="l-humas__badge">3</span>
             </span>
           </button>
 
           {headerActions && (
-            <div style={{ display: 'contents' }}>
+            <div
+              data-page-content={pageContentId}
+              data-page-slot="header-actions"
+              style={{ display: 'contents' }}
+            >
               {headerActions}
             </div>
           )}

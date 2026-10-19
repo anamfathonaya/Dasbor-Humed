@@ -1,0 +1,14 @@
+---
+import HumasLayout from '../layouts/HumasLayout.astro';
+import { ChannelMonitoringView } from '../components/channels/ChannelMonitoringView';
+---
+
+<HumasLayout
+  title="Pemantauan Kanal Media Sosial — Yayasan Peduli Negeri"
+  pageTitle="Pemantauan Kanal Media Sosial"
+  pageSubtitle="Pemantauan performa hanya-baca lintas Instagram, Facebook, TikTok, dan YouTube"
+  currentPath="/pemantauan-kanal"
+  pageContentId="dasbor-utama"
+>
+  <ChannelMonitoringView client:load />
+</HumasLayout>

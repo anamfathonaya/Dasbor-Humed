@@ -433,5 +433,389 @@
   },
   "src/styles/humas-theme.css": {
     "summary": "Lembar gaya tema utama Dasbor Humas yang mendefinisikan variabel CSS untuk palet warna, tipografi, dan gaya tata letak responsif."
+  },
+  ".claude/settings.json": {
+    "summary": "Konfigurasi izin dan pengaturan integrasi CLI untuk lingkungan asisten agen pengkodean di repositori."
+  },
+  ".claude/skills/ngodingpakeai/SKILL.md": {
+    "summary": "Panduan alur kerja sinkronisasi codebase, manajemen rencana PRD, dan eksekusi task via CLI NgodingPakeAI."
+  },
+  "docs/INVENTARIS_SKEMA_DB.md": {
+    "summary": "Dokumentasi inventaris lengkap tabel basis data, relasi kunci asing, indeks, dan pemicu dari SQLite ke PostgreSQL Supabase."
+  },
+  "docs/SCHEMA_MAPPING.md": {
+    "summary": "Dokumen pemetaan skema dan tipe data dalam proses migrasi basis data lokal SQLite menuju Supabase PostgreSQL."
+  },
+  "next-env.d.ts": {
+    "summary": "Deklarasi tipe TypeScript otomatis untuk lingkungan kompilasi Next.js App Router dan Pages Router."
+  },
+  "next.config.mjs": {
+    "summary": "Konfigurasi utama Next.js yang mengatur kompatibilitas paket eksternal server seperti better-sqlite3 dan pengaturan build."
+  },
+  "scripts/applyMigrations.ts": {
+    "summary": "Skrip CLI untuk menjalankan dan memverifikasi urutan file migrasi SQL pada basis data PostgreSQL atau lingkungan lokal."
+  },
+  "scripts/exportSqlite.ts": {
+    "summary": "Skrip utilitas untuk mengekspor seluruh isi tabel dari basis data SQLite lokal (dasbor.db) ke berkas JSON terstruktur di supabase/data_export."
+  },
+  "scripts/generateSchemaAudit.ts": {
+    "summary": "Skrip otomatis untuk mengaudit struktur tabel SQLite dan menghasilkan laporan inventaris skema basis data."
+  },
+  "scripts/importSupabase.ts": {
+    "summary": "Skrip pemuatan data (data loader) untuk mengimpor hasil ekspor JSON dari SQLite ke dalam tabel-tabel PostgreSQL Supabase."
+  },
+  "scripts/inviteStaffReset.ts": {
+    "summary": "Skrip administrasi untuk mengirim undangan staf baru atau mengatur ulang akses kata sandi pengguna melalui layanan autentikasi."
+  },
+  "scripts/migrateOneShot.ts": {
+    "summary": "Skrip orkestrasi satu langkah untuk mengeksekusi migrasi skema, ekspor data SQLite, dan impor ke Supabase secara berurutan."
+  },
+  "scripts/setupStorage.ts": {
+    "summary": "Skrip inisialisasi bucket penyimpanan objek (Storage) untuk foto profil pengguna (avatars) dan berkas ekspor laporan."
+  },
+  "scripts/testRlsPolicies.ts": {
+    "summary": "Skrip pengujian otomatis untuk memvalidasi aturan Row Level Security (RLS) pada tabel-tabel utama berdasarkan peran head, admin, dan staff."
+  },
+  "scripts/testRoleAccess.ts": {
+    "summary": "Skrip verifikasi matriks hak akses berbasis peran (RBAC) terhadap endpoint API dan operasi baca/tulis basis data."
+  },
+  "scripts/verifyKeyData.ts": {
+    "summary": "Skrip pemeriksaan integritas jumlah baris dan kecocokan nilai kunci antara basis data sumber SQLite dan target hasil migrasi."
+  },
+  "scripts/verifyPageAndApiParity.ts": {
+    "summary": "Skrip pengujian paritas fungsional untuk memastikan seluruh rute halaman dan endpoint API memberikan respons yang konsisten."
+  },
+  "src/app/akun/page.tsx": {
+    "summary": "Halaman Next.js App Router untuk modul Manajemen Akun, matriks izin peran (RBAC), dan administrasi pengguna tim Humas."
+  },
+  "src/app/api/admin/invite-staff/route.ts": {
+    "summary": "Endpoint API POST (/api/admin/invite-staff) khusus administrator untuk mengundang anggota staf baru dan mencatat log audit."
+  },
+  "src/app/api/channels/route.ts": {
+    "summary": "Endpoint API (/api/channels) untuk mengambil daftar kanal media sosial terhubung, metrik performa, dan memperbarui konfigurasi kanal."
+  },
+  "src/app/api/cron/metrics-rollup/route.ts": {
+    "summary": "Endpoint penjadwal cron (/api/cron/metrics-rollup) untuk mengakumulasi dan menyinkronkan metrik harian lintas kanal media sosial."
+  },
+  "src/app/api/cron/news-sync/route.ts": {
+    "summary": "Endpoint penjadwal cron (/api/cron/news-sync) untuk menarik berita terbaru dari sumber RSS dan kanal Telegram secara terjadwal."
+  },
+  "src/app/api/cron/reminders/route.ts": {
+    "summary": "Endpoint penjadwal cron (/api/cron/reminders) untuk memproses dan mengirimkan pengingat tenggat konten serta tugas proyek."
+  },
+  "src/app/api/health/route.ts": {
+    "summary": "Endpoint pemeriksaan kesehatan sistem (/api/health) yang memverifikasi konektivitas basis data, jumlah tabel, dan status layanan."
+  },
+  "src/app/api/parity/modules/route.ts": {
+    "summary": "Endpoint API (/api/parity/modules) untuk mengecek status kesiapan dan paritas fitur antar-modul aplikasi pasca-migrasi."
+  },
+  "src/app/api/user/avatar/[filename]/route.ts": {
+    "summary": "Endpoint API GET (/api/user/avatar/[filename]) untuk menyajikan berkas gambar avatar profil pengguna dari penyimpanan lokal atau cloud."
+  },
+  "src/app/api/webhooks/channels/[platform]/route.ts": {
+    "summary": "Endpoint penerima webhook (/api/webhooks/channels/[platform]) untuk menangkap pembaruan metrik dan notifikasi dari platform sosial eksternal."
+  },
+  "src/app/auth/callback/route.ts": {
+    "summary": "Route handler (/auth/callback) untuk memproses pertukaran kode otorisasi OAuth 2.0 dan membangun sesi pengguna yang aman."
+  },
+  "src/app/bagikan-cetak/page.tsx": {
+    "summary": "Halaman tampilan cetak dan berbagi laporan (/bagikan-cetak) dengan tata letak bersih yang dioptimalkan untuk ekspor PDF dan cetak kertas."
+  },
+  "src/app/basis-pengetahuan/page.tsx": {
+    "summary": "Halaman utama Basis Pengetahuan (/basis-pengetahuan) untuk mencari dokumen pedoman humas, SOP, dan mengajukan usulan revisi dokumen."
+  },
+  "src/app/dasbor/page.tsx": {
+    "summary": "Halaman Dasbor & Metrik utama (/dasbor) yang merangkum KPI jangkauan, grafik tren lintas kanal, pantauan berita, dan jadwal konten."
+  },
+  "src/app/error.tsx": {
+    "summary": "Komponen Error Boundary tingkat aplikasi di Next.js App Router untuk menangani kesalahan runtime dengan opsi pemulihan halaman."
+  },
+  "src/app/insight-konten/page.tsx": {
+    "summary": "Halaman Insight & Ide Konten (/insight-konten) untuk memantau topik tren, analisis celah konten (content gap), dan tabungan ide redaksi."
+  },
+  "src/app/jejak-audit/page.tsx": {
+    "summary": "Halaman Jejak Audit Sistem (/jejak-audit) untuk meninjau riwayat aktivitas pengguna, perubahan izin, dan log keamanan."
+  },
+  "src/app/kalender-konten/page.tsx": {
+    "summary": "Halaman Kalender Konten Editorial (/kalender-konten) untuk menjadwalkan publikasi, mengatur pilar konten, dan memantau alur produksi."
+  },
+  "src/app/laporan/page.tsx": {
+    "summary": "Halaman Laporan & Anggaran (/laporan) untuk mengelola realisasi anggaran RAB/LRA, laporan tahunan, dan pengunduhan dokumen laporan."
+  },
+  "src/app/laporan-kinerja/page.tsx": {
+    "summary": "Halaman Laporan Kinerja (/laporan-kinerja) yang menyajikan evaluasi capaian KPI humas, perbandingan kanal, dan catatan evaluasi pimpinan."
+  },
+  "src/app/layout.tsx": {
+    "summary": "Root layout Next.js App Router yang memuat stylesheet tema Humas, font IBM Plex Sans/Mono, penyedia konteks tata letak, dan runtime Iconify."
+  },
+  "src/app/masuk/page.tsx": {
+    "summary": "Halaman autentikasi masuk pengguna (/masuk) dengan dukungan login kredensial email/kata sandi, Google SSO, dan pemilih peran simulasi."
+  },
+  "src/app/not-found.tsx": {
+    "summary": "Halaman kustom 404 (Halaman Tidak Ditemukan) dengan navigasi kembali ke Dasbor Utama Humas."
+  },
+  "src/app/page.tsx": {
+    "summary": "Halaman indeks utama (/) yang mengarahkan atau menampilkan tampilan Dasbor & Metrik Humas Media secara langsung."
+  },
+  "src/app/pantauan-berita/page.tsx": {
+    "summary": "Halaman Pantauan Berita (/pantauan-berita) untuk memonitor umpan berita RSS dan Telegram secara waktu nyata beserta fitur markah dan rujukan."
+  },
+  "src/app/papan-proyek/page.tsx": {
+    "summary": "Halaman Papan Proyek Kanban (/papan-proyek) untuk mengelola kampanye humas, distribusi tugas tim, dan pemantauan beban kerja."
+  },
+  "src/app/papan-proyek/[id]/page.tsx": {
+    "summary": "Halaman detail proyek spesifik (/papan-proyek/[id]) yang menampilkan daftar tugas, penanggung jawab, dan progres tahapan kampanye."
+  },
+  "src/app/pengaturan/page.tsx": {
+    "summary": "Halaman Pengaturan & Integrasi (/pengaturan) untuk mengelola sambungan OAuth kanal sosial, Google Workspace, DAM, dan preferensi sistem."
+  },
+  "src/app/profil-akun/page.tsx": {
+    "summary": "Halaman Profil Akun (/profil-akun) bagi pengguna untuk memperbarui informasi diri, mengunggah foto avatar, dan mengganti kata sandi."
+  },
+  "src/app/set-ulang-kata-sandi/page.tsx": {
+    "summary": "Halaman pengaturan ulang kata sandi (/set-ulang-kata-sandi) untuk pemulihan akses akun pengguna dengan validasi keamanan."
+  },
+  "src/app/sop/page.tsx": {
+    "summary": "Halaman SOP & Alur Krisis (/sop) yang menampilkan prosedur standar operasional komunikasi krisis dan panduan tanggap cepat humas."
+  },
+  "src/app/status-usulan-sop/page.tsx": {
+    "summary": "Halaman pelacakan Status Usulan SOP (/status-usulan-sop) untuk memantau proses peninjauan dan persetujuan revisi dokumen pedoman."
+  },
+  "src/app/tugas-terjadwal/page.tsx": {
+    "summary": "Halaman pemantauan Tugas Terjadwal (/tugas-terjadwal) untuk melihat status eksekusi cron job, sinkronisasi metrik, dan log pengingat."
+  },
+  "src/app/verifikasi-paritas/page.tsx": {
+    "summary": "Halaman Verifikasi Paritas (/verifikasi-paritas) untuk menguji kelengkapan modul, kesehatan tabel basis data, dan matriks kontrol akses."
+  },
+  "src/astro-middleware.ts": {
+    "summary": "Middleware khusus runtime Astro untuk membaca sesi autentikasi, menetapkan peran pengguna di Astro.locals, dan menegakkan aturan RBAC."
+  },
+  "src/components/auth/GoogleAuthFlow.tsx": {
+    "summary": "Komponen interaktif React untuk menangani tombol masuk Google OAuth 2.0 dan umpan balik status autentikasi."
+  },
+  "src/components/channels/ChannelCard.tsx": {
+    "summary": "Komponen kartu informasi kanal media sosial yang menampilkan status koneksi, metrik utama, dan tombol aksi sinkronisasi."
+  },
+  "src/components/charts/MetricTrendChart.tsx": {
+    "summary": "Komponen grafik visualisasi tren metrik harian untuk menampilkan perbandingan jangkauan, tayangan, dan interaksi lintas kanal."
+  },
+  "src/components/dasbor/DashboardView.tsx": {
+    "summary": "Komponen antarmuka utama Dasbor & Metrik yang menggabungkan kartu KPI, grafik tren, tabel performa platform, peringatan sistem, dan jadwal terdekat."
+  },
+  "src/components/database/TableRoleSummaryView.tsx": {
+    "summary": "Komponen tabel ringkasan untuk menampilkan jumlah baris data per tabel basis data beserta kebijakan akses perannya."
+  },
+  "src/components/export/ExportProgressIndicator.tsx": {
+    "summary": "Komponen indikator progres untuk menampilkan status proses pembuatan dan pengunduhan berkas laporan CSV/PDF."
+  },
+  "src/components/layout/HumasHeader.tsx": {
+    "summary": "Komponen bilah atas (header) aplikasi Humas yang memuat judul halaman, pencarian global, pemilih peran RBAC, pengubah tema, dan notifikasi."
+  },
+  "src/components/layout/HumasShell.tsx": {
+    "summary": "Komponen kerangka tata letak utama (App Shell) yang membungkus sidebar, header, dan kontainer konten dengan atribut scope CSS otomatis."
+  },
+  "src/components/layout/HumasSidebar.tsx": {
+    "summary": "Komponen navigasi bilah samping (sidebar) dengan pengelompokan menu modul, indikator progres target konten bulanan, dan info profil aktif."
+  },
+  "src/components/layout/LayoutContext.tsx": {
+    "summary": "Penyedia React Context untuk mengelola state global tata letak seperti tema terang/gelap, status menu mobile, dan peran pengguna aktif."
+  },
+  "src/components/layout/StandardPagePattern.tsx": {
+    "summary": "Komponen pola halaman standar yang menyediakan struktur konsisten untuk halaman-halaman modul operasional dan administrasi."
+  },
+  "src/components/profile/AvatarUploadForm.tsx": {
+    "summary": "Komponen formulir unggah dan pratinjau foto avatar profil pengguna dengan validasi ukuran serta tipe berkas gambar."
+  },
+  "src/components/profile/UserAvatar.tsx": {
+    "summary": "Komponen penampil avatar pengguna yang merender gambar profil atau fallback inisial nama secara konsisten."
+  },
+  "src/components/RoleMatrixTable.tsx": {
+    "summary": "Komponen tabel interaktif untuk menampilkan dan memverifikasi matriks izin akses antara peran (Kepala Humas, Admin, Staf) dan modul."
+  },
+  "src/components/schedule/CronFailureDetailCard.tsx": {
+    "summary": "Komponen kartu diagnostik untuk menampilkan rincian pesan kesalahan pada tugas terjadwal (cron) yang mengalami kegagalan."
+  },
+  "src/components/schedule/CronHistoryTable.tsx": {
+    "summary": "Komponen tabel riwayat eksekusi tugas latar belakang (cron job) beserta durasi, waktu jalan, dan status keberhasilannya."
+  },
+  "src/components/schedule/ScheduleStatusSummary.tsx": {
+    "summary": "Komponen ringkasan status kesehatan penjadwal otomatis untuk sinkronisasi berita, agregasi metrik, dan pengingat."
+  },
+  "src/lib/avatarStorage.ts": {
+    "summary": "Layanan penyimpanan berkas avatar pengguna yang mendukung penulisan ke sistem berkas lokal maupun bucket penyimpanan cloud."
+  },
+  "src/lib/roleClaims.ts": {
+    "summary": "Utilitas pemetaan klaim peran pengguna (head, admin, staff) dan pemeriksaan hak izin spesifik untuk proteksi rute serta API."
+  },
+  "src/lib/socialProviders.ts": {
+    "summary": "Definisi konfigurasi penyedia OAuth media sosial (YouTube, Instagram, Facebook, TikTok), cakupan izin (scopes), dan normalisasi metrik."
+  },
+  "src/lib/supabase.ts": {
+    "summary": "Inisialisasi klien koneksi Supabase dan helper konfigurasi lingkungan untuk komunikasi dengan PostgreSQL dan layanan Auth/Storage."
+  },
+  "src/lib/supabaseDb.ts": {
+    "summary": "Lapisan abstraksi akses data untuk menjalankan kueri ke Supabase PostgreSQL dengan fallback otomatis ke SQLite lokal."
+  },
+  "src/types/contracts.ts": {
+    "summary": "Definisi antarmuka TypeScript (interfaces & types) untuk kontrak data API, entitas basis data, metrik kanal, dan respons layanan."
+  },
+  "supabase/data_export/ad_campaigns.json": {
+    "summary": "Data ekspor JSON untuk tabel ad_campaigns berisi riwayat dan metrik kampanye iklan media sosial."
+  },
+  "supabase/data_export/annual_reports.json": {
+    "summary": "Data ekspor JSON untuk tabel annual_reports berisi ringkasan laporan tahunan kehumasan."
+  },
+  "supabase/data_export/audit_logs.json": {
+    "summary": "Data ekspor JSON untuk tabel audit_logs berisi catatan jejak audit aktivitas pengguna dan sistem."
+  },
+  "supabase/data_export/budget_lines.json": {
+    "summary": "Data ekspor JSON untuk tabel budget_lines berisi rincian mata anggaran RAB dan realisasi LRA."
+  },
+  "supabase/data_export/budget_revisions.json": {
+    "summary": "Data ekspor JSON untuk tabel budget_revisions berisi histori perubahan dan revisi pagu anggaran."
+  },
+  "supabase/data_export/content_calendar.json": {
+    "summary": "Data ekspor JSON untuk tabel content_calendar berisi jadwal publikasi konten lintas kanal."
+  },
+  "supabase/data_export/content_gaps.json": {
+    "summary": "Data ekspor JSON untuk tabel content_gaps berisi daftar analisis celah topik konten yang belum tergarap."
+  },
+  "supabase/data_export/content_pillars.json": {
+    "summary": "Data ekspor JSON untuk tabel content_pillars berisi definisi pilar utama komunikasi dan bobot targetnya."
+  },
+  "supabase/data_export/content_themes.json": {
+    "summary": "Data ekspor JSON untuk tabel content_themes berisi daftar tema kampanye bulanan dan pesan kunci."
+  },
+  "supabase/data_export/dam_shares.json": {
+    "summary": "Data ekspor JSON untuk tabel dam_shares berisi tautan berbagi aset media digital (DAM)."
+  },
+  "supabase/data_export/dasbor_full_export.json": {
+    "summary": "Berkas bundel ekspor JSON lengkap yang mencakup seluruh tabel dari basis data SQLite lokal untuk keperluan pencadangan dan migrasi."
+  },
+  "supabase/data_export/doc_proposals.json": {
+    "summary": "Data ekspor JSON untuk tabel doc_proposals berisi daftar usulan pembaruan dokumen SOP dan basis pengetahuan."
+  },
+  "supabase/data_export/doc_proposal_logs.json": {
+    "summary": "Data ekspor JSON untuk tabel doc_proposal_logs berisi riwayat perubahan status tinjauan usulan dokumen."
+  },
+  "supabase/data_export/doc_sections.json": {
+    "summary": "Data ekspor JSON untuk tabel doc_sections berisi bagian-bagian isi dokumen pada modul basis pengetahuan."
+  },
+  "supabase/data_export/donations.json": {
+    "summary": "Data ekspor JSON untuk tabel donations berisi metrik konversi donasi dan kontribusi kampanye publik."
+  },
+  "supabase/data_export/idea_recommendations.json": {
+    "summary": "Data ekspor JSON untuk tabel idea_recommendations berisi rekomendasi ide konten berbasis tren."
+  },
+  "supabase/data_export/integration_sync_jobs.json": {
+    "summary": "Data ekspor JSON untuk tabel integration_sync_jobs berisi log pekerjaan sinkronisasi layanan eksternal."
+  },
+  "supabase/data_export/knowledge_categories.json": {
+    "summary": "Data ekspor JSON untuk tabel knowledge_categories berisi pengelompokan kategori dokumen pedoman humas."
+  },
+  "supabase/data_export/knowledge_docs.json": {
+    "summary": "Data ekspor JSON untuk tabel knowledge_docs berisi metadata dan isi dokumen pada Basis Pengetahuan."
+  },
+  "supabase/data_export/metric_snapshots.json": {
+    "summary": "Data ekspor JSON untuk tabel metric_snapshots berisi rekaman historis metrik harian kanal media sosial dan situs web."
+  },
+  "supabase/data_export/news_bookmarks.json": {
+    "summary": "Data ekspor JSON untuk tabel news_bookmarks berisi daftar berita yang disimpan/ditandai oleh tim humas."
+  },
+  "supabase/data_export/news_items.json": {
+    "summary": "Data ekspor JSON untuk tabel news_items berisi artikel berita hasil agregasi dari RSS dan Telegram."
+  },
+  "supabase/data_export/news_references.json": {
+    "summary": "Data ekspor JSON untuk tabel news_references berisi rujukan berita yang dikaitkan ke agenda konten atau krisis."
+  },
+  "supabase/data_export/news_sources.json": {
+    "summary": "Data ekspor JSON untuk tabel news_sources berisi daftar sumber umpan RSS dan kanal pemantauan berita."
+  },
+  "supabase/data_export/performance_notes.json": {
+    "summary": "Data ekspor JSON untuk tabel performance_notes berisi catatan evaluasi kinerja bulanan dari pimpinan humas."
+  },
+  "supabase/data_export/performance_reports.json": {
+    "summary": "Data ekspor JSON untuk tabel performance_reports berisi metadata dokumen laporan kinerja periodik."
+  },
+  "supabase/data_export/performance_rows.json": {
+    "summary": "Data ekspor JSON untuk tabel performance_rows berisi baris rincian metrik capaian pada laporan kinerja."
+  },
+  "supabase/data_export/permissions.json": {
+    "summary": "Data ekspor JSON untuk tabel permissions berisi daftar kode hak izin operasi di dalam sistem."
+  },
+  "supabase/data_export/projects.json": {
+    "summary": "Data ekspor JSON untuk tabel projects berisi daftar proyek dan kampanye kehumasan pada papan Kanban."
+  },
+  "supabase/data_export/project_tasks.json": {
+    "summary": "Data ekspor JSON untuk tabel project_tasks berisi rincian kartu tugas, tahapan, dan tenggat waktu proyek."
+  },
+  "supabase/data_export/reminders.json": {
+    "summary": "Data ekspor JSON untuk tabel reminders berisi jadwal pengingat otomatis untuk agenda konten dan tugas."
+  },
+  "supabase/data_export/roles.json": {
+    "summary": "Data ekspor JSON untuk tabel roles berisi definisi peran pengguna (head, admin, staff)."
+  },
+  "supabase/data_export/role_permissions.json": {
+    "summary": "Data ekspor JSON untuk tabel role_permissions berisi pemetaan relasi antara peran pengguna dan hak izinnya."
+  },
+  "supabase/data_export/saved_ideas.json": {
+    "summary": "Data ekspor JSON untuk tabel saved_ideas berisi daftar ide konten yang disimpan oleh tim redaksi."
+  },
+  "supabase/data_export/shared_reports.json": {
+    "summary": "Data ekspor JSON untuk tabel shared_reports berisi token dan konfigurasi tautan berbagi laporan eksternal."
+  },
+  "supabase/data_export/sop_steps.json": {
+    "summary": "Data ekspor JSON untuk tabel sop_steps berisi tahapan langkah demi langkah prosedur penanganan krisis (SOP)."
+  },
+  "supabase/data_export/system_integrations.json": {
+    "summary": "Data ekspor JSON untuk tabel system_integrations berisi status sambungan integrasi pihak ketiga."
+  },
+  "supabase/data_export/system_settings.json": {
+    "summary": "Data ekspor JSON untuk tabel system_settings berisi pasangan kunci-nilai konfigurasi umum aplikasi."
+  },
+  "supabase/data_export/top_pages.json": {
+    "summary": "Data ekspor JSON untuk tabel top_pages berisi analitik halaman situs web dengan kunjungan tertinggi."
+  },
+  "supabase/data_export/trending_topics.json": {
+    "summary": "Data ekspor JSON untuk tabel trending_topics berisi daftar isu dan topik populer yang sedang dipantau."
+  },
+  "supabase/data_export/users.json": {
+    "summary": "Data ekspor JSON untuk tabel users berisi profil akun anggota tim humas beserta perannya."
+  },
+  "supabase/migrations/001_initial_schema.sql": {
+    "summary": "Migrasi SQL awal untuk membuat seluruh tabel inti aplikasi Dasbor Humas Media di PostgreSQL."
+  },
+  "supabase/migrations/002_constraints_and_indexes.sql": {
+    "summary": "Migrasi SQL untuk menambahkan indeks pencarian performa tinggi dan batasan integritas referensial (constraints)."
+  },
+  "supabase/migrations/003_rls_select_policies.sql": {
+    "summary": "Migrasi SQL untuk mengaktifkan Row Level Security (RLS) dan kebijakan akses baca (SELECT) bagi seluruh anggota tim."
+  },
+  "supabase/migrations/004_rls_mutation_policies.sql": {
+    "summary": "Migrasi SQL untuk mengatur kebijakan mutasi data (INSERT, UPDATE, DELETE) berbasis peran RBAC di tingkat basis data."
+  },
+  "supabase/migrations/005_storage_avatars_bucket.sql": {
+    "summary": "Migrasi SQL untuk menyiapkan bucket penyimpanan avatar profil beserta aturan kontrol akses objeknya."
+  },
+  "supabase/migrations/006_report_export_logs.sql": {
+    "summary": "Migrasi SQL untuk membuat tabel pencatatan riwayat ekspor laporan dan pengunduhan dokumen."
+  },
+  "supabase/migrations/007_parity_and_role_matrix.sql": {
+    "summary": "Migrasi SQL untuk mendukung tabel verifikasi paritas modul dan tampilan matriks hak akses peran."
+  },
+  "supabase/migrations/008_social_channels_and_credentials.sql": {
+    "summary": "Migrasi SQL untuk membuat tabel integrasi kanal media sosial dan penyimpanan kredensial OAuth terenkripsi di sisi server."
+  },
+  "supabase/migrations/009_channel_daily_metrics.sql": {
+    "summary": "Migrasi SQL untuk membuat tabel metrik harian kanal sosial terstandarisasi beserta indeks rentang tanggal."
+  },
+  "supabase/migrations/010_channel_webhook_logs.sql": {
+    "summary": "Migrasi SQL untuk membuat tabel log penerimaan webhook dan riwayat sinkronisasi metrik dari platform eksternal."
+  },
+  "tsconfig.json": {
+    "summary": "Konfigurasi compiler TypeScript dengan pemetaan alias path (@/*) dan dukungan JSX untuk Next.js serta modul proyek."
+  },
+  "vercel.json": {
+    "summary": "Konfigurasi deployment dan jadwal eksekusi Cron Jobs otomatis untuk sinkronisasi berita, metrik harian, dan pengingat."
   }
 }

@@ -4,405 +4,514 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import DashboardGrid from '@/components/DashboardGrid';
 import RealtimeNewsFeed from '@/components/react/RealtimeNewsFeed';
-import MetricTrendChart from '@/components/charts/MetricTrendChart';
 
-interface PlatformMetric {
-  name: string;
-  reach: string;
-  interactions: string;
-  engagement: string;
-  growth: string;
-  growthType: 'up' | 'down' | 'flat';
-}
-
-interface AlertItem {
+interface ConnectedChannelItem {
   id: string;
-  title: string;
-  note: string;
-  level: 'danger' | 'warning' | 'info';
-  actionLabel: string;
-  actionHref: string;
+  platform: string;
+  handle: string;
+  followersLabel: string;
+  pulledAgoLabel: string;
+  statusLabel: 'Aktif' | 'Re-Auth';
+  icon: string;
+  iconColor: string;
 }
 
-const INITIAL_PLATFORMS: PlatformMetric[] = [
+const CONNECTED_CHANNELS: ConnectedChannelItem[] = [
   {
-    name: 'Instagram',
-    reach: '1.024.300',
-    interactions: '58.420',
-    engagement: '5,70%',
-    growth: '+12,4%',
-    growthType: 'up'
+    id: 'ig',
+    platform: 'Instagram',
+    handle: '@kemensosri',
+    followersLabel: '2,4 jt Pengikut',
+    pulledAgoLabel: 'Ditarik 2 mnt lalu',
+    statusLabel: 'Aktif',
+    icon: 'mdi:instagram',
+    iconColor: '#ec4899'
   },
   {
-    name: 'Facebook',
-    reach: '724.180',
-    interactions: '31.960',
-    engagement: '4,41%',
-    growth: '+6,2%',
-    growthType: 'up'
+    id: 'yt',
+    platform: 'YouTube',
+    handle: '@KemensosRI',
+    followersLabel: '840,2 rb Pengikut',
+    pulledAgoLabel: 'Ditarik 15 mnt lalu',
+    statusLabel: 'Aktif',
+    icon: 'mdi:youtube',
+    iconColor: '#dc2626'
   },
   {
-    name: 'YouTube',
-    reach: '561.420',
-    interactions: '38.240',
-    engagement: '6,81%',
-    growth: '+18,9%',
-    growthType: 'up'
+    id: 'tt',
+    platform: 'TikTok',
+    handle: '@kemensos.ri',
+    followersLabel: '1,2 jt Pengikut',
+    pulledAgoLabel: 'Ditarik 8 mnt lalu',
+    statusLabel: 'Re-Auth',
+    icon: 'simple-icons:tiktok',
+    iconColor: '#ffffff'
   },
   {
-    name: 'WhatsApp Siaran',
-    reach: '338.900',
-    interactions: '12.880',
-    engagement: '3,80%',
-    growth: '+2,4%',
-    growthType: 'up'
-  },
-  {
-    name: 'Situs Web Resmi',
-    reach: '194.600',
-    interactions: '4.780',
-    engagement: '2,46%',
-    growth: '-1,1%',
-    growthType: 'down'
+    id: 'fb',
+    platform: 'Facebook',
+    handle: 'Kemensos RI',
+    followersLabel: '420,1 rb Pengikut',
+    pulledAgoLabel: 'Ditarik 32 mnt lalu',
+    statusLabel: 'Aktif',
+    icon: 'mdi:facebook',
+    iconColor: '#2563eb'
   }
 ];
 
-const INITIAL_ALERTS: AlertItem[] = [
+const NEWS_CLIPPINGS = [
   {
-    id: 'alert-1',
-    title: 'Sinkronisasi Google Sheets terputus',
-    note: 'Otorisasi akun lembaga kedaluwarsa sejak kemarin.',
-    level: 'danger',
-    actionLabel: 'Sambungkan kembali',
-    actionHref: '/pengaturan'
+    id: 'news-1',
+    sentiment: 'Negatif',
+    sentimentTone: 'danger' as const,
+    timeAgo: '2 jam lalu',
+    title: 'Polemik Kebijakan Impor Beras, Warga Mengeluhkan Harga',
+    source: 'Pantauan Media Nasional'
   },
   {
-    id: 'alert-2',
-    title: '4 jadwal konten menunggu persetujuan',
-    note: 'Tenggat terdekat publikasi Instagram besok pagi.',
-    level: 'warning',
-    actionLabel: 'Tinjau jadwal',
-    actionHref: '/kalender-konten'
+    id: 'news-2',
+    sentiment: 'Positif',
+    sentimentTone: 'up' as const,
+    timeAgo: '5 jam lalu',
+    title: 'Pemerintah Resmikan Jembatan Baru di Kalimantan Timur',
+    source: 'Antara News'
   },
   {
-    id: 'alert-3',
-    title: 'Konektor Meta Ads perlu refresh token',
-    note: 'Data analitik belanja iklan bulan ini belum sinkron.',
-    level: 'info',
-    actionLabel: 'Perbarui token',
-    actionHref: '/pengaturan'
+    id: 'news-3',
+    sentiment: 'Netral',
+    sentimentTone: 'flat' as const,
+    timeAgo: '8 jam lalu',
+    title: 'Stok Pangan Nasional Aman Menjelang Akhir Tahun',
+    source: 'Republika'
   }
 ];
 
 export function DashboardView() {
-  const [selectedPlatform, setSelectedPlatform] = useState('semua');
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(12);
-  const [alerts, setAlerts] = useState<AlertItem[]>(INITIAL_ALERTS);
+  const [periodRange, setPeriodRange] = useState<'7d' | '30d'>('7d');
+  const [activeChannelLine, setActiveChannelLine] = useState<'all' | 'ig' | 'yt' | 'fb' | 'tt'>('all');
 
-  const handleResolveAlert = (id: string) => {
-    setAlerts((prev) => prev.filter((a) => a.id !== id));
-  };
+  const kpiMetrics =
+    periodRange === '7d'
+      ? [
+          {
+            label: 'Total Jangkauan',
+            value: '12.410.802',
+            delta: '+14,2%',
+            deltaTone: 'up' as const,
+            compare: 'vs 7 hari lalu'
+          },
+          {
+            label: 'Interaksi Aktif',
+            value: '842.109',
+            delta: '+8,5%',
+            deltaTone: 'up' as const,
+            compare: 'vs 7 hari lalu'
+          },
+          {
+            label: 'Sentimen Positif',
+            value: '68,4%',
+            delta: '-2,1%',
+            deltaTone: 'down' as const,
+            compare: 'vs 7 hari lalu'
+          },
+          {
+            label: 'Total Konten',
+            value: '142',
+            delta: '±0%',
+            deltaTone: 'flat' as const,
+            compare: 'vs 7 hari lalu'
+          }
+        ]
+      : [
+          {
+            label: 'Total Jangkauan',
+            value: '46.890.410',
+            delta: '+19,4%',
+            deltaTone: 'up' as const,
+            compare: 'vs 30 hari lalu'
+          },
+          {
+            label: 'Interaksi Aktif',
+            value: '3.124.850',
+            delta: '+11,2%',
+            deltaTone: 'up' as const,
+            compare: 'vs 30 hari lalu'
+          },
+          {
+            label: 'Sentimen Positif',
+            value: '71,8%',
+            delta: '+3,4%',
+            deltaTone: 'up' as const,
+            compare: 'vs 30 hari lalu'
+          },
+          {
+            label: 'Total Konten',
+            value: '548',
+            delta: '+6,2%',
+            deltaTone: 'up' as const,
+            compare: 'vs 30 hari lalu'
+          }
+        ];
 
   return (
     <div className="dasbor" data-node-id="dasbor.root">
-      {/* 1. Baris Operasional Ringkas Hari Ini */}
+      {/* 1. Baris Kontrol Rentang Waktu & Status Ringkas */}
       <section className="dasbor__bar" aria-label="Status ringkas hari ini">
         <p className="dasbor__bar-text">
           Kalender konten bulan ini: <b>18 jadwal</b> terjadwal, <b>4</b> menunggu persetujuan redaksi.
-          Sinkronisasi Google Calendar & Sheets: <b>normal</b>.
+          Sinkronisasi lintas kanal: <b>normal</b>.
         </p>
         <div className="dasbor__bar-actions">
-          <Link className="dasbor__btn" href="/kalender-konten">
+          <div className="dasbor__seg" role="group" aria-label="Rentang periode ikhtisar">
+            <button
+              type="button"
+              className="dasbor__seg-btn"
+              aria-pressed={periodRange === '7d'}
+              onClick={() => setPeriodRange('7d')}
+            >
+              7 Hari
+            </button>
+            <button
+              type="button"
+              className="dasbor__seg-btn"
+              aria-pressed={periodRange === '30d'}
+              onClick={() => setPeriodRange('30d')}
+            >
+              30 Hari
+            </button>
+          </div>
+          <Link className="dasbor__btn" href="/pemantauan-kanal">
+            {/* @ts-ignore iconify web component */}
+            <iconify-icon icon="lucide:radio" aria-hidden="true" />
+            <span>Pemantauan Kanal</span>
+          </Link>
+          <Link className="dasbor__btn dasbor__btn--primary" href="/kalender-konten">
             {/* @ts-ignore iconify web component */}
             <iconify-icon icon="lucide:calendar-plus" aria-hidden="true" />
-            <span>Tambah jadwal konten</span>
-          </Link>
-          <Link className="dasbor__btn dasbor__btn--primary" href="/laporan">
-            {/* @ts-ignore iconify web component */}
-            <iconify-icon icon="lucide:download" aria-hidden="true" />
-            <span>Unduh laporan bulanan</span>
+            <span>Tambah Jadwal</span>
           </Link>
         </div>
       </section>
 
-      {/* Komponen Asli Dipakai Ulang: Multi-Platform Metric Aggregator Island */}
-      <DashboardGrid />
-
-      {/* 2. Kartu KPI Ringkasan Metrik Utama */}
-      <div className="dasbor__analytics-grid" style={{ marginBottom: '1.25rem' }}>
-        <article className="dasbor__card dasbor__kpi">
-          <div className="dasbor__kpi-top">
-            <span style={{ fontSize: '1.4rem' }}>📈</span>
-            <span className="dasbor__badge dasbor__badge--up">+14,2%</span>
-          </div>
-          <div className="dasbor__kpi-label">Total Jangkauan Akun</div>
-          <div className="dasbor__kpi-row" style={{ marginTop: '4px' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>2.843.400</span>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-muted, #72747a)', margin: '4px 0 0' }}>
-            Akumulasi 5 kanal aktif periode 30 hari
-          </p>
-        </article>
-
-        <article className="dasbor__card dasbor__kpi">
-          <div className="dasbor__kpi-top">
-            <span style={{ fontSize: '1.4rem' }}>💬</span>
-            <span className="dasbor__badge dasbor__badge--up">+8,7%</span>
-          </div>
-          <div className="dasbor__kpi-label">Interaksi Keterlibatan</div>
-          <div className="dasbor__kpi-row" style={{ marginTop: '4px' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>145.280</span>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-muted, #72747a)', margin: '4px 0 0' }}>
-            Komentar, share, save & tanggapan
-          </p>
-        </article>
-
-        <article className="dasbor__card dasbor__kpi">
-          <div className="dasbor__kpi-top">
-            <span style={{ fontSize: '1.4rem' }}>👥</span>
-            <span className="dasbor__badge dasbor__badge--up">+4.250</span>
-          </div>
-          <div className="dasbor__kpi-label">Total Pengikut & Audiens</div>
-          <div className="dasbor__kpi-row" style={{ marginTop: '4px' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>489.100</span>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-muted, #72747a)', margin: '4px 0 0' }}>
-            Pertumbuhan bersih lintas platform
-          </p>
-        </article>
-
-        <article className="dasbor__card dasbor__kpi">
-          <div className="dasbor__kpi-top">
-            <span style={{ fontSize: '1.4rem' }}>🎯</span>
-            <span className="dasbor__badge dasbor__badge--up">-11,5% CPA</span>
-          </div>
-          <div className="dasbor__kpi-label">Efisiensi Iklan & Akuisisi</div>
-          <div className="dasbor__kpi-row" style={{ marginTop: '4px' }}>
-            <span style={{ fontSize: '1.5rem', fontWeight: 700 }}>Rp 4.120</span>
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-muted, #72747a)', margin: '4px 0 0' }}>
-            Rata-rata biaya per interaksi terverifikasi
-          </p>
-        </article>
+      {/* 2. KPI Metrics Grid (4 Kartu Seragam) */}
+      <div className="dasbor__kpis">
+        {kpiMetrics.map((kpi) => (
+          <article key={kpi.label} className="dasbor__card dasbor__kpi">
+            <span className="dasbor__kpi-label">{kpi.label}</span>
+            <div className="dasbor__kpi-row">
+              <span className="dasbor__kpi-value">{kpi.value}</span>
+              <span
+                className={`dasbor__badge ${
+                  kpi.deltaTone === 'up'
+                    ? 'dasbor__badge--up'
+                    : kpi.deltaTone === 'down'
+                    ? 'dasbor__badge--down'
+                    : 'dasbor__badge--flat'
+                }`}
+              >
+                {kpi.delta}
+              </span>
+            </div>
+            <p className="dasbor__kpi-compare">{kpi.compare}</p>
+          </article>
+        ))}
       </div>
 
-      {/* 3. Baris Grafik Tren & Sebaran Platform */}
-      <div className="dasbor__analytics-grid">
-        {/* Grafik Tren Jangkauan & Interaksi menggunakan komponen pakai ulang */}
-        <MetricTrendChart
-          initialPeriod={selectedPeriod}
-          initialPlatform={selectedPlatform}
-          onPeriodChange={(p) => setSelectedPeriod(p)}
-          onPlatformChange={(pl) => setSelectedPlatform(pl)}
-        />
-
-        {/* Sebaran Platform & Konten Terbaik */}
-        <article className="dasbor__card">
+      {/* 3. Baris Grafik Tren Interaksi Kanal (8 Kolom) & Kanal Terhubung (4 Kolom) */}
+      <div className="sd-grid-12">
+        {/* Grafik Tren Interaksi Kanal */}
+        <article className="dasbor__card sd-col-8">
           <div className="dasbor__card-head">
             <div>
-              <h2>Sebaran jangkauan per platform</h2>
-              <p>Porsi pembaca dan audiens aktif periode ini</p>
+              <h2 className="sd-section-title">Tren Interaksi Kanal</h2>
+              <p>Perbandingan interaksi harian lintas 4 kanal resmi ({periodRange === '7d' ? '13 Okt – 19 Okt 2026' : '30 Hari Terakhir'})</p>
+            </div>
+            <div className="sd-chart-legend" role="group" aria-label="Filter garis kanal">
+              <button
+                type="button"
+                className={`sd-legend-pill ${activeChannelLine === 'all' || activeChannelLine === 'ig' ? 'is-active' : ''}`}
+                onClick={() => setActiveChannelLine((prev) => (prev === 'ig' ? 'all' : 'ig'))}
+              >
+                <span className="sd-dot" style={{ background: '#ec4899' }} />
+                Instagram
+              </button>
+              <button
+                type="button"
+                className={`sd-legend-pill ${activeChannelLine === 'all' || activeChannelLine === 'yt' ? 'is-active' : ''}`}
+                onClick={() => setActiveChannelLine((prev) => (prev === 'yt' ? 'all' : 'yt'))}
+              >
+                <span className="sd-dot" style={{ background: '#dc2626' }} />
+                YouTube
+              </button>
+              <button
+                type="button"
+                className={`sd-legend-pill ${activeChannelLine === 'all' || activeChannelLine === 'fb' ? 'is-active' : ''}`}
+                onClick={() => setActiveChannelLine((prev) => (prev === 'fb' ? 'all' : 'fb'))}
+              >
+                <span className="sd-dot" style={{ background: '#2563eb' }} />
+                Facebook
+              </button>
+              <button
+                type="button"
+                className={`sd-legend-pill ${activeChannelLine === 'all' || activeChannelLine === 'tt' ? 'is-active' : ''}`}
+                onClick={() => setActiveChannelLine((prev) => (prev === 'tt' ? 'all' : 'tt'))}
+              >
+                <span className="sd-dot" style={{ background: '#f4f4f5' }} />
+                TikTok
+              </button>
             </div>
           </div>
 
-          <div className="dasbor__channels">
-            <div className="dasbor__channel" style={{ ['--value' as any]: '100%' }}>
-              <span>
-                {/* @ts-ignore iconify web component */}
-                <iconify-icon icon="simple-icons:instagram" aria-hidden="true" style={{ color: '#e1306c' }} />
-                {' Instagram'}
-              </span>
-              <strong>1.024.300 (46%)</strong>
+          <div className="sd-chart-frame">
+            <div className="sd-chart-yaxis" aria-hidden="true">
+              <div className="sd-chart-yrow">
+                <span>100 rb</span>
+                <div className="sd-chart-gridline" />
+              </div>
+              <div className="sd-chart-yrow">
+                <span>75 rb</span>
+                <div className="sd-chart-gridline" />
+              </div>
+              <div className="sd-chart-yrow">
+                <span>50 rb</span>
+                <div className="sd-chart-gridline" />
+              </div>
+              <div className="sd-chart-yrow">
+                <span>25 rb</span>
+                <div className="sd-chart-gridline" />
+              </div>
+              <div className="sd-chart-yrow sd-chart-yrow--zero">
+                <span>0</span>
+                <div className="sd-chart-gridline sd-chart-gridline--strong" />
+              </div>
             </div>
-            <div className="dasbor__channel" style={{ ['--value' as any]: '71%' }}>
-              <span>
-                {/* @ts-ignore iconify web component */}
-                <iconify-icon icon="simple-icons:facebook" aria-hidden="true" style={{ color: '#1877f2' }} />
-                {' Facebook'}
-              </span>
-              <strong>724.180 (32%)</strong>
-            </div>
-            <div className="dasbor__channel" style={{ ['--value' as any]: '55%' }}>
-              <span>
-                {/* @ts-ignore iconify web component */}
-                <iconify-icon icon="simple-icons:youtube" aria-hidden="true" style={{ color: '#ff0000' }} />
-                {' YouTube'}
-              </span>
-              <strong>561.420 (25%)</strong>
-            </div>
-            <div className="dasbor__channel" style={{ ['--value' as any]: '33%' }}>
-              <span>
-                {/* @ts-ignore iconify web component */}
-                <iconify-icon icon="simple-icons:whatsapp" aria-hidden="true" style={{ color: '#25d366' }} />
-                {' WhatsApp Siaran'}
-              </span>
-              <strong>338.900 (15%)</strong>
-            </div>
-            <div className="dasbor__channel" style={{ ['--value' as any]: '19%' }}>
-              <span>
-                {/* @ts-ignore iconify web component */}
-                <iconify-icon icon="lucide:globe" aria-hidden="true" style={{ color: '#1d5c94' }} />
-                {' Situs Web Resmi'}
-              </span>
-              <strong>194.600 (9%)</strong>
-            </div>
-          </div>
 
-          <div style={{ marginTop: '16px', borderTop: '1px solid var(--color-border, #e8e8ea)', paddingTop: '12px' }}>
-            <div className="dasbor__card-head" style={{ marginBottom: '8px' }}>
-              <div>
-                <h3 style={{ fontSize: '13px', margin: 0 }}>Konten terbaik periode ini</h3>
-              </div>
-            </div>
-            <div className="dasbor__top-list">
-              <div className="dasbor__top-item">
-                <strong>Dokumenter penyaluran air bersih</strong>
-                <span>YouTube · 412 rb tayangan · 28,4 rb interaksi</span>
-              </div>
-              <div className="dasbor__top-item">
-                <strong>Reels program beasiswa yatim</strong>
-                <span>Instagram · 268 rb tayangan · 19,1 rb interaksi</span>
-              </div>
+            <svg
+              viewBox="0 0 800 260"
+              className="sd-chart-svg"
+              role="img"
+              aria-label="Grafik garis tren interaksi Instagram, YouTube, Facebook, dan TikTok"
+            >
+              {(activeChannelLine === 'all' || activeChannelLine === 'ig') && (
+                <path
+                  d="M 0 175 L 133 155 L 266 190 L 399 130 L 532 85 L 665 102 L 800 68"
+                  fill="none"
+                  stroke="#ec4899"
+                  strokeWidth="2.25"
+                />
+              )}
+              {(activeChannelLine === 'all' || activeChannelLine === 'yt') && (
+                <path
+                  d="M 0 215 L 133 198 L 266 206 L 399 162 L 532 180 L 665 145 L 800 162"
+                  fill="none"
+                  stroke="#dc2626"
+                  strokeWidth="2.25"
+                />
+              )}
+              {(activeChannelLine === 'all' || activeChannelLine === 'fb') && (
+                <path
+                  d="M 0 232 L 133 240 L 266 224 L 399 232 L 532 215 L 665 206 L 800 198"
+                  fill="none"
+                  stroke="#2563eb"
+                  strokeWidth="2.25"
+                />
+              )}
+              {(activeChannelLine === 'all' || activeChannelLine === 'tt') && (
+                <path
+                  d="M 0 130 L 133 85 L 266 68 L 399 76 L 532 50 L 665 34 L 800 18"
+                  fill="none"
+                  stroke="#f4f4f5"
+                  strokeWidth="2.25"
+                />
+              )}
+            </svg>
+
+            <div className="sd-chart-xaxis">
+              <span>13 OKT</span>
+              <span>14 OKT</span>
+              <span>15 OKT</span>
+              <span>16 OKT</span>
+              <span>17 OKT</span>
+              <span>18 OKT</span>
+              <span>19 OKT</span>
             </div>
           </div>
         </article>
-      </div>
 
-      {/* 4. Baris Tabel Performa Tiap Platform & Peringatan */}
-      <div className="dasbor__analytics-grid">
-        {/* Tabel Performa Platform */}
-        <article className="dasbor__card">
+        {/* Kanal Terhubung */}
+        <article className="dasbor__card sd-col-4">
           <div className="dasbor__card-head">
             <div>
-              <h2>Performa tiap platform</h2>
-              <p>Rincian metrik keterlibatan dan pertumbuhan pengikut</p>
+              <h2 className="sd-section-title">Kanal Terhubung</h2>
+              <p>Satuan seragam &amp; waktu sinkronisasi terakhir</p>
             </div>
-          </div>
-
-          <div className="dasbor__table-wrap">
-            <table className="dasbor__table">
-              <thead>
-                <tr>
-                  <th scope="col">Platform</th>
-                  <th scope="col" style={{ textAlign: 'right' }}>Jangkauan</th>
-                  <th scope="col" style={{ textAlign: 'right' }}>Interaksi</th>
-                  <th scope="col" style={{ textAlign: 'right' }}>Engagement</th>
-                  <th scope="col" style={{ textAlign: 'right' }}>Pertumbuhan</th>
-                </tr>
-              </thead>
-              <tbody>
-                {INITIAL_PLATFORMS.map((p) => (
-                  <tr key={p.name}>
-                    <td><strong>{p.name}</strong></td>
-                    <td className="num">{p.reach}</td>
-                    <td className="num">{p.interactions}</td>
-                    <td className="num">
-                      <span className="dasbor__badge dasbor__badge--flat">{p.engagement}</span>
-                    </td>
-                    <td className="num">
-                      <span className={`dasbor__badge dasbor__badge--${p.growthType}`}>
-                        {p.growth}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </article>
-
-        {/* Peringatan & Tindak Lanjut */}
-        <article className="dasbor__card">
-          <div className="dasbor__card-head">
-            <div>
-              <h2>Peringatan & tindak lanjut</h2>
-              <p><span>{alerts.length}</span> butir membutuhkan perhatian staf</p>
-            </div>
-            <Link className="dasbor__mini-btn" href="/pengaturan" style={{ textDecoration: 'none' }}>
-              Semua integrasi
+            <Link href="/pemantauan-kanal" className="dasbor__mini-btn">
+              Detail
             </Link>
           </div>
 
-          {alerts.length > 0 ? (
-            <div className="dasbor__alerts">
-              {alerts.map((alert) => (
-                <div className="dasbor__alert" key={alert.id} data-level={alert.level}>
-                  <div className="dasbor__alert-body">
-                    <p className="dasbor__alert-title">{alert.title}</p>
-                    <p className="dasbor__alert-note">{alert.note}</p>
-                    <div className="dasbor__alert-actions">
-                      <Link className="dasbor__mini-btn" href={alert.actionHref} style={{ textDecoration: 'none' }}>
-                        {alert.actionLabel}
-                      </Link>
-                      <button
-                        className="dasbor__mini-btn"
-                        type="button"
-                        onClick={() => handleResolveAlert(alert.id)}
-                      >
-                        Selesai
-                      </button>
-                    </div>
+          <div className="sd-channel-list">
+            {CONNECTED_CHANNELS.map((ch) => (
+              <Link
+                href="/pemantauan-kanal"
+                key={ch.id}
+                className="sd-channel-item"
+              >
+                <div className="sd-channel-item__left">
+                  {/* @ts-ignore iconify web component */}
+                  <iconify-icon
+                    icon={ch.icon}
+                    aria-hidden="true"
+                    style={{ fontSize: '20px', color: ch.iconColor }}
+                  />
+                  <div className="sd-channel-item__meta">
+                    <strong>{ch.handle}</strong>
+                    <span>
+                      {ch.followersLabel} · {ch.pulledAgoLabel}
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <p className="dasbor__empty" style={{ textAlign: 'center', padding: '16px', color: '#72747a' }}>
-              Semua peringatan telah diselesaikan.
-            </p>
-          )}
+                <span
+                  className={`sd-status-tag ${
+                    ch.statusLabel === 'Aktif' ? 'sd-status-tag--ok' : 'sd-status-tag--warn'
+                  }`}
+                >
+                  {ch.statusLabel}
+                </span>
+              </Link>
+            ))}
+          </div>
         </article>
       </div>
 
-      {/* 5. Baris Modular: Umpan Berita Waktu Nyata & Jadwal Konten Terdekat */}
-      <div className="dasbor__analytics-grid">
-        <RealtimeNewsFeed />
-
-        <article className="dasbor__card">
+      {/* 4. Baris Kalender Konten (7 Kolom) & Basis Pengetahuan (5 Kolom) */}
+      <div className="sd-grid-12">
+        <article className="dasbor__card sd-col-7">
           <div className="dasbor__card-head">
             <div>
-              <h2>Jadwal konten terdekat</h2>
-              <p>Kalender publikasi 3 hari mendatang</p>
+              <h2 className="sd-section-title">Kalender Konten</h2>
+              <p>Jadwal publikasi lintas kanal pekan berjalan</p>
             </div>
-            <Link className="dasbor__mini-btn" href="/kalender-konten" style={{ textDecoration: 'none' }}>
-              Buka Kalender
+            <span className="sd-mono-tag">Minggu 42 — Okt 2026</span>
+          </div>
+
+          <div className="sd-agenda-list">
+            <Link href="/kalender-konten" className="sd-agenda-item">
+              <div className="sd-agenda-date">
+                <strong>19</strong>
+                <span>Sen</span>
+              </div>
+              <div className="sd-agenda-body">
+                <strong>Edukasi Pajak Digital (IG Story)</strong>
+                <span>Status: Terbit · 09:00 WIB</span>
+              </div>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon
+                icon="lucide:check-circle"
+                aria-hidden="true"
+                style={{ color: '#10b981', fontSize: '18px' }}
+              />
+            </Link>
+
+            <Link href="/kalender-konten" className="sd-agenda-item">
+              <div className="sd-agenda-date">
+                <strong>20</strong>
+                <span>Sel</span>
+              </div>
+              <div className="sd-agenda-body">
+                <strong>Live: Tanya Jawab Bansos (YouTube)</strong>
+                <span>Status: Reviu · 19:30 WIB</span>
+              </div>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon
+                icon="lucide:clock"
+                aria-hidden="true"
+                style={{ color: '#f59e0b', fontSize: '18px' }}
+              />
+            </Link>
+
+            <Link href="/kalender-konten" className="sd-agenda-item">
+              <div className="sd-agenda-date">
+                <strong>22</strong>
+                <span>Kam</span>
+              </div>
+              <div className="sd-agenda-body">
+                <strong>Infografis Penyaluran Logistik Daerah Terdampak (Reels &amp; TikTok)</strong>
+                <span>Status: Terjadwal · 16:00 WIB</span>
+              </div>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon
+                icon="lucide:calendar-check"
+                aria-hidden="true"
+                style={{ color: '#3b82f6', fontSize: '18px' }}
+              />
             </Link>
           </div>
-          <div className="dasbor__table-wrap">
-            <table className="dasbor__table">
-              <thead>
-                <tr>
-                  <th scope="col">Tanggal</th>
-                  <th scope="col">Konten</th>
-                  <th scope="col">Kanal</th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><strong>Besok</strong></td>
-                  <td className="title-col">Siaran pers bakti sosial penyaluran air bersih</td>
-                  <td>Instagram</td>
-                  <td><span className="dasbor__badge dasbor__badge--up">Siap terbit</span></td>
-                </tr>
-                <tr>
-                  <td><strong>Lusa</strong></td>
-                  <td className="title-col">Klarifikasi isu penanganan darurat banjir lahar</td>
-                  <td>Situs Web</td>
-                  <td><span className="dasbor__badge dasbor__badge--flat">Menunggu review</span></td>
-                </tr>
-                <tr>
-                  <td><strong>+3 Hari</strong></td>
-                  <td className="title-col">Reels program beasiswa yatim dhuafa</td>
-                  <td>TikTok</td>
-                  <td><span className="dasbor__badge dasbor__badge--flat">Menunggu review</span></td>
-                </tr>
-              </tbody>
-            </table>
+        </article>
+
+        <article className="dasbor__card sd-col-5">
+          <div className="dasbor__card-head">
+            <div>
+              <h2 className="sd-section-title">Basis Pengetahuan</h2>
+              <p>Dokumen rujukan operasional &amp; SOP aktif</p>
+            </div>
+          </div>
+
+          <div className="sd-kb-list">
+            <Link href="/basis-pengetahuan" id="kb-1" className="sd-kb-link">
+              <span>SOP Komunikasi Krisis v2.1</span>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon icon="lucide:chevron-right" aria-hidden="true" />
+            </Link>
+            <Link href="/basis-pengetahuan" id="kb-2" className="sd-kb-link">
+              <span>Panduan Visual Brand 2026</span>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon icon="lucide:chevron-right" aria-hidden="true" />
+            </Link>
+            <Link href="/sop" id="kb-3" className="sd-kb-link">
+              <span>Protokol Keselamatan Liputan Bencana</span>
+              {/* @ts-ignore iconify web component */}
+              <iconify-icon icon="lucide:chevron-right" aria-hidden="true" />
+            </Link>
+            <Link href="/basis-pengetahuan" className="sd-kb-cta">
+              Buka Perpustakaan
+            </Link>
           </div>
         </article>
       </div>
+
+      {/* 5. Pantauan Berita Terkini (3 Kolom Responsif) */}
+      <article className="dasbor__card">
+        <div className="dasbor__card-head">
+          <div>
+            <h2 className="sd-section-title">Pantauan Berita Terkini</h2>
+            <p>Kliping isu publik &amp; sentimen pemberitaan utama hari ini</p>
+          </div>
+          <Link href="/pantauan-berita" id="news-link" className="sd-link-accent">
+            Lihat Semua
+          </Link>
+        </div>
+
+        <div className="sd-news-grid">
+          {NEWS_CLIPPINGS.map((clip) => (
+            <Link href="/pantauan-berita" key={clip.id} className="sd-news-card">
+              <div className="sd-news-card__top">
+                <span className={`sd-sentiment sd-sentiment--${clip.sentimentTone}`}>
+                  {clip.sentiment}
+                </span>
+                <span className="sd-mono-tag">{clip.timeAgo}</span>
+              </div>
+              <h3 className="sd-news-card__title">{clip.title}</h3>
+              <span className="sd-news-card__source">{clip.source}</span>
+            </Link>
+          ))}
+        </div>
+      </article>
+
+      {/* 6. Agregasi Multi-Platform & Stream Berita Live */}
+      <DashboardGrid />
+      <RealtimeNewsFeed />
     </div>
   );
 }
+export default DashboardView;

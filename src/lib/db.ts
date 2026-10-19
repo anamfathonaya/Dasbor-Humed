@@ -48,6 +48,8 @@ export const db = new Proxy({} as any, {
   },
 });
 
+export default db;
+
 export function initDatabase() {
   if (isSupabasePreferred) {
     // Runtime dasbor.db dihentikan saat Supabase aktif (production/serverless environment)
@@ -668,7 +670,7 @@ export function initDatabase() {
       UNIQUE(channel_id, metric_date)
     );
 
-    -- 16. Log Webhook Kanal
+    -- 16. Log Webhook Kanal & Log Sinkronisasi Kanal
     CREATE TABLE IF NOT EXISTS channel_webhook_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       channel_id INTEGER,
@@ -683,7 +685,171 @@ export function initDatabase() {
       processed_at DATETIME,
       FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS channel_sync_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      channel_id INTEGER,
+      platform TEXT NOT NULL,
+      sync_type TEXT NOT NULL DEFAULT 'scheduled',
+      status TEXT NOT NULL DEFAULT 'success',
+      metrics_synced INTEGER DEFAULT 0,
+      error_message TEXT,
+      triggered_by TEXT DEFAULT 'cron_scheduler',
+      started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      finished_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS youtube_connected_channels (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      social_channel_id INTEGER,
+      youtube_channel_id TEXT NOT NULL UNIQUE,
+      channel_title TEXT NOT NULL,
+      custom_url TEXT NOT NULL,
+      avatar_url TEXT,
+      subscriber_count INTEGER DEFAULT 0,
+      total_views_count INTEGER DEFAULT 0,
+      video_count INTEGER DEFAULT 0,
+      analytics_views_30d INTEGER DEFAULT 0,
+      analytics_watch_time_minutes_30d INTEGER DEFAULT 0,
+      analytics_engagements_30d INTEGER DEFAULT 0,
+      granted_scopes TEXT NOT NULL DEFAULT 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly',
+      oauth_status TEXT NOT NULL DEFAULT 'connected',
+      token_expires_at DATETIME,
+      last_health_check_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_synced_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      connected_by_email TEXT DEFAULT 'admin.humas@kemensos.go.id',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (social_channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS channel_sync_schedules (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      channel_id INTEGER,
+      platform TEXT NOT NULL,
+      cron_expression TEXT NOT NULL DEFAULT '0 6 * * *',
+      is_active BOOLEAN NOT NULL DEFAULT 1,
+      target_metrics TEXT NOT NULL DEFAULT '["reach","impressions","engagement","subscribers"]',
+      last_run_at DATETIME,
+      next_run_at DATETIME,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS channel_sync_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      schedule_id INTEGER,
+      channel_id INTEGER,
+      platform TEXT NOT NULL,
+      sync_type TEXT NOT NULL DEFAULT 'scheduled', -- 'scheduled' | 'manual' | 'retry'
+      status TEXT NOT NULL DEFAULT 'success',      -- 'success' | 'partial' | 'failed'
+      items_synced INTEGER DEFAULT 0,
+      duration_ms INTEGER DEFAULT 0,
+      details_json TEXT,
+      error_message TEXT,
+      triggered_by TEXT DEFAULT 'scheduler',
+      started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      completed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (schedule_id) REFERENCES channel_sync_schedules(id) ON DELETE SET NULL,
+      FOREIGN KEY (channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS meta_connected_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      social_channel_id INTEGER,
+      meta_account_id TEXT NOT NULL UNIQUE, -- Instagram IGID or Facebook Page ID
+      platform TEXT NOT NULL,               -- 'instagram' | 'facebook'
+      name TEXT NOT NULL,
+      handle TEXT NOT NULL,
+      account_type TEXT NOT NULL,           -- 'Instagram Business / Creator' | 'Facebook Page Resmi'
+      encrypted_access_token TEXT,          -- Token akses tersimpan aman di sisi server
+      token_expires_at DATETIME,
+      granted_scopes TEXT NOT NULL,         -- JSON array: instagram_basic, instagram_manage_insights, pages_show_list, pages_read_engagement, read_insights
+      followers_count INTEGER DEFAULT 0,
+      reach_30d INTEGER DEFAULT 0,
+      engagement_rate REAL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'connected', -- 'connected' | 'token_expiring' | 'disconnected'
+      last_health_check_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_synced_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      connected_by_email TEXT DEFAULT 'admin.humas@kemensos.go.id',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (social_channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS meta_integration_audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      meta_account_id TEXT,
+      action TEXT NOT NULL,         -- 'OAUTH_CONNECT' | 'TOKEN_REFRESH' | 'HEALTH_CHECK' | 'DISCONNECT'
+      platform TEXT NOT NULL,       -- 'instagram' | 'facebook'
+      account_name TEXT NOT NULL,
+      user_name TEXT NOT NULL,
+      user_role TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'success', -- 'success' | 'warning' | 'failed'
+      details TEXT,
+      ip_address TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    -- 17. Kanal TikTok Resmi & Audit Log Integrasi (Display API v2)
+    CREATE TABLE IF NOT EXISTS tiktok_connected_accounts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      social_channel_id INTEGER,
+      open_id TEXT NOT NULL UNIQUE,          -- TikTok OpenID akun resmi
+      union_id TEXT,                         -- TikTok UnionID
+      display_name TEXT NOT NULL,
+      handle TEXT NOT NULL,
+      avatar_url TEXT,
+      encrypted_access_token TEXT,           -- Token akses terenkripsi di sisi server
+      encrypted_refresh_token TEXT,          -- Refresh token terenkripsi di sisi server
+      token_expires_at DATETIME,             -- Kedaluwarsa access token (biasanya 24 jam)
+      refresh_token_expires_at DATETIME,     -- Kedaluwarsa refresh token (biasanya 60 hari)
+      granted_scopes TEXT NOT NULL DEFAULT 'user.info.basic,video.list',
+      followers_count INTEGER DEFAULT 0,
+      likes_count INTEGER DEFAULT 0,
+      video_count INTEGER DEFAULT 0,
+      reach_30d INTEGER DEFAULT 0,
+      views_30d INTEGER DEFAULT 0,
+      engagement_rate REAL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'connected', -- 'connected' | 'token_expiring' | 'disconnected'
+      last_health_check_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      last_synced_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      connected_by_email TEXT DEFAULT 'admin.humas@kemensos.go.id',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (social_channel_id) REFERENCES social_channels(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS tiktok_integration_audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      open_id TEXT,
+      action TEXT NOT NULL,                  -- 'OAUTH_CONNECT' | 'TOKEN_REFRESH' | 'HEALTH_CHECK' | 'METRIC_PULL' | 'DISCONNECT'
+      account_name TEXT NOT NULL,
+      user_name TEXT NOT NULL,
+      user_role TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'success', -- 'success' | 'warning' | 'failed'
+      details TEXT,
+      ip_address TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_tiktok_open_id ON tiktok_connected_accounts(open_id);
+    CREATE INDEX IF NOT EXISTS idx_tiktok_status ON tiktok_connected_accounts(status);
+    CREATE INDEX IF NOT EXISTS idx_tiktok_audit_open_id ON tiktok_integration_audit_logs(open_id);
   `);
+
+  // Safe migrations for social_channels & channel_daily_metrics
+  try { db.exec("ALTER TABLE social_channels ADD COLUMN external_account_id TEXT"); } catch {}
+  try { db.exec("ALTER TABLE social_channels ADD COLUMN sync_schedule TEXT DEFAULT '0 6 * * *'"); } catch {}
+  try { db.exec("ALTER TABLE social_channels ADD COLUMN last_health_check DATETIME"); } catch {}
+  try { db.exec("ALTER TABLE social_channels ADD COLUMN last_error_message TEXT"); } catch {}
+  try { db.exec("ALTER TABLE social_channels ADD COLUMN configured_by INTEGER"); } catch {}
+  try { db.exec("ALTER TABLE channel_daily_metrics ADD COLUMN followers_count INTEGER DEFAULT 0"); } catch {}
+  try { db.exec("ALTER TABLE channel_daily_metrics ADD COLUMN views_count INTEGER DEFAULT 0"); } catch {}
+  try { db.exec("ALTER TABLE channel_daily_metrics ADD COLUMN interactions_count INTEGER DEFAULT 0"); } catch {}
+  try { db.exec("ALTER TABLE channel_daily_metrics ADD COLUMN engagement_rate REAL DEFAULT 0"); } catch {}
 
   // Safe migrations for content_calendar columns
   try { db.exec("ALTER TABLE content_calendar ADD COLUMN content_type TEXT"); } catch {}
@@ -1760,6 +1926,248 @@ export function initDatabase() {
     insertAudit.run(null, 'Sistem Otomatis DAM', 'service_agent', 'Sinkronisasi Folder SMB', '48 Berkas Foto Dokumentasi Baru Dipindai', '192.168.1.200', 'success', 'Penambahan metadata EXIF');
     insertAudit.run(null, 'Percobaan Masuk Tamu', 'anonymous', 'Gagal Autentikasi Pengguna', 'admin.backup@pedulinegeri.org (Salah Sandi)', '114.124.201.33', 'failed', '3x percobaan salah sandi berurutan');
   }
+
+  // Seeding default social_channels & channel_daily_metrics jika kosong
+  try {
+    const channelCount = (db.prepare('SELECT COUNT(*) as count FROM social_channels').get() as { count: number }).count;
+    if (channelCount === 0) {
+      const insertChannel = db.prepare(`
+        INSERT INTO social_channels (name, platform, handle, followers_count, status, platform_url, external_account_id, last_synced_at, last_health_check)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertChannel.run('Instagram Resmi Humas', 'instagram', '@pedulinegeri_id', 45200, 'connected', 'https://instagram.com/pedulinegeri_id', 'ig_pedulinegeri_01', '2026-10-19 08:30:00', '2026-10-19 08:30:00');
+      insertChannel.run('Halaman Resmi Yayasan Peduli Negeri', 'facebook', 'Yayasan Peduli Negeri', 62800, 'connected', 'https://facebook.com/pedulinegeri.id', 'fb_pedulinegeri_01', '2026-10-19 08:20:00', '2026-10-19 08:20:00');
+      insertChannel.run('Aksi Peduli Negeri', 'tiktok', '@aksipedulinegeri', 89000, 'connected', 'https://tiktok.com/@aksipedulinegeri', 'tt_pedulinegeri_01', '2026-10-19 08:15:00', '2026-10-19 08:15:00');
+      insertChannel.run('Peduli Negeri TV', 'youtube', '@PeduliNegeriTV', 185000, 'connected', 'https://youtube.com/@PeduliNegeriTV', 'UC_PeduliNegeriTV_01', '2026-10-19 08:35:00', '2026-10-19 08:35:00');
+    }
+
+    const dailyMetricsCount = (db.prepare('SELECT COUNT(*) as count FROM channel_daily_metrics').get() as { count: number }).count;
+    if (dailyMetricsCount === 0) {
+      const channels = db.prepare('SELECT id, platform, followers_count FROM social_channels').all() as Array<{
+        id: number;
+        platform: string;
+        followers_count: number;
+      }>;
+
+      const insertDailyMetric = db.prepare(`
+        INSERT OR IGNORE INTO channel_daily_metrics (
+          channel_id, platform, metric_date, reach, impressions, engagement,
+          followers_gained, conversions, clicks, shares,
+          followers_count, views_count, interactions_count, engagement_rate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const dates = ['2026-10-13', '2026-10-14', '2026-10-15', '2026-10-16', '2026-10-17', '2026-10-18', '2026-10-19'];
+      for (const ch of channels) {
+        dates.forEach((dt, idx) => {
+          const baseViews = ch.platform === 'tiktok' ? 175000 : ch.platform === 'instagram' ? 138000 : ch.platform === 'facebook' ? 98000 : 91000;
+          const views = baseViews + idx * 3400;
+          const interactions = Math.round(views * 0.062);
+          const followers = ch.followers_count - (6 - idx) * 120;
+          const er = Number(((interactions / views) * 100).toFixed(2));
+          insertDailyMetric.run(
+            ch.id,
+            ch.platform,
+            dt,
+            Math.round(views * 0.82),
+            views,
+            interactions,
+            120,
+            15 + idx,
+            Math.round(interactions * 0.18),
+            Math.round(interactions * 0.09),
+            followers,
+            views,
+            interactions,
+            er
+          );
+        });
+      }
+    }
+
+    // Seeding meta_connected_accounts jika kosong
+    const metaCount = (db.prepare('SELECT COUNT(*) as count FROM meta_connected_accounts').get() as { count: number }).count;
+    if (metaCount === 0) {
+      const insertMeta = db.prepare(`
+        INSERT INTO meta_connected_accounts (
+          meta_account_id, platform, name, handle, account_type,
+          encrypted_access_token, token_expires_at, granted_scopes,
+          followers_count, reach_30d, engagement_rate, status,
+          last_health_check_at, last_synced_at, connected_by_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertMeta.run(
+        'meta-ig-01',
+        'instagram',
+        'Instagram Resmi Kemensos RI',
+        '@kemensosri',
+        'Instagram Business / Creator',
+        'EAABwzLIXf...ENC_SECURE_TOKEN_01',
+        '2026-12-18 10:00:00',
+        JSON.stringify(['instagram_basic', 'instagram_manage_insights', 'pages_show_list', 'pages_read_engagement']),
+        524000,
+        1845000,
+        4.82,
+        'connected',
+        '2026-10-19 06:00:00',
+        '2026-10-19 06:00:00',
+        'admin.humas@kemensos.go.id'
+      );
+
+      insertMeta.run(
+        'meta-fb-01',
+        'facebook',
+        'Kementerian Sosial Republik Indonesia',
+        'KemensosRI',
+        'Facebook Page Resmi',
+        'EAABwzLIXf...ENC_SECURE_TOKEN_02',
+        '2026-11-25 15:30:00',
+        JSON.stringify(['pages_show_list', 'pages_read_engagement', 'read_insights']),
+        890000,
+        2120000,
+        3.45,
+        'connected',
+        '2026-10-19 06:00:00',
+        '2026-10-19 06:00:00',
+        'admin.humas@kemensos.go.id'
+      );
+
+      insertMeta.run(
+        'meta-ig-02',
+        'instagram',
+        'Pusat Data dan Informasi Kesejahteraan Sosial (Pusdatin Kesos)',
+        '@pusdatinkesos',
+        'Instagram Business / Creator',
+        'EAABwzLIXf...ENC_SECURE_TOKEN_03',
+        '2026-10-22 18:00:00',
+        JSON.stringify(['instagram_basic', 'instagram_manage_insights']),
+        89200,
+        312000,
+        5.14,
+        'token_expiring',
+        '2026-10-19 06:00:00',
+        '2026-10-18 18:00:00',
+        'admin.humas@kemensos.go.id'
+      );
+    }
+
+    // Seeding meta_integration_audit_logs jika kosong
+    const metaAuditCount = (db.prepare('SELECT COUNT(*) as count FROM meta_integration_audit_logs').get() as { count: number }).count;
+    if (metaAuditCount === 0) {
+      const insertMetaAudit = db.prepare(`
+        INSERT INTO meta_integration_audit_logs (
+          meta_account_id, action, platform, account_name, user_name, user_role, status, details, ip_address, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertMetaAudit.run(
+        'meta-fb-01',
+        'OAUTH_CONNECT',
+        'facebook',
+        'Kementerian Sosial Republik Indonesia',
+        'Budi Santoso',
+        'admin',
+        'success',
+        'Berhasil menghubungkan Facebook Page Resmi via OAuth 2.0 User Token & pertukaran Page Token',
+        '192.168.1.45',
+        '2026-10-19 06:12:00'
+      );
+
+      insertMetaAudit.run(
+        'meta-ig-01',
+        'HEALTH_CHECK',
+        'instagram',
+        'Instagram Resmi Kemensos RI',
+        'Sistem Otomatis Cron',
+        'service_agent',
+        'success',
+        'Pemeriksaan token aktif dan endpoint Graph API wawasan akun sukses (200 OK — Respons 142ms)',
+        '127.0.0.1',
+        '2026-10-19 06:00:00'
+      );
+
+      insertMetaAudit.run(
+        'meta-ig-02',
+        'TOKEN_REFRESH',
+        'instagram',
+        'Pusat Data dan Informasi Kesejahteraan Sosial (Pusdatin Kesos)',
+        'Rani Maulida',
+        'head',
+        'warning',
+        'Peringatan masa berlaku kredensial sisa 3 hari. Memerlukan otorisasi ulang akun Instagram Business',
+        '180.252.16.89',
+        '2026-10-18 18:00:00'
+      );
+    }
+
+    // Seeding channel_sync_history jika kosong
+    const syncHistoryCount = (db.prepare('SELECT COUNT(*) as count FROM channel_sync_history').get() as { count: number }).count;
+    if (syncHistoryCount === 0) {
+      const insertSyncHist = db.prepare(`
+        INSERT INTO channel_sync_history (
+          channel_id, platform, sync_type, status, items_synced, duration_ms, details_json, error_message, triggered_by, started_at, completed_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertSyncHist.run(
+        1,
+        'instagram',
+        'scheduled',
+        'success',
+        1,
+        380,
+        JSON.stringify({ views: 184500, reach: 98200, engagements: 14200 }),
+        null,
+        'daily_cron_scheduler',
+        '2026-10-19 06:00:00',
+        '2026-10-19 06:00:18'
+      );
+
+      insertSyncHist.run(
+        2,
+        'facebook',
+        'scheduled',
+        'success',
+        1,
+        510,
+        JSON.stringify({ views: 76400, reach: 41000, engagements: 3400 }),
+        null,
+        'daily_cron_scheduler',
+        '2026-10-19 06:00:00',
+        '2026-10-19 06:00:22'
+      );
+
+      insertSyncHist.run(
+        4,
+        'youtube',
+        'scheduled',
+        'success',
+        1,
+        412,
+        JSON.stringify({ views: 42100, reach: 28400, engagements: 5120 }),
+        null,
+        'daily_cron_scheduler',
+        '2026-10-19 06:00:00',
+        '2026-10-19 06:00:14'
+      );
+
+      insertSyncHist.run(
+        3,
+        'tiktok',
+        'scheduled',
+        'partial',
+        1,
+        640,
+        JSON.stringify({ views: 245000, reach: 145000, engagements: 21800 }),
+        'Peringatan: Masa berlaku Display API token mendekati batas 3 hari.',
+        'daily_cron_scheduler',
+        '2026-10-18 19:00:00',
+        '2026-10-18 19:00:08'
+      );
+    }
+  } catch {}
 }
 
 /* ==========================================================================
@@ -1876,6 +2284,247 @@ export const dbQueries = {
   // 9. Audit Logs
   audit: {
     getRecent: (limit = 100) => db.prepare('SELECT * FROM audit_logs ORDER BY id DESC LIMIT ?').all(limit),
+  },
+
+  // 10. Meta Connected Accounts
+  metaAccounts: {
+    getAll: () => db.prepare('SELECT * FROM meta_connected_accounts ORDER BY id ASC').all(),
+    getById: (id: string | number) => db.prepare('SELECT * FROM meta_connected_accounts WHERE id = ? OR meta_account_id = ?').get(id, String(id)),
+    getByPlatform: (platform: string) => db.prepare('SELECT * FROM meta_connected_accounts WHERE platform = ? ORDER BY id ASC').all(platform),
+    updateStatus: (metaAccountId: string, status: string, lastHealthCheck?: string) => {
+      return db.prepare(`
+        UPDATE meta_connected_accounts
+        SET status = ?, last_health_check_at = COALESCE(?, datetime('now')), updated_at = datetime('now')
+        WHERE meta_account_id = ?
+      `).run(status, lastHealthCheck || null, metaAccountId);
+    },
+    updateToken: (metaAccountId: string, encryptedToken: string, expiresAt: string) => {
+      return db.prepare(`
+        UPDATE meta_connected_accounts
+        SET encrypted_access_token = ?, token_expires_at = ?, status = 'connected', updated_at = datetime('now')
+        WHERE meta_account_id = ?
+      `).run(encryptedToken, expiresAt, metaAccountId);
+    },
+    disconnect: (metaAccountId: string) => {
+      return db.prepare(`
+        UPDATE meta_connected_accounts
+        SET encrypted_access_token = NULL, status = 'disconnected', updated_at = datetime('now')
+        WHERE meta_account_id = ?
+      `).run(metaAccountId);
+    }
+  },
+
+  // 11. Meta Integration Audit Logs
+  metaAudit: {
+    getAll: (limit = 100) => db.prepare('SELECT * FROM meta_integration_audit_logs ORDER BY id DESC LIMIT ?').all(limit),
+    insert: (log: {
+      metaAccountId?: string;
+      action: 'OAUTH_CONNECT' | 'TOKEN_REFRESH' | 'HEALTH_CHECK' | 'DISCONNECT';
+      platform: 'instagram' | 'facebook';
+      accountName: string;
+      userName: string;
+      userRole: string;
+      status: 'success' | 'warning' | 'failed';
+      details: string;
+      ipAddress?: string;
+    }) => {
+      return db.prepare(`
+        INSERT INTO meta_integration_audit_logs (
+          meta_account_id, action, platform, account_name, user_name, user_role, status, details, ip_address
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        log.metaAccountId || null,
+        log.action,
+        log.platform,
+        log.accountName,
+        log.userName,
+        log.userRole,
+        log.status,
+        log.details,
+        log.ipAddress || null
+      );
+    }
+  },
+
+  // 12. TikTok Connected Accounts (Display API v2)
+  tiktokAccounts: {
+    getAll: () => db.prepare('SELECT * FROM tiktok_connected_accounts ORDER BY id DESC').all(),
+    getByOpenId: (openId: string) => db.prepare('SELECT * FROM tiktok_connected_accounts WHERE open_id = ?').get(openId),
+    upsert: (account: {
+      openId: string;
+      unionId?: string;
+      displayName: string;
+      handle: string;
+      avatarUrl?: string;
+      encryptedAccessToken?: string;
+      encryptedRefreshToken?: string;
+      tokenExpiresAt?: string;
+      refreshTokenExpiresAt?: string;
+      grantedScopes?: string;
+      followersCount?: number;
+      likesCount?: number;
+      videoCount?: number;
+      reach30d?: number;
+      views30d?: number;
+      engagementRate?: number;
+      status?: 'connected' | 'token_expiring' | 'disconnected';
+      connectedByEmail?: string;
+    }) => {
+      const existing = db.prepare('SELECT id FROM tiktok_connected_accounts WHERE open_id = ?').get(account.openId) as { id: number } | undefined;
+      if (existing) {
+        return db.prepare(`
+          UPDATE tiktok_connected_accounts
+          SET union_id = COALESCE(?, union_id),
+              display_name = ?,
+              handle = ?,
+              avatar_url = COALESCE(?, avatar_url),
+              encrypted_access_token = COALESCE(?, encrypted_access_token),
+              encrypted_refresh_token = COALESCE(?, encrypted_refresh_token),
+              token_expires_at = COALESCE(?, token_expires_at),
+              refresh_token_expires_at = COALESCE(?, refresh_token_expires_at),
+              granted_scopes = COALESCE(?, granted_scopes),
+              followers_count = COALESCE(?, followers_count),
+              likes_count = COALESCE(?, likes_count),
+              video_count = COALESCE(?, video_count),
+              reach_30d = COALESCE(?, reach_30d),
+              views_30d = COALESCE(?, views_30d),
+              engagement_rate = COALESCE(?, engagement_rate),
+              status = COALESCE(?, status),
+              updated_at = datetime('now')
+          WHERE open_id = ?
+        `).run(
+          account.unionId || null,
+          account.displayName,
+          account.handle,
+          account.avatarUrl || null,
+          account.encryptedAccessToken || null,
+          account.encryptedRefreshToken || null,
+          account.tokenExpiresAt || null,
+          account.refreshTokenExpiresAt || null,
+          account.grantedScopes || 'user.info.basic,video.list',
+          account.followersCount ?? null,
+          account.likesCount ?? null,
+          account.videoCount ?? null,
+          account.reach30d ?? null,
+          account.views30d ?? null,
+          account.engagementRate ?? null,
+          account.status || 'connected',
+          account.openId
+        );
+      } else {
+        return db.prepare(`
+          INSERT INTO tiktok_connected_accounts (
+            open_id, union_id, display_name, handle, avatar_url,
+            encrypted_access_token, encrypted_refresh_token,
+            token_expires_at, refresh_token_expires_at, granted_scopes,
+            followers_count, likes_count, video_count, reach_30d, views_30d, engagement_rate,
+            status, connected_by_email
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).run(
+          account.openId,
+          account.unionId || null,
+          account.displayName,
+          account.handle,
+          account.avatarUrl || null,
+          account.encryptedAccessToken || null,
+          account.encryptedRefreshToken || null,
+          account.tokenExpiresAt || null,
+          account.refreshTokenExpiresAt || null,
+          account.grantedScopes || 'user.info.basic,video.list',
+          account.followersCount || 0,
+          account.likesCount || 0,
+          account.videoCount || 0,
+          account.reach30d || 0,
+          account.views30d || 0,
+          account.engagementRate || 0,
+          account.status || 'connected',
+          account.connectedByEmail || 'admin.humas@kemensos.go.id'
+        );
+      }
+    },
+    updateMetrics: (openId: string, metrics: {
+      followersCount?: number;
+      likesCount?: number;
+      videoCount?: number;
+      reach30d?: number;
+      views30d?: number;
+      engagementRate?: number;
+    }) => {
+      return db.prepare(`
+        UPDATE tiktok_connected_accounts
+        SET followers_count = COALESCE(?, followers_count),
+            likes_count = COALESCE(?, likes_count),
+            video_count = COALESCE(?, video_count),
+            reach_30d = COALESCE(?, reach_30d),
+            views_30d = COALESCE(?, views_30d),
+            engagement_rate = COALESCE(?, engagement_rate),
+            last_synced_at = datetime('now'),
+            updated_at = datetime('now')
+        WHERE open_id = ?
+      `).run(
+        metrics.followersCount ?? null,
+        metrics.likesCount ?? null,
+        metrics.videoCount ?? null,
+        metrics.reach30d ?? null,
+        metrics.views30d ?? null,
+        metrics.engagementRate ?? null,
+        openId
+      );
+    },
+    updateStatus: (openId: string, status: string, lastHealthCheck?: string) => {
+      return db.prepare(`
+        UPDATE tiktok_connected_accounts
+        SET status = ?, last_health_check_at = COALESCE(?, datetime('now')), updated_at = datetime('now')
+        WHERE open_id = ?
+      `).run(status, lastHealthCheck || null, openId);
+    },
+    updateToken: (openId: string, encryptedAccessToken: string, encryptedRefreshToken: string, tokenExpiresAt: string, refreshTokenExpiresAt: string) => {
+      return db.prepare(`
+        UPDATE tiktok_connected_accounts
+        SET encrypted_access_token = ?, encrypted_refresh_token = ?,
+            token_expires_at = ?, refresh_token_expires_at = ?,
+            status = 'connected', updated_at = datetime('now')
+        WHERE open_id = ?
+      `).run(encryptedAccessToken, encryptedRefreshToken, tokenExpiresAt, refreshTokenExpiresAt, openId);
+    },
+    disconnect: (openId: string) => {
+      return db.prepare(`
+        UPDATE tiktok_connected_accounts
+        SET encrypted_access_token = NULL, encrypted_refresh_token = NULL,
+            status = 'disconnected', updated_at = datetime('now')
+        WHERE open_id = ?
+      `).run(openId);
+    }
+  },
+
+  // 13. TikTok Integration Audit Logs
+  tiktokAudit: {
+    getAll: (limit = 100) => db.prepare('SELECT * FROM tiktok_integration_audit_logs ORDER BY id DESC LIMIT ?').all(limit),
+    insert: (log: {
+      openId?: string;
+      action: 'OAUTH_CONNECT' | 'TOKEN_REFRESH' | 'HEALTH_CHECK' | 'METRIC_PULL' | 'DISCONNECT';
+      accountName: string;
+      userName: string;
+      userRole: string;
+      status: 'success' | 'warning' | 'failed';
+      details: string;
+      ipAddress?: string;
+    }) => {
+      return db.prepare(`
+        INSERT INTO tiktok_integration_audit_logs (
+          open_id, action, account_name, user_name, user_role, status, details, ip_address
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        log.openId || null,
+        log.action,
+        log.accountName,
+        log.userName,
+        log.userRole,
+        log.status,
+        log.details,
+        log.ipAddress || null
+      );
+    }
   },
 };
 
