@@ -1,63 +1,90 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import {
-  completeYouTubeOAuthCallback,
-  verifyAdminOrHeadRole
+  exchangeYouTubeCode,
+  fetchYouTubeChannelInfo,
+  saveYouTubeChannel,
 } from '@/lib/youtubeConnectorService';
+import { initDatabase } from '@/lib/db';
+import { recordAuditLog } from '@/lib/auditService';
 
-export async function GET(request: Request) {
-  const roleCheck = verifyAdminOrHeadRole(request);
-  if (!roleCheck.allowed) {
-    return NextResponse.json(
-      { ok: false, error: roleCheck.reason },
-      { status: 403 }
-    );
-  }
+initDatabase();
 
-  const url = new URL(request.url);
-  const code = url.searchParams.get('code') || 'yt_auth_code_2026';
-  const state = url.searchParams.get('state') || 'yt_state_verified';
+export const dynamic = 'force-dynamic';
 
-  const result = await completeYouTubeOAuthCallback({
-    code,
-    state
-  });
-
-  return NextResponse.json({
-    ok: true,
-    provider: 'youtube',
-    message: 'Kanal YouTube berhasil dihubungkan melalui OAuth 2.0 (Hanya-Baca).',
-    channel: result
-  });
-}
-
-export async function POST(request: Request) {
-  const roleCheck = verifyAdminOrHeadRole(request);
-  if (!roleCheck.allowed) {
-    return NextResponse.json(
-      { ok: false, error: roleCheck.reason },
-      { status: 403 }
-    );
-  }
-
-  let body: any = {};
+/**
+ * YouTube OAuth callback handler
+ * GET /api/channels/youtube/oauth/callback?code=...&state=...
+ */
+export async function GET(req: NextRequest) {
   try {
-    body = await request.json();
-  } catch {
-    body = {};
+    const { searchParams } = new URL(req.url);
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    const error = searchParams.get('error');
+
+    // Handle OAuth errors
+    if (error) {
+      return NextResponse.redirect(
+        new URL(`/integrasi-youtube?error=youtube_oauth_${error}`, req.url)
+      );
+    }
+
+    if (!code || !state) {
+      return NextResponse.redirect(
+        new URL('/integrasi-youtube?error=youtube_oauth_missing_params', req.url)
+      );
+    }
+
+    // Validate state
+    const storedState = req.cookies.get('youtube_oauth_state')?.value;
+    if (state !== storedState) {
+      return NextResponse.redirect(
+        new URL('/integrasi-youtube?error=youtube_oauth_invalid_state', req.url)
+      );
+    }
+
+    // Exchange code for tokens
+    const tokens = await exchangeYouTubeCode(code);
+
+    // Fetch channel information
+    const channelInfo = await fetchYouTubeChannelInfo(tokens.accessToken);
+
+    // Save channel and credentials
+    await saveYouTubeChannel({
+      channelId: channelInfo.channelId,
+      channelTitle: channelInfo.title,
+      customUrl: channelInfo.customUrl,
+      avatarUrl: channelInfo.thumbnailUrl,
+      subscriberCount: channelInfo.subscriberCount,
+      viewCount: channelInfo.viewCount,
+      videoCount: channelInfo.videoCount,
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
+    });
+
+    // Record audit log
+    recordAuditLog({
+      userName: 'Admin',
+      userRole: 'admin',
+      action: 'YOUTUBE_CHANNEL_CONNECTED',
+      target: channelInfo.title,
+      status: 'success',
+      ipAddress: req.headers.get('x-forwarded-for') || undefined,
+      details: `Connected YouTube channel: ${channelInfo.title} (@${channelInfo.customUrl})`,
+    });
+
+    // Clear state cookie
+    const response = NextResponse.redirect(
+      new URL('/integrasi-youtube?success=youtube_connected', req.url)
+    );
+    response.cookies.delete('youtube_oauth_state');
+
+    return response;
+  } catch (error: any) {
+    console.error('[YouTube Callback Error]', error);
+    return NextResponse.redirect(
+      new URL(`/integrasi-youtube?error=youtube_callback_failed&message=${encodeURIComponent(error.message)}`, req.url)
+    );
   }
-
-  const result = await completeYouTubeOAuthCallback({
-    code: body.code || 'yt_auth_code_2026',
-    state: body.state || 'yt_state_verified',
-    channelTitle: body.channelTitle,
-    customUrl: body.customUrl,
-    connectedByEmail: body.connectedByEmail
-  });
-
-  return NextResponse.json({
-    ok: true,
-    provider: 'youtube',
-    message: 'Kanal YouTube berhasil dihubungkan melalui OAuth 2.0 (Hanya-Baca).',
-    channel: result
-  });
 }

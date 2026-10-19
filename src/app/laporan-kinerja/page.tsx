@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { HumasShell } from '@/components/layout/HumasShell';
+import { ChannelReportSummaryBlock } from '@/components/channels/ChannelReportSummaryBlock';
 import { mockPerformance, reportChannels, reportPeriods } from '@/lib/clientDataFetcher';
 
 export default function LaporanKinerjaPage() {
@@ -72,6 +73,9 @@ export default function LaporanKinerjaPage() {
             </button>
           </div>
         </div>
+
+        {/* Ringkasan Metrik Kanal Media Sosial */}
+        <ChannelReportSummaryBlock selectedChannel={selectedChannel} />
 
         {/* Tabel Rincian per Kanal */}
         <article className="dasbor__card" style={{ padding: 0, overflow: 'hidden' }}>

@@ -6,8 +6,18 @@ import crypto from 'crypto';
  * Menjamin access_token, refresh_token, dan client_secret tidak pernah tersimpan dalam teks mentah (plaintext).
  */
 
-const DEFAULT_SECRET = 'kemensos-dasbor-humas-secret-master-key-32b';
-const MASTER_KEY = process.env.CHANNEL_ENCRYPTION_KEY || process.env.TOKEN_ENCRYPTION_SECRET || DEFAULT_SECRET;
+function getMasterKey(): Buffer {
+  const secret = process.env.CHANNEL_ENCRYPTION_KEY || process.env.TOKEN_ENCRYPTION_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('FATAL: CHANNEL_ENCRYPTION_KEY atau TOKEN_ENCRYPTION_SECRET wajib dikonfigurasi di environment produksi!');
+    }
+    // Kunci deterministik aman untuk development/test lokal Komnas Palestina
+    return crypto.createHash('sha256').update('komnas-palestina-humed-vault-secret-local-dev-key').digest();
+  }
+  return crypto.createHash('sha256').update(secret).digest();
+}
+
 const ALGORITHM = 'aes-256-gcm';
 
 export interface EncryptedPayload {
@@ -18,12 +28,12 @@ export interface EncryptedPayload {
 }
 
 /**
- * Mengenkripsi token atau rahasia kredensial kanal
+ * Mengenkripsi token atau rahasia kredensial kanal menggunakan AES-256-GCM terverifikasi
  */
 export function encryptChannelCredential(plainText: string): string {
   if (!plainText) return '';
   try {
-    const key = crypto.createHash('sha256').update(MASTER_KEY).digest();
+    const key = getMasterKey();
     const iv = crypto.randomBytes(12);
     const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
     
@@ -31,11 +41,11 @@ export function encryptChannelCredential(plainText: string): string {
     encrypted += cipher.final('hex');
     const authTag = cipher.getAuthTag().toString('hex');
     
-    // Format baku: iv:authTag:encryptedData
+    // Format baku AES-256-GCM: iv:authTag:encryptedData
     return `${iv.toString('hex')}:${authTag}:${encrypted}`;
   } catch (err) {
-    // Fallback safe obfuscation jika OpenSSL crypto context terbatas
-    return `enc_fallback_${Buffer.from(plainText).toString('base64')}`;
+    console.error('[ChannelVault] Gagal mengenkripsi kredensial:', err);
+    throw new Error('Enkripsi kredensial gagal. Operasi dibatalkan demi keamanan data.');
   }
 }
 
@@ -45,18 +55,14 @@ export function encryptChannelCredential(plainText: string): string {
 export function decryptChannelCredential(cipherText: string): string {
   if (!cipherText) return '';
   try {
-    if (cipherText.startsWith('enc_fallback_')) {
-      return Buffer.from(cipherText.replace('enc_fallback_', ''), 'base64').toString('utf8');
-    }
-
     const parts = cipherText.split(':');
     if (parts.length !== 3) {
-      // Jika teks belum terenkripsi (misal string lama), kembalikan apa adanya
+      // Jika teks bukan format iv:tag:data, kembalikan apa adanya (kompatibilitas backward jika ada teks lama)
       return cipherText;
     }
 
     const [ivHex, authTagHex, encryptedData] = parts;
-    const key = crypto.createHash('sha256').update(MASTER_KEY).digest();
+    const key = getMasterKey();
     const decipher = crypto.createDecipheriv(ALGORITHM, key, Buffer.from(ivHex, 'hex'));
     decipher.setAuthTag(Buffer.from(authTagHex, 'hex'));
     
@@ -64,16 +70,16 @@ export function decryptChannelCredential(cipherText: string): string {
     decrypted += decipher.final('utf8');
     return decrypted;
   } catch (err) {
-    return cipherText;
+    console.error('[ChannelVault] Gagal mendekripsi kredensial kanal:', err);
+    return '';
   }
 }
 
 /**
- * Validasi apakah format string kredensial sudah aman terenkripsi
+ * Validasi apakah format string kredensial sudah aman terenkripsi dengan AES-256-GCM
  */
 export function isCredentialEncrypted(text: string): boolean {
   if (!text) return false;
-  if (text.startsWith('enc_fallback_')) return true;
   const parts = text.split(':');
   return parts.length === 3 && parts[0].length === 24 && parts[1].length === 32;
 }

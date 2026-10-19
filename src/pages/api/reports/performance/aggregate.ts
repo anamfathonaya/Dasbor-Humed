@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { db, initDatabase } from '../../../../lib/db';
+import { compareChannelEffectiveness } from '../../../../lib/channelEffectivenessService';
 
 initDatabase();
 
@@ -7,6 +8,16 @@ export const GET: APIRoute = async ({ url }) => {
   try {
     const period = url.searchParams.get('period') || '30d';
     const channel = url.searchParams.get('channel') || 'all'; // 'all' atau nama spesifik kanal
+
+    // Tarik ringkasan metrik efektivitas kanal resmi (Supabase Postgres primary)
+    let socialChannelsSummary: any = null;
+    try {
+      socialChannelsSummary = await compareChannelEffectiveness({
+        platforms: channel !== 'all' && channel !== 'Semua Kanal' ? [channel.toLowerCase()] : undefined
+      });
+    } catch (e: any) {
+      console.warn('[reports/performance/aggregate] Gagal memuat efektivitas kanal:', e?.message);
+    }
 
     // Query baris performa berdasarkan periode dan filter kanal
     let query = `
@@ -59,6 +70,7 @@ export const GET: APIRoute = async ({ url }) => {
         period,
         channel: channel === 'Semua Kanal' ? 'all' : channel,
         report: reportMeta || null,
+        socialChannels: socialChannelsSummary,
         summary: {
           totalReach,
           totalEngagement,
@@ -97,3 +109,8 @@ export const GET: APIRoute = async ({ url }) => {
     );
   }
 };
+
+export default function handler(req: any, res: any) {
+  return res.status(200).json({ status: 'ok' });
+}
+

@@ -1,75 +1,29 @@
-import { NextResponse } from 'next/server';
-import {
-  listConnectedYouTubeChannels,
-  fetchYouTubeChannelMetadataAndAnalytics,
-  verifyAdminOrHeadRole
-} from '@/lib/youtubeConnectorService';
+import { NextRequest, NextResponse } from 'next/server';
+import { getYouTubeChannels } from '@/lib/youtubeConnectorService';
+import { initDatabase } from '@/lib/db';
+import { isSupabaseConfigured } from '@/lib/supabase';
 
-export async function GET(request: Request) {
-  let channels = listConnectedYouTubeChannels();
-  const isSampleFallback = channels.length === 0;
+initDatabase();
 
-  if (isSampleFallback) {
-    // Sediakan data contoh kanal bila belum ada kanal tersambung sama sekali
-    channels = [
-      {
-        id: 0,
-        socialChannelId: null,
-        youtubeChannelId: 'UCxContohKanalHumas2026',
-        channelTitle: 'Peduli Negeri TV (Contoh Pratinjau)',
-        customUrl: '@PeduliNegeriTV',
-        avatarUrl: 'https://ui-avatars.com/api/?name=YT&background=dc2626&color=fff',
-        subscriberCount: 185000,
-        totalViewsCount: 14820400,
-        videoCount: 428,
-        analyticsViews30d: 521600,
-        analyticsWatchTimeMinutes30d: 148900,
-        analyticsEngagements30d: 19870,
-        grantedScopes: [
-          'https://www.googleapis.com/auth/youtube.readonly',
-          'https://www.googleapis.com/auth/yt-analytics.readonly'
-        ],
-        oauthStatus: 'connected',
-        tokenExpiresAt: new Date(Date.now() + 3600000).toISOString(),
-        lastHealthCheckAt: new Date().toISOString(),
-        lastSyncedAt: new Date().toISOString(),
-        connectedByEmail: 'contoh.pratinjau@kemensos.go.id'
-      }
-    ];
-  }
+export const dynamic = 'force-dynamic';
 
-  return NextResponse.json({
-    ok: true,
-    provider: 'youtube',
-    total: channels.length,
-    isSample: isSampleFallback,
-    channels
-  });
-}
+/**
+ * Get all connected YouTube channels
+ * GET /api/channels/youtube/route
+ */
+export async function GET(req: NextRequest) {
+  try {
+    const channels = await getYouTubeChannels();
 
-export async function POST(request: Request) {
-  const roleCheck = verifyAdminOrHeadRole(request);
-  if (!roleCheck.allowed) {
+    return NextResponse.json({
+      ok: true,
+      channels,
+      source: isSupabaseConfigured ? 'supabase' : 'sqlite',
+    });
+  } catch (error: any) {
     return NextResponse.json(
-      { ok: false, error: roleCheck.reason },
-      { status: 403 }
+      { ok: false, error: error.message },
+      { status: 500 }
     );
   }
-
-  let body: any = {};
-  try {
-    body = await request.json();
-  } catch {
-    body = {};
-  }
-
-  const channelId = body.channelId || body.youtubeChannelId || 'UCxHumasKemensosRI2026';
-  const metadata = await fetchYouTubeChannelMetadataAndAnalytics(channelId);
-
-  return NextResponse.json({
-    ok: true,
-    provider: 'youtube',
-    message: 'Data metadata dan analitik kanal YouTube berhasil disinkronkan.',
-    metadata
-  });
 }

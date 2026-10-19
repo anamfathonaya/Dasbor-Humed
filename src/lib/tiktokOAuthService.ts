@@ -1,3 +1,4 @@
+import { recordChannelAuditLog } from './auditService';
 import crypto from 'crypto';
 import { db } from './db';
 
@@ -99,6 +100,16 @@ export async function exchangeTikTokOAuthCodeAndSave(params: {
     status: 'success',
     details: `Otorisasi akun TikTok resmi ${sampleAccount.displayName} (${sampleAccount.handle}) via Display API berhasil. Cakupan: ${sampleAccount.grantedScopes}.`,
     ipAddress
+  });
+
+  recordChannelAuditLog({
+    action: 'CHANNEL_OAUTH_CONNECT',
+    platform: 'tiktok',
+    target: sampleAccount.handle,
+    userName,
+    userRole,
+    ipAddress,
+    details: `Otorisasi akun TikTok ${sampleAccount.displayName} (${sampleAccount.handle}) berhasil dengan cakupan hanya-baca.`
   });
 
   return {

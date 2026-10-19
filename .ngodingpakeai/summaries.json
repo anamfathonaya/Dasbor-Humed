@@ -817,5 +817,341 @@
   },
   "vercel.json": {
     "summary": "Konfigurasi deployment dan jadwal eksekusi Cron Jobs otomatis untuk sinkronisasi berita, metrik harian, dan pengingat."
+  },
+  ".agents/skills/superdesign/agents/openai.yaml": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (openai.yaml) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/INIT.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (INIT.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/ASSET_GENERATION.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (ASSET_GENERATION.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/COMPONENTS.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (COMPONENTS.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/design-with-your-model.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (design-with-your-model.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/GRAPHIC.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (GRAPHIC.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/INIT.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (INIT.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/PRESENTATION.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (PRESENTATION.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/RESUME.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (RESUME.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/SUPERDESIGN.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (SUPERDESIGN.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/references/WEBSITE.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (WEBSITE.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/SKILL.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (SKILL.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".agents/skills/superdesign/SUPERDESIGN.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (SUPERDESIGN.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".codex/skills/ngodingpakeai/SKILL.md": {
+    "summary": "Konfigurasi skill dan aturan AI assistant (SKILL.md) untuk panduan pengembangan dan otomasi kode."
+  },
+  ".superdesign/init/components.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (components.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/init/extractable-components.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (extractable-components.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/init/layouts.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (layouts.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/init/pages.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (pages.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/init/routes.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (routes.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/init/theme.md": {
+    "summary": "Berkas konfigurasi atau aset proyek (theme.md) untuk mendukung siklus pengembangan dasbor."
+  },
+  ".superdesign/resume.json": {
+    "summary": "Berkas konfigurasi atau aset proyek (resume.json) untuk mendukung siklus pengembangan dasbor."
+  },
+  "skills-lock.json": {
+    "summary": "Berkas konfigurasi atau aset proyek (skills-lock.json) untuk mendukung siklus pengembangan dasbor."
+  },
+  "src/app/akses-ditolak/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/api/channels/aggregate/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/connect/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/disconnect/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/export/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/facebook/callback/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/facebook/start/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/freshness/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/instagram/callback/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/instagram/start/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/meta/disconnect/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/meta/guard-check/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/meta/refresh-token/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/meta/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/monitoring/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/schedule/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/summary/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/sync-error/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/sync-history/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/sync-now/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/test-connection/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/test-refresh/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/tiktok/callback/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/tiktok/refresh-token/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/tiktok/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/tiktok/start/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/trends/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/disconnect/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/health/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/oauth/callback/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/oauth/start/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/channels/youtube/token-refresh/route.ts": {
+    "summary": "Endpoint route handler untuk modul kanal media sosial (route.ts) dengan dukungan Supabase Postgres dan fallback SQLite."
+  },
+  "src/app/api/cron/channels/daily-sync/route.ts": {
+    "summary": "Endpoint REST API Next.js (src/app/api/cron/channels/daily-sync/route.ts) untuk layanan operasional dan data dasbor humas."
+  },
+  "src/app/dasbor-metrik-kanal/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/integrasi-meta/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/integrasi-tiktok/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/integrasi-youtube/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/pemantauan-kanal/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/penarikan-metrik-terjadwal/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/app/status-integrasi/page.tsx": {
+    "summary": "Halaman aplikasi Next.js App Router (page.tsx) untuk tata letak dan visualisasi dasbor."
+  },
+  "src/components/channels/ChannelAdminActionGate.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelAdminActionGate.tsx)."
+  },
+  "src/components/channels/ChannelConnectionFormModal.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelConnectionFormModal.tsx)."
+  },
+  "src/components/channels/ChannelConnectionStateNotice.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelConnectionStateNotice.tsx)."
+  },
+  "src/components/channels/ChannelDailyScheduleForm.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelDailyScheduleForm.tsx)."
+  },
+  "src/components/channels/ChannelDailyTrendChart.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelDailyTrendChart.tsx)."
+  },
+  "src/components/channels/ChannelDisconnectModal.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelDisconnectModal.tsx)."
+  },
+  "src/components/channels/ChannelExportButton.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelExportButton.tsx)."
+  },
+  "src/components/channels/ChannelFilterBar.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelFilterBar.tsx)."
+  },
+  "src/components/channels/ChannelFreshnessBadge.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelFreshnessBadge.tsx)."
+  },
+  "src/components/channels/ChannelIntegrationStatusView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelIntegrationStatusView.tsx)."
+  },
+  "src/components/channels/ChannelMetricCard.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelMetricCard.tsx)."
+  },
+  "src/components/channels/ChannelMetricsDashboardView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelMetricsDashboardView.tsx)."
+  },
+  "src/components/channels/ChannelMonitoringView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelMonitoringView.tsx)."
+  },
+  "src/components/channels/ChannelReportSummaryBlock.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelReportSummaryBlock.tsx)."
+  },
+  "src/components/channels/ChannelScheduleSyncCard.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelScheduleSyncCard.tsx)."
+  },
+  "src/components/channels/ChannelSideBySideComparison.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelSideBySideComparison.tsx)."
+  },
+  "src/components/channels/ChannelSummaryCard.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelSummaryCard.tsx)."
+  },
+  "src/components/channels/ChannelSyncHistoryTable.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelSyncHistoryTable.tsx)."
+  },
+  "src/components/channels/ChannelUnifiedMetricComparisonTable.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ChannelUnifiedMetricComparisonTable.tsx)."
+  },
+  "src/components/channels/FacebookOAuthModal.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (FacebookOAuthModal.tsx)."
+  },
+  "src/components/channels/InstagramOAuthModal.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (InstagramOAuthModal.tsx)."
+  },
+  "src/components/channels/MetaIntegrationView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (MetaIntegrationView.tsx)."
+  },
+  "src/components/channels/ScheduledMetricsSyncView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (ScheduledMetricsSyncView.tsx)."
+  },
+  "src/components/channels/TikTokIntegrationView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (TikTokIntegrationView.tsx)."
+  },
+  "src/components/channels/TikTokOAuthModal.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (TikTokOAuthModal.tsx)."
+  },
+  "src/components/channels/YouTubeConnectedChannelsList.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubeConnectedChannelsList.tsx)."
+  },
+  "src/components/channels/YouTubeDisconnectDialog.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubeDisconnectDialog.tsx)."
+  },
+  "src/components/channels/YouTubeEmptyStateCard.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubeEmptyStateCard.tsx)."
+  },
+  "src/components/channels/YouTubeIntegrationView.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubeIntegrationView.tsx)."
+  },
+  "src/components/channels/YouTubeOAuthConnectFlow.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubeOAuthConnectFlow.tsx)."
+  },
+  "src/components/channels/YouTubePermissionHealthPanel.tsx": {
+    "summary": "Komponen antarmuka React untuk pemantauan dan pengelolaan kanal media sosial (YouTubePermissionHealthPanel.tsx)."
+  },
+  "src/lib/adminAuthGuard.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (adminAuthGuard.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelConnectionWarningService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelConnectionWarningService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelEffectivenessService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelEffectivenessService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelErrorResilience.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelErrorResilience.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelMetricsPullService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelMetricsPullService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelSampleSeeder.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelSampleSeeder.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/channelVaultService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (channelVaultService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/facebookOAuthService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (facebookOAuthService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/instagramOAuthService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (instagramOAuthService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/metaReadOnlyGuard.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (metaReadOnlyGuard.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/tiktokOAuthService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (tiktokOAuthService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/lib/youtubeConnectorService.ts": {
+    "summary": "Modul pustaka dan layanan bisnis (youtubeConnectorService.ts) untuk operasi database, autentikasi, dan integrasi kanal."
+  },
+  "src/pages/integrasi-youtube.astro": {
+    "summary": "Berkas konfigurasi atau aset proyek (integrasi-youtube.astro) untuk mendukung siklus pengembangan dasbor."
+  },
+  "src/pages/pemantauan-kanal.astro": {
+    "summary": "Berkas konfigurasi atau aset proyek (pemantauan-kanal.astro) untuk mendukung siklus pengembangan dasbor."
+  },
+  "src/pages/penarikan-metrik-terjadwal.astro": {
+    "summary": "Berkas konfigurasi atau aset proyek (penarikan-metrik-terjadwal.astro) untuk mendukung siklus pengembangan dasbor."
+  },
+  "supabase/migrations/011_channel_monitoring_schema.sql": {
+    "summary": "Skrip migrasi skema PostgreSQL Supabase (011_channel_monitoring_schema.sql) untuk struktur tabel, indeks, dan aturan keamanan RLS."
+  },
+  "supabase/migrations/012_youtube_channel_connector.sql": {
+    "summary": "Skrip migrasi skema PostgreSQL Supabase (012_youtube_channel_connector.sql) untuk struktur tabel, indeks, dan aturan keamanan RLS."
+  },
+  "tsconfig.tsbuildinfo": {
+    "summary": "Berkas konfigurasi atau aset proyek (tsconfig.tsbuildinfo) untuk mendukung siklus pengembangan dasbor."
   }
 }

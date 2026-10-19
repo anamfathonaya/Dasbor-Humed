@@ -4,6 +4,7 @@ import React from 'react';
 import { HumasShell } from '@/components/layout/HumasShell';
 import { useLayout } from '@/components/layout/LayoutContext';
 import RoleMatrixTable from '@/components/RoleMatrixTable';
+import { GoogleAnalyticsConnector } from '@/components/integrations/GoogleAnalyticsConnector';
 
 export default function PengaturanPage() {
   const { currentRole } = useLayout();
@@ -48,6 +49,16 @@ export default function PengaturanPage() {
         </section>
 
         <div className="dasbor__analytics-grid">
+          <article className="dasbor__card">
+            <div className="dasbor__card-head">
+              <div>
+                <h2>Google Analytics 4</h2>
+                <p>Pemantauan trafik website dan performa konten digital</p>
+              </div>
+            </div>
+            <GoogleAnalyticsConnector />
+          </article>
+
           <article className="dasbor__card">
             <div className="dasbor__card-head">
               <div>

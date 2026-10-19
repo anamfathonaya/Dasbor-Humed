@@ -1,3 +1,4 @@
+import { recordChannelAuditLog } from './auditService';
 import crypto from 'crypto';
 import db from './db';
 
@@ -165,6 +166,15 @@ export async function exchangeInstagramOAuthCodeAndSave(
       `Pertukaran kode otorisasi OAuth Instagram berhasil. Long-Lived Token disimpan aman di sisi server (kedaluwarsa 60 hari).`
     );
   } catch {}
+
+  recordChannelAuditLog({
+    action: 'CHANNEL_OAUTH_CONNECT',
+    platform: 'instagram',
+    target: String(metaAccountId),
+    userName,
+    userRole,
+    details: `Pertukaran kode OAuth Instagram berhasil untuk akun "${name}".`
+  });
 
   return {
     id: insertedId || 1,

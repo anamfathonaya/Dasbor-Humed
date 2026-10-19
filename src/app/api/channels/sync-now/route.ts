@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db, initDatabase } from '@/lib/db';
 import { pullChannelMetricsByProvider, pullAllActiveChannelsMetrics } from '@/lib/channelMetricsPullService';
 import { verifyAdminOrHeadRole } from '@/lib/youtubeConnectorService';
+import { recordChannelAuditLog } from '@/lib/auditService';
 
 initDatabase();
 
@@ -23,9 +24,20 @@ export async function POST(req: NextRequest) {
     const provider = (body.provider || body.platform || 'all').toLowerCase();
     const metricDate = body.metricDate || new Date().toISOString().slice(0, 10);
     const triggeredBy = body.triggeredBy || 'manual_one_click';
+    const roleHint = String(verifyAdminOrHeadRole(req as any).role || 'unknown');
 
     if (provider === 'all') {
       const summary = await pullAllActiveChannelsMetrics(metricDate);
+
+      recordChannelAuditLog({
+        action: 'CHANNEL_SYNC_MANUAL',
+        platform: 'all',
+        userName: 'Pengguna Dasbor',
+        userRole: roleHint,
+        status: summary.failed === 0 ? 'success' : 'warning',
+        ipAddress: req.headers.get('x-forwarded-for') || undefined,
+        details: `Tarik manual semua kanal: ${summary.successful} sukses, ${summary.failed} gagal dari ${summary.total} kanal (tanggal metrik ${metricDate}).`
+      });
 
       const historyEntry = {
         id: `sync-manual-${Date.now()}`,
@@ -65,6 +77,19 @@ export async function POST(req: NextRequest) {
       .get(provider) as { name: string; handle: string } | undefined;
 
     const channelName = chRow ? `${chRow.name} (${chRow.handle})` : provider.toUpperCase();
+
+    recordChannelAuditLog({
+      action: 'CHANNEL_SYNC_MANUAL',
+      platform: provider,
+      target: chRow?.handle,
+      userName: 'Pengguna Dasbor',
+      userRole: roleHint,
+      status: outcome.success ? 'success' : 'failed',
+      ipAddress: req.headers.get('x-forwarded-for') || undefined,
+      details: outcome.success
+        ? `Tarik manual metrik kanal ${channelName} berhasil (tanggal metrik ${metricDate}).`
+        : `Tarik manual metrik kanal ${channelName} gagal: ${outcome.error}`
+    });
 
     const historyEntry = {
       id: `sync-manual-${Date.now()}`,

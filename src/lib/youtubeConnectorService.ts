@@ -1,552 +1,511 @@
-import crypto from 'crypto';
-import db from './db';
-import { getProvider } from './socialProviders';
+/**
+ * Enhanced YouTube Connector Service
+ * Extends existing YouTube integration with complete OAuth flow and metrics sync
+ */
 
-export interface YouTubeConnectedChannelRecord {
+import { db } from './db';
+import { getServiceSupabase, isSupabaseConfigured } from './supabase';
+
+export interface YouTubeChannel {
   id: number;
-  socialChannelId: number | null;
   youtubeChannelId: string;
   channelTitle: string;
   customUrl: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   subscriberCount: number;
   totalViewsCount: number;
   videoCount: number;
   analyticsViews30d: number;
   analyticsWatchTimeMinutes30d: number;
   analyticsEngagements30d: number;
-  grantedScopes: string[];
   oauthStatus: 'connected' | 'expiring_soon' | 'expired' | 'disconnected';
-  tokenExpiresAt: string;
-  lastHealthCheckAt: string;
-  lastSyncedAt: string;
-  connectedByEmail: string;
+  lastSyncedAt?: string;
 }
 
-export const YOUTUBE_READONLY_SCOPES = [
-  'https://www.googleapis.com/auth/youtube.readonly',
-  'https://www.googleapis.com/auth/yt-analytics.readonly'
-];
-
-function encryptServerSideToken(rawToken: string): string {
-  const secret = process.env.CHANNEL_TOKEN_SECRET || 'dasbor-humas-kemensos-2026-secret-key';
-  const digest = crypto.createHmac('sha256', secret).update(rawToken).digest('hex');
-  return `enc_v1_${digest.slice(0, 32)}`;
+export interface YouTubeMetrics {
+  date: string;
+  views: number;
+  watchTimeMinutes: number;
+  subscribersGained: number;
+  likes: number;
+  comments: number;
+  shares: number;
 }
 
-export function extractRoleFromRequest(request: Request): string {
-  try {
-    const url = new URL(request.url);
-    const queryRole = url.searchParams.get('role');
-    if (queryRole) return queryRole.toLowerCase().trim();
+/**
+ * Generate YouTube OAuth URL
+ */
+export function generateYouTubeOAuthUrl(state: string): string {
+  const clientId = process.env.GOOGLE_CLIENT_ID || '';
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI?.replace('/google-analytics/', '/youtube/') ||
+    'http://localhost:3000/api/integrations/youtube/callback';
 
-    const headerRole = request.headers.get('x-user-role');
-    if (headerRole) return headerRole.toLowerCase().trim();
+  const scopes = [
+    'https://www.googleapis.com/auth/youtube.readonly',
+    'https://www.googleapis.com/auth/yt-analytics.readonly',
+  ].join(' ');
 
-    const authHeader = request.headers.get('authorization');
-    if (authHeader) {
-      const token = authHeader.replace(/^Bearer\s+/i, '').trim().toLowerCase();
-      if (token) return token;
-    }
-
-    const cookieHeader = request.headers.get('cookie');
-    if (cookieHeader) {
-      const match = cookieHeader.match(/user_role=([a-zA-Z]+)/);
-      if (match) return match[1].toLowerCase().trim();
-    }
-  } catch {
-    // Abaikan jika parsing request gagal
-  }
-  return '';
-}
-
-export function verifyAdminOrHeadRole(roleOrRequest?: string | Request | null): {
-  allowed: boolean;
-  role: string;
-  reason?: string;
-} {
-  let role = '';
-  if (roleOrRequest && typeof roleOrRequest === 'object' && 'headers' in roleOrRequest) {
-    role = extractRoleFromRequest(roleOrRequest as Request);
-  } else if (typeof roleOrRequest === 'string') {
-    role = roleOrRequest.toLowerCase().trim();
-  }
-
-  if (role === 'admin' || role === 'head') {
-    return { allowed: true, role };
-  }
-
-  return {
-    allowed: false,
-    role: role || 'unauthenticated',
-    reason: 'Akses ditolak: Hanya peran Admin atau Kepala Humas yang diizinkan mengelola integrasi kanal YouTube.'
-  };
-}
-
-export function recordYouTubeAuditLog(params: {
-  action: string;
-  target: string;
-  details: string;
-  userRole?: string;
-  userName?: string;
-  status?: 'success' | 'warning' | 'failed';
-}) {
-  try {
-    db.prepare(
-      `INSERT INTO audit_logs (user_name, user_role, action, target, ip_address, status, details)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      params.userName || 'Admin Humas',
-      params.userRole || 'admin',
-      params.action,
-      params.target,
-      '127.0.0.1',
-      params.status || 'success',
-      params.details
-    );
-  } catch {
-    // Fallback aman bila tabel belum siap
-  }
-}
-
-export function ensureDefaultYouTubeChannelsSeeded(): void {
-  try {
-    const countRow = db
-      .prepare('SELECT COUNT(*) as total FROM youtube_connected_channels')
-      .get() as { total: number } | undefined;
-
-    if (countRow && countRow.total > 0) return;
-
-    const ytSocialRow = db
-      .prepare("SELECT id FROM social_channels WHERE platform = 'youtube' LIMIT 1")
-      .get() as { id: number } | undefined;
-
-    const expiresAt = new Date(Date.now() + 55 * 60 * 1000).toISOString();
-
-    db.prepare(
-      `INSERT INTO youtube_connected_channels (
-        social_channel_id, youtube_channel_id, channel_title, custom_url, avatar_url,
-        subscriber_count, total_views_count, video_count,
-        analytics_views_30d, analytics_watch_time_minutes_30d, analytics_engagements_30d,
-        granted_scopes, oauth_status, token_expires_at, connected_by_email
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      ytSocialRow?.id ?? null,
-      'UCxHumasKemensosRI2026',
-      'Peduli Negeri TV — Kanal Resmi Humas',
-      '@PeduliNegeriTV',
-      'https://ui-avatars.com/api/?name=YT&background=dc2626&color=fff',
-      185000,
-      14820400,
-      428,
-      521600,
-      148900,
-      19870,
-      YOUTUBE_READONLY_SCOPES.join(' '),
-      'connected',
-      expiresAt,
-      'admin.humas@kemensos.go.id'
-    );
-  } catch {
-    // Abaikan jika SQLite sedang dalam mode hanya-baca
-  }
-}
-
-export async function startYouTubeOAuthFlow(redirectOrigin?: string) {
-  const provider = getProvider('youtube');
-  const baseAuth = await provider.authenticate();
-  const state = `yt_oauth_${crypto.randomBytes(8).toString('hex')}`;
-  const clientId = process.env.YOUTUBE_CLIENT_ID || 'GOOGLE_YT_CLIENT_ID_2026';
-  const redirectUri = `${redirectOrigin || 'http://localhost:3000'}/api/channels/youtube/oauth/callback`;
-  const scopeParam = encodeURIComponent(YOUTUBE_READONLY_SCOPES.join(' '));
-
-  const authUrl =
-    `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&response_type=code&access_type=offline&prompt=consent` +
-    `&scope=${scopeParam}&state=${encodeURIComponent(state)}`;
-
-  recordYouTubeAuditLog({
-    action: 'OAUTH_YOUTUBE_START',
-    target: 'YouTube Data API v3 + Analytics API',
-    details: `Memulai alur izin OAuth 2.0 YouTube hanya-baca dengan state=${state}.`
-  });
-
-  return {
-    authUrl,
-    fallbackStubUrl: baseAuth.authUrl,
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: scopes,
+    access_type: 'offline',
+    prompt: 'consent',
     state,
-    scopes: YOUTUBE_READONLY_SCOPES,
-    accessType: 'offline',
-    readOnlyMode: true
-  };
-}
-
-export async function completeYouTubeOAuthCallback(params: {
-  code: string;
-  state?: string;
-  channelTitle?: string;
-  customUrl?: string;
-  connectedByEmail?: string;
-}) {
-  ensureDefaultYouTubeChannelsSeeded();
-  const provider = getProvider('youtube');
-  const callbackData = await provider.handleCallback(params.code, params.state);
-
-  const encryptedAccessToken = encryptServerSideToken(callbackData.token);
-  const encryptedRefreshToken = encryptServerSideToken(`refresh_${callbackData.token}`);
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-
-  const ytChannelId =
-    params.customUrl === '@KemensosRIVideo'
-      ? 'UCxKemensosRIVideo02'
-      : 'UCxHumasKemensosRI2026';
-  const channelTitle = params.channelTitle || callbackData.profile.name || 'Peduli Negeri TV — Kanal Resmi Humas';
-  const customUrl = params.customUrl || callbackData.profile.handle || '@PeduliNegeriTV';
-
-  try {
-    let socialRow = db
-      .prepare("SELECT id FROM social_channels WHERE platform = 'youtube' LIMIT 1")
-      .get() as { id: number } | undefined;
-
-    if (!socialRow) {
-      const insertSocial = db
-        .prepare(
-          `INSERT INTO social_channels (name, platform, handle, followers_count, status, platform_url, last_synced_at)
-           VALUES (?, 'youtube', ?, ?, 'connected', ?, CURRENT_TIMESTAMP)`
-        )
-        .run(
-          channelTitle,
-          customUrl,
-          callbackData.profile.followersCount,
-          `https://youtube.com/${customUrl}`
-        );
-      socialRow = { id: Number(insertSocial.lastInsertRowid) };
-    } else {
-      db.prepare(
-        `UPDATE social_channels
-         SET status = 'connected', followers_count = ?, last_synced_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?`
-      ).run(callbackData.profile.followersCount, socialRow.id);
-    }
-
-    // Simpan kredensial terenkripsi di sisi server (channel_credentials)
-    const existingCred = db
-      .prepare('SELECT id FROM channel_credentials WHERE channel_id = ? LIMIT 1')
-      .get(socialRow.id) as { id: number } | undefined;
-
-    if (existingCred) {
-      db.prepare(
-        `UPDATE channel_credentials
-         SET encrypted_token = ?, refresh_token = ?, expires_at = ?, scopes = ?, updated_at = CURRENT_TIMESTAMP
-         WHERE id = ?`
-      ).run(
-        encryptedAccessToken,
-        encryptedRefreshToken,
-        expiresAt,
-        YOUTUBE_READONLY_SCOPES.join(' '),
-        existingCred.id
-      );
-    } else {
-      db.prepare(
-        `INSERT INTO channel_credentials (channel_id, auth_type, encrypted_token, refresh_token, expires_at, scopes)
-         VALUES (?, 'oauth2', ?, ?, ?, ?)`
-      ).run(
-        socialRow.id,
-        encryptedAccessToken,
-        encryptedRefreshToken,
-        expiresAt,
-        YOUTUBE_READONLY_SCOPES.join(' ')
-      );
-    }
-
-    // Upsert ke youtube_connected_channels
-    db.prepare(
-      `INSERT INTO youtube_connected_channels (
-        social_channel_id, youtube_channel_id, channel_title, custom_url, avatar_url,
-        subscriber_count, total_views_count, video_count,
-        analytics_views_30d, analytics_watch_time_minutes_30d, analytics_engagements_30d,
-        granted_scopes, oauth_status, token_expires_at, connected_by_email, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'connected', ?, ?, CURRENT_TIMESTAMP)
-      ON CONFLICT(youtube_channel_id) DO UPDATE SET
-        channel_title = excluded.channel_title,
-        custom_url = excluded.custom_url,
-        subscriber_count = excluded.subscriber_count,
-        oauth_status = 'connected',
-        token_expires_at = excluded.token_expires_at,
-        last_synced_at = CURRENT_TIMESTAMP,
-        updated_at = CURRENT_TIMESTAMP`
-    ).run(
-      socialRow.id,
-      ytChannelId,
-      channelTitle,
-      customUrl,
-      'https://ui-avatars.com/api/?name=YT&background=dc2626&color=fff',
-      callbackData.profile.followersCount,
-      14820400,
-      428,
-      521600,
-      148900,
-      19870,
-      YOUTUBE_READONLY_SCOPES.join(' '),
-      expiresAt,
-      params.connectedByEmail || 'admin.humas@kemensos.go.id'
-    );
-  } catch {
-    // Fallback aman
-  }
-
-  recordYouTubeAuditLog({
-    action: 'OAUTH_YOUTUBE_CONNECTED',
-    target: `${channelTitle} (${customUrl})`,
-    details: 'Berhasil menyimpan token OAuth YouTube terenkripsi di server dan menyinkronkan profil kanal.'
   });
 
-  // PENTING: Jangan pernah mengembalikan encrypted_token atau refresh_token ke sisi klien
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+}
+
+/**
+ * Exchange authorization code for tokens
+ */
+export async function exchangeYouTubeCode(code: string): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+}> {
+  const clientId = process.env.GOOGLE_CLIENT_ID || '';
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET || '';
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI?.replace('/google-analytics/', '/youtube/') ||
+    'http://localhost:3000/api/integrations/youtube/callback';
+
+  const response = await fetch('https://oauth2.googleapis.com/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code',
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to exchange code: ${error}`);
+  }
+
+  const data = await response.json();
   return {
-    connected: true,
-    youtubeChannelId: ytChannelId,
-    channelTitle,
-    customUrl,
-    subscriberCount: callbackData.profile.followersCount,
-    grantedScopes: YOUTUBE_READONLY_SCOPES,
-    tokenStoredServerSide: true,
-    tokenExpiresAt: expiresAt
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    expiresIn: data.expires_in,
   };
 }
 
-export function listConnectedYouTubeChannels(): YouTubeConnectedChannelRecord[] {
-  ensureDefaultYouTubeChannelsSeeded();
-  try {
-    const rows = db
-      .prepare(
-        `SELECT
-          id, social_channel_id, youtube_channel_id, channel_title, custom_url, avatar_url,
-          subscriber_count, total_views_count, video_count,
-          analytics_views_30d, analytics_watch_time_minutes_30d, analytics_engagements_30d,
-          granted_scopes, oauth_status, token_expires_at, last_health_check_at, last_synced_at, connected_by_email
-         FROM youtube_connected_channels
-         WHERE oauth_status != 'disconnected'
-         ORDER BY id ASC`
-      )
-      .all() as any[];
-
-    if (rows && rows.length > 0) {
-      return rows.map((r) => ({
-        id: r.id,
-        socialChannelId: r.social_channel_id,
-        youtubeChannelId: r.youtube_channel_id,
-        channelTitle: r.channel_title,
-        customUrl: r.custom_url,
-        avatarUrl: r.avatar_url || 'https://ui-avatars.com/api/?name=YT&background=dc2626&color=fff',
-        subscriberCount: Number(r.subscriber_count || 185000),
-        totalViewsCount: Number(r.total_views_count || 14820400),
-        videoCount: Number(r.video_count || 428),
-        analyticsViews30d: Number(r.analytics_views_30d || 521600),
-        analyticsWatchTimeMinutes30d: Number(r.analytics_watch_time_minutes_30d || 148900),
-        analyticsEngagements30d: Number(r.analytics_engagements_30d || 19870),
-        grantedScopes: String(r.granted_scopes || YOUTUBE_READONLY_SCOPES.join(' ')).split(' '),
-        oauthStatus: r.oauth_status || 'connected',
-        tokenExpiresAt: r.token_expires_at || new Date(Date.now() + 3600_000).toISOString(),
-        lastHealthCheckAt: r.last_health_check_at || new Date().toISOString(),
-        lastSyncedAt: r.last_synced_at || new Date().toISOString(),
-        connectedByEmail: r.connected_by_email || 'admin.humas@kemensos.go.id'
-      }));
-    }
-  } catch {
-    // Fallback ke data default
-  }
-
-  return [
+/**
+ * Fetch channel information using YouTube Data API v3
+ */
+export async function fetchYouTubeChannelInfo(accessToken: string): Promise<{
+  channelId: string;
+  title: string;
+  customUrl: string;
+  thumbnailUrl?: string;
+  subscriberCount: number;
+  viewCount: number;
+  videoCount: number;
+}> {
+  const response = await fetch(
+    'https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics,contentDetails&mine=true',
     {
-      id: 1,
-      socialChannelId: 4,
-      youtubeChannelId: 'UCxHumasKemensosRI2026',
-      channelTitle: 'Peduli Negeri TV — Kanal Resmi Humas',
-      customUrl: '@PeduliNegeriTV',
-      avatarUrl: 'https://ui-avatars.com/api/?name=YT&background=dc2626&color=fff',
-      subscriberCount: 185000,
-      totalViewsCount: 14820400,
-      videoCount: 428,
-      analyticsViews30d: 521600,
-      analyticsWatchTimeMinutes30d: 148900,
-      analyticsEngagements30d: 19870,
-      grantedScopes: YOUTUBE_READONLY_SCOPES,
-      oauthStatus: 'connected',
-      tokenExpiresAt: new Date(Date.now() + 55 * 60 * 1000).toISOString(),
-      lastHealthCheckAt: new Date().toISOString(),
-      lastSyncedAt: new Date().toISOString(),
-      connectedByEmail: 'admin.humas@kemensos.go.id'
+      headers: { Authorization: `Bearer ${accessToken}` },
     }
-  ];
-}
+  );
 
-export function saveAndRefreshYouTubeOAuthToken(youtubeChannelId?: string) {
-  ensureDefaultYouTubeChannelsSeeded();
-  const targetChannelId = youtubeChannelId || 'UCxHumasKemensosRI2026';
-  const freshTokenHash = encryptServerSideToken(`yt_refreshed_${targetChannelId}_${Date.now()}`);
-  const nextExpiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-
-  try {
-    const channelRow = db
-      .prepare('SELECT social_channel_id, channel_title FROM youtube_connected_channels WHERE youtube_channel_id = ? LIMIT 1')
-      .get(targetChannelId) as { social_channel_id: number | null; channel_title: string } | undefined;
-
-    db.prepare(
-      `UPDATE youtube_connected_channels
-       SET oauth_status = 'connected',
-           token_expires_at = ?,
-           last_health_check_at = CURRENT_TIMESTAMP,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE youtube_channel_id = ?`
-    ).run(nextExpiresAt, targetChannelId);
-
-    if (channelRow?.social_channel_id) {
-      db.prepare(
-        `UPDATE channel_credentials
-         SET encrypted_token = ?,
-             expires_at = ?,
-             updated_at = CURRENT_TIMESTAMP
-         WHERE channel_id = ?`
-      ).run(freshTokenHash, nextExpiresAt, channelRow.social_channel_id);
-    }
-  } catch {
-    // Fallback aman
+  if (!response.ok) {
+    throw new Error(`Failed to fetch channel info: ${response.statusText}`);
   }
 
-  recordYouTubeAuditLog({
-    action: 'OAUTH_YOUTUBE_TOKEN_REFRESH',
-    target: targetChannelId,
-    details: 'Token akses OAuth YouTube berhasil diperbarui menggunakan refresh_token sisi server.'
-  });
+  const data = await response.json();
 
-  return {
-    refreshed: true,
-    youtubeChannelId: targetChannelId,
-    oauthStatus: 'connected' as const,
-    tokenExpiresAt: nextExpiresAt,
-    tokenStoredServerSide: true
-  };
-}
-
-export async function fetchYouTubeChannelMetadataAndAnalytics(youtubeChannelId?: string) {
-  ensureDefaultYouTubeChannelsSeeded();
-  const targetChannelId = youtubeChannelId || 'UCxHumasKemensosRI2026';
-  const provider = getProvider('youtube');
-  const todayDate = new Date().toISOString().slice(0, 10);
-
-  const profile = await provider.fetchProfile('server_side_encrypted_token');
-  const dailyMetrics = await provider.syncMetrics('server_side_encrypted_token', todayDate);
-
-  const metadata = {
-    youtubeChannelId: targetChannelId,
-    channelTitle: 'Peduli Negeri TV — Kanal Resmi Humas',
-    customUrl: profile.handle || '@PeduliNegeriTV',
-    dataApiV3: {
-      subscriberCount: profile.followersCount || 185000,
-      viewCount: 14820400,
-      videoCount: 428,
-      hiddenSubscriberCount: false
-    },
-    analyticsApi: {
-      period: todayDate,
-      views: dailyMetrics.impressions || 160000,
-      reachUniqueViewers: dailyMetrics.reach || 94000,
-      engagements: dailyMetrics.engagement || 12400,
-      estimatedMinutesWatched: 48200,
-      averageViewDurationSeconds: 194,
-      subscribersGained: dailyMetrics.followersGained || 420,
-      shares: dailyMetrics.shares || 740
-    },
-    syncedAt: new Date().toISOString()
-  };
-
-  try {
-    db.prepare(
-      `UPDATE youtube_connected_channels
-       SET subscriber_count = ?,
-           analytics_views_30d = ?,
-           analytics_engagements_30d = ?,
-           last_synced_at = CURRENT_TIMESTAMP,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE youtube_channel_id = ?`
-    ).run(
-      metadata.dataApiV3.subscriberCount,
-      521600,
-      19870,
-      targetChannelId
-    );
-  } catch {
-    // Fallback aman
+  if (!data.items || data.items.length === 0) {
+    throw new Error('No YouTube channel found for this account');
   }
 
-  return metadata;
-}
-
-export async function testYouTubeConnectionHealth(youtubeChannelId?: string) {
-  ensureDefaultYouTubeChannelsSeeded();
-  const targetChannelId = youtubeChannelId || 'UCxHumasKemensosRI2026';
-  const refreshed = saveAndRefreshYouTubeOAuthToken(targetChannelId);
-
-  recordYouTubeAuditLog({
-    action: 'OAUTH_YOUTUBE_HEALTH_CHECK',
-    target: targetChannelId,
-    details: 'Pemeriksaan kesehatan koneksi YouTube Data API v3 & Analytics API berhasil (200 OK).'
-  });
+  const channel = data.items[0];
 
   return {
-    healthy: true,
-    youtubeChannelId: targetChannelId,
-    dataApiV3Status: 'ok',
-    analyticsApiStatus: 'ok',
-    latencyMs: 184,
-    grantedScopes: YOUTUBE_READONLY_SCOPES,
-    oauthStatus: refreshed.oauthStatus,
-    tokenExpiresAt: refreshed.tokenExpiresAt,
-    checkedAt: new Date().toISOString()
+    channelId: channel.id,
+    title: channel.snippet.title,
+    customUrl: channel.snippet.customUrl || '',
+    thumbnailUrl: channel.snippet.thumbnails?.default?.url,
+    subscriberCount: parseInt(channel.statistics.subscriberCount, 10) || 0,
+    viewCount: parseInt(channel.statistics.viewCount, 10) || 0,
+    videoCount: parseInt(channel.statistics.videoCount, 10) || 0,
   };
 }
 
-export function disconnectYouTubeChannelById(youtubeChannelId: string, reason?: string) {
-  ensureDefaultYouTubeChannelsSeeded();
-  const targetChannelId = youtubeChannelId || 'UCxHumasKemensosRI2026';
-
-  try {
-    const channelRow = db
-      .prepare('SELECT social_channel_id, channel_title FROM youtube_connected_channels WHERE youtube_channel_id = ? LIMIT 1')
-      .get(targetChannelId) as { social_channel_id: number | null; channel_title: string } | undefined;
-
-    db.prepare(
-      `UPDATE youtube_connected_channels
-       SET oauth_status = 'disconnected',
-           token_expires_at = NULL,
-           updated_at = CURRENT_TIMESTAMP
-       WHERE youtube_channel_id = ?`
-    ).run(targetChannelId);
-
-    if (channelRow?.social_channel_id) {
-      db.prepare('DELETE FROM channel_credentials WHERE channel_id = ?').run(channelRow.social_channel_id);
-      db.prepare("UPDATE social_channels SET status = 'disconnected', updated_at = CURRENT_TIMESTAMP WHERE id = ?").run(
-        channelRow.social_channel_id
-      );
+/**
+ * Fetch YouTube Analytics metrics
+ */
+export async function fetchYouTubeAnalytics(
+  accessToken: string,
+  channelId: string,
+  startDate: string,
+  endDate: string
+): Promise<YouTubeMetrics[]> {
+  const response = await fetch(
+    `https://youtubeanalytics.googleapis.com/v2/reports?` +
+    new URLSearchParams({
+      ids: `channel==${channelId}`,
+      startDate,
+      endDate,
+      metrics: 'views,estimatedMinutesWatched,subscribersGained,likes,comments,shares',
+      dimensions: 'day',
+      sort: 'day',
+    }),
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
     }
-  } catch {
-    // Fallback aman
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch YouTube Analytics: ${response.statusText}`);
   }
 
-  recordYouTubeAuditLog({
-    action: 'OAUTH_YOUTUBE_DISCONNECTED',
-    target: targetChannelId,
-    details: `Sambungan OAuth YouTube diputus dan token dihapus dari server. Alasan: ${reason || 'Pencabutan akses oleh Admin'}.`,
-    status: 'warning'
-  });
+  const data = await response.json();
+  const metrics: YouTubeMetrics[] = [];
+
+  if (data.rows) {
+    for (const row of data.rows) {
+      metrics.push({
+        date: row[0], // YYYY-MM-DD
+        views: row[1] || 0,
+        watchTimeMinutes: row[2] || 0,
+        subscribersGained: row[3] || 0,
+        likes: row[4] || 0,
+        comments: row[5] || 0,
+        shares: row[6] || 0,
+      });
+    }
+  }
+
+  return metrics;
+}
+
+/**
+ * Save YouTube channel and credentials
+ */
+export async function saveYouTubeChannel(params: {
+  channelId: string;
+  channelTitle: string;
+  customUrl: string;
+  avatarUrl?: string;
+  subscriberCount: number;
+  viewCount: number;
+  videoCount: number;
+  accessToken: string;
+  refreshToken: string;
+  expiresIn: number;
+  connectedBy?: number;
+}): Promise<number> {
+  const expiresAt = new Date(Date.now() + params.expiresIn * 1000).toISOString();
+  const scopes = 'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/yt-analytics.readonly';
+
+  if (isSupabaseConfigured) {
+    const client = getServiceSupabase();
+
+    // Check if social_channels entry exists
+    let socialChannelId: number;
+    const { data: existingSocial } = await client
+      .from('social_channels')
+      .select('id')
+      .eq('platform', 'youtube')
+      .eq('handle', params.customUrl || params.channelTitle)
+      .maybeSingle();
+
+    if (existingSocial) {
+      socialChannelId = existingSocial.id;
+    } else {
+      const { data: newSocial, error: socialError } = await client
+        .from('social_channels')
+        .insert({
+          name: params.channelTitle,
+          platform: 'youtube',
+          handle: params.customUrl || params.channelTitle,
+          followers_count: params.subscriberCount,
+          status: 'connected',
+        })
+        .select()
+        .single();
+
+      if (socialError) throw new Error(socialError.message);
+      socialChannelId = newSocial.id;
+    }
+
+    // Insert/update YouTube channel details
+    const { data: ytChannel, error: ytError } = await client
+      .from('youtube_connected_channels')
+      .upsert({
+        social_channel_id: socialChannelId,
+        youtube_channel_id: params.channelId,
+        channel_title: params.channelTitle,
+        custom_url: params.customUrl,
+        avatar_url: params.avatarUrl,
+        subscriber_count: params.subscriberCount,
+        total_views_count: params.viewCount,
+        video_count: params.videoCount,
+        oauth_status: 'connected',
+        token_expires_at: expiresAt,
+        last_synced_at: new Date().toISOString(),
+      }, { onConflict: 'youtube_channel_id' })
+      .select()
+      .single();
+
+    if (ytError) throw new Error(ytError.message);
+
+    // Insert/update credentials
+    const { error: credError } = await client
+      .from('channel_credentials')
+      .upsert({
+        channel_id: socialChannelId,
+        auth_type: 'oauth2',
+        encrypted_token: params.accessToken, // TODO: Encrypt
+        refresh_token: params.refreshToken, // TODO: Encrypt
+        expires_at: expiresAt,
+        scopes,
+      }, { onConflict: 'channel_id' });
+
+    if (credError) throw new Error(credError.message);
+
+    return ytChannel.id;
+  }
+
+  // SQLite fallback
+  let socialChannelId: number;
+  const existingSocial = db.prepare('SELECT id FROM social_channels WHERE platform = ? AND handle = ?')
+    .get('youtube', params.customUrl || params.channelTitle) as any;
+
+  if (existingSocial) {
+    socialChannelId = existingSocial.id;
+    db.prepare('UPDATE social_channels SET followers_count = ?, status = ? WHERE id = ?')
+      .run(params.subscriberCount, 'connected', socialChannelId);
+  } else {
+    const result = db.prepare(`
+      INSERT INTO social_channels (name, platform, handle, followers_count, status)
+      VALUES (?, 'youtube', ?, ?, 'connected')
+    `).run(params.channelTitle, params.customUrl || params.channelTitle, params.subscriberCount);
+    socialChannelId = Number(result.lastInsertRowid);
+  }
+
+  const ytResult = db.prepare(`
+    INSERT INTO youtube_connected_channels (
+      social_channel_id, youtube_channel_id, channel_title, custom_url,
+      avatar_url, subscriber_count, total_views_count, video_count,
+      oauth_status, token_expires_at, last_synced_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'connected', ?, datetime('now'))
+    ON CONFLICT(youtube_channel_id) DO UPDATE SET
+      channel_title = excluded.channel_title,
+      subscriber_count = excluded.subscriber_count,
+      total_views_count = excluded.total_views_count,
+      video_count = excluded.video_count,
+      oauth_status = 'connected',
+      token_expires_at = excluded.token_expires_at,
+      last_synced_at = datetime('now')
+  `).run(
+    socialChannelId,
+    params.channelId,
+    params.channelTitle,
+    params.customUrl,
+    params.avatarUrl || null,
+    params.subscriberCount,
+    params.viewCount,
+    params.videoCount,
+    expiresAt
+  );
+
+  db.prepare(`
+    INSERT INTO channel_credentials (channel_id, auth_type, encrypted_token, refresh_token, expires_at, scopes)
+    VALUES (?, 'oauth2', ?, ?, ?, ?)
+    ON CONFLICT(channel_id) DO UPDATE SET
+      encrypted_token = excluded.encrypted_token,
+      refresh_token = excluded.refresh_token,
+      expires_at = excluded.expires_at,
+      updated_at = datetime('now')
+  `).run(socialChannelId, params.accessToken, params.refreshToken, expiresAt, scopes);
+
+  return Number(ytResult.lastInsertRowid);
+}
+
+/**
+ * Get all connected YouTube channels
+ */
+export async function getYouTubeChannels(): Promise<YouTubeChannel[]> {
+  if (isSupabaseConfigured) {
+    const client = getServiceSupabase();
+    const { data, error } = await client
+      .from('youtube_connected_channels')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) throw new Error(error.message);
+
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      youtubeChannelId: row.youtube_channel_id,
+      channelTitle: row.channel_title,
+      customUrl: row.custom_url,
+      avatarUrl: row.avatar_url,
+      subscriberCount: row.subscriber_count,
+      totalViewsCount: row.total_views_count,
+      videoCount: row.video_count,
+      analyticsViews30d: row.analytics_views_30d || 0,
+      analyticsWatchTimeMinutes30d: row.analytics_watch_time_minutes_30d || 0,
+      analyticsEngagements30d: row.analytics_engagements_30d || 0,
+      oauthStatus: row.oauth_status,
+      lastSyncedAt: row.last_synced_at,
+    }));
+  }
+
+  // SQLite fallback
+  const rows = db.prepare('SELECT * FROM youtube_connected_channels ORDER BY id ASC').all() as any[];
+  return rows.map((row: any) => ({
+    id: row.id,
+    youtubeChannelId: row.youtube_channel_id,
+    channelTitle: row.channel_title,
+    customUrl: row.custom_url,
+    avatarUrl: row.avatar_url,
+    subscriberCount: row.subscriber_count,
+    totalViewsCount: row.total_views_count,
+    videoCount: row.video_count,
+    analyticsViews30d: row.analytics_views_30d || 0,
+    analyticsWatchTimeMinutes30d: row.analytics_watch_time_minutes_30d || 0,
+    analyticsEngagements30d: row.analytics_engagements_30d || 0,
+    oauthStatus: row.oauth_status,
+    lastSyncedAt: row.last_synced_at,
+  }));
+}
+
+/**
+ * Sync YouTube channel metrics
+ */
+export async function syncYouTubeMetrics(
+  channelDbId: number,
+  youtubeChannelId: string,
+  accessToken: string,
+  days: number = 30
+): Promise<number> {
+  const endDate = new Date().toISOString().split('T')[0];
+  const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const metrics = await fetchYouTubeAnalytics(accessToken, youtubeChannelId, startDate, endDate);
+
+  // Calculate aggregated metrics
+  const totalViews = metrics.reduce((sum, m) => sum + m.views, 0);
+  const totalWatchTime = metrics.reduce((sum, m) => sum + m.watchTimeMinutes, 0);
+  const totalEngagements = metrics.reduce((sum, m) => sum + m.likes + m.comments + m.shares, 0);
+
+  if (isSupabaseConfigured) {
+    const client = getServiceSupabase();
+
+    // Update aggregated metrics
+    await client
+      .from('youtube_connected_channels')
+      .update({
+        analytics_views_30d: totalViews,
+        analytics_watch_time_minutes_30d: totalWatchTime,
+        analytics_engagements_30d: totalEngagements,
+        last_synced_at: new Date().toISOString(),
+      })
+      .eq('id', channelDbId);
+  } else {
+    // SQLite fallback
+    db.prepare(`
+      UPDATE youtube_connected_channels
+      SET analytics_views_30d = ?,
+          analytics_watch_time_minutes_30d = ?,
+          analytics_engagements_30d = ?,
+          last_synced_at = datetime('now')
+      WHERE id = ?
+    `).run(totalViews, totalWatchTime, totalEngagements, channelDbId);
+  }
+
+  return metrics.length;
+}
+
+/**
+ * Get YouTube credentials
+ */
+export async function getYouTubeCredentials(socialChannelId: number): Promise<{
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: string;
+} | null> {
+  if (isSupabaseConfigured) {
+    const client = getServiceSupabase();
+    const { data, error } = await client
+      .from('channel_credentials')
+      .select('*')
+      .eq('channel_id', socialChannelId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+
+    return {
+      accessToken: data.encrypted_token,
+      refreshToken: data.refresh_token,
+      expiresAt: data.expires_at,
+    };
+  }
+
+  // SQLite fallback
+  const row = db.prepare('SELECT * FROM channel_credentials WHERE channel_id = ?').get(socialChannelId) as any;
+  if (!row) return null;
 
   return {
-    disconnected: true,
-    youtubeChannelId: targetChannelId,
-    credentialsPurgedFromServer: true,
-    historicalMetricsPreserved: true,
-    disconnectedAt: new Date().toISOString()
+    accessToken: row.encrypted_token,
+    refreshToken: row.refresh_token,
+    expiresAt: row.expires_at,
   };
 }
 
+/**
+ * Verify admin or head role for YouTube management
+ */
+export function verifyAdminOrHeadRole(req: any): { ok: boolean; role?: string; allowed?: boolean; reason?: string } {
+  const roleCookie = req.cookies.get('user_role')?.value;
+  if (!roleCookie) return { ok: false, allowed: false, reason: 'No role found' };
+
+  if (['head', 'admin'].includes(roleCookie)) {
+    return { ok: true, allowed: true, role: roleCookie };
+  }
+
+  return { ok: false, allowed: false, reason: 'Insufficient permissions' };
+}
+
+/**
+ * Test YouTube connection health (stub for compatibility)
+ */
+export async function testYouTubeConnectionHealth(youtubeChannelId: string): Promise<{
+  ok: boolean;
+  status: string;
+  message: string;
+}> {
+  try {
+    const channels = await getYouTubeChannels();
+    const channel = channels.find(ch => ch.youtubeChannelId === youtubeChannelId);
+
+    if (!channel) {
+      return {
+        ok: false,
+        status: 'not_found',
+        message: 'Channel not found',
+      };
+    }
+
+    return {
+      ok: channel.oauthStatus === 'connected',
+      status: channel.oauthStatus,
+      message: channel.oauthStatus === 'connected' ? 'Connected' : 'Disconnected or expired',
+    };
+  } catch (error: any) {
+    return {
+      ok: false,
+      status: 'error',
+      message: error.message,
+    };
+  }
+}

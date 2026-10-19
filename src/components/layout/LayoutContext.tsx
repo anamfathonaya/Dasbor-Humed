@@ -12,41 +12,115 @@ export interface UserProfile {
   roleLabel: string;
 }
 
+export interface TeamMember {
+  id: string;
+  name: string;
+  nickname: string;
+  roleTitle: string;
+  systemRole: UserRole;
+  initials: string;
+  avatarBg: string;
+  skills: string[];
+}
+
+export const TEAM_MEMBERS: TeamMember[] = [
+  {
+    id: 'iskandar',
+    name: 'Iskandar',
+    nickname: 'Pak Iskandar',
+    roleTitle: 'Humas & Ketua Bidang',
+    systemRole: 'head',
+    initials: 'IS',
+    avatarBg: '#0284c7',
+    skills: ['Kelembagaan & Pers', 'Rapat BPH', 'Strategic Planning', 'Leadership']
+  },
+  {
+    id: 'anam',
+    name: 'Anam',
+    nickname: 'Anam',
+    roleTitle: 'Creative Director & IT Support',
+    systemRole: 'admin',
+    initials: 'AN',
+    avatarBg: '#7c3aed',
+    skills: ['Konsep Kreatif', 'Sistem & Dasbor', 'Meta Ads & Pixel', 'Wordpress/Elementor']
+  },
+  {
+    id: 'dimas',
+    name: 'Dimas',
+    nickname: 'Dimas',
+    roleTitle: 'Content Creator / Scriptwriter',
+    systemRole: 'staff',
+    initials: 'DM',
+    avatarBg: '#059669',
+    skills: ['Riset & Naskah', 'Script Big Idea', 'Copywriting Carousel', 'V-Art']
+  },
+  {
+    id: 'hilmiya',
+    name: 'Hilmiya',
+    nickname: 'Hilmiya',
+    roleTitle: 'Graphic Designer',
+    systemRole: 'staff',
+    initials: 'HL',
+    avatarBg: '#db2777',
+    skills: ['Visual Statis', 'Desain Carousel', 'Merchandise & Tools', 'Plakat']
+  },
+  {
+    id: 'jundi',
+    name: 'Jundi',
+    nickname: 'Jundi',
+    roleTitle: 'Videografer & Editor',
+    systemRole: 'staff',
+    initials: 'JD',
+    avatarBg: '#ea580c',
+    skills: ['Produksi Video', 'Reels/Shorts/TOG', 'Operator Zoom/Livestream', 'Shooting']
+  },
+  {
+    id: 'rijal',
+    name: 'Rijal',
+    nickname: 'Rijal',
+    roleTitle: 'Social Media Specialist & Admin',
+    systemRole: 'staff',
+    initials: 'RJ',
+    avatarBg: '#4f46e5',
+    skills: ['Publishing Multi-Kanal', 'Moderasi Komunitas', 'Operator Zoom', 'Log Restriksi']
+  }
+];
+
 export const ROLE_LABELS: Record<UserRole, string> = {
-  head: 'Kepala Humas',
-  admin: 'Admin Teknis',
-  staff: 'Staf Konten',
-  reviewer: 'Reviewer / Mitra'
+  head: 'Humas & Ketua Bidang (Iskandar)',
+  admin: 'Creative Director & IT (Anam)',
+  staff: 'Tim Pelaksana (Dimas/Hilmiya/Jundi/Rijal)',
+  reviewer: 'Reviewer / BPH Lembaga'
 };
 
 export const DEFAULT_USERS: Record<UserRole, UserProfile> = {
   head: {
-    name: 'Rani Maulida',
-    initials: 'RM',
+    name: 'Iskandar',
+    initials: 'IS',
     avatarUrl: null,
     role: 'head',
-    roleLabel: 'Kepala Humas'
+    roleLabel: 'Humas & Ketua Bidang'
   },
   admin: {
-    name: 'Budi Santoso',
-    initials: 'BS',
+    name: 'Anam',
+    initials: 'AN',
     avatarUrl: null,
     role: 'admin',
-    roleLabel: 'Admin Teknis'
+    roleLabel: 'Creative Director'
   },
   staff: {
-    name: 'Dewi Lestari',
-    initials: 'DL',
+    name: 'Dimas',
+    initials: 'DM',
     avatarUrl: null,
     role: 'staff',
-    roleLabel: 'Staf Konten'
+    roleLabel: 'Content Creator'
   },
   reviewer: {
-    name: 'Ahmad Fauzi',
-    initials: 'AF',
+    name: 'BPH Komnas Palestina',
+    initials: 'BP',
     avatarUrl: null,
     role: 'reviewer',
-    roleLabel: 'Reviewer / Mitra'
+    roleLabel: 'Reviewer Lembaga'
   }
 };
 

@@ -1,3 +1,4 @@
+import { recordChannelAuditLog } from './auditService';
 import crypto from 'crypto';
 import db from './db';
 import { encryptMetaServerToken } from './instagramOAuthService';
@@ -198,6 +199,15 @@ export async function exchangeFacebookPageTokenAndSave(
       `Pertukaran token Facebook Page berhasil untuk halaman "${name}" (${metaAccountId}). Page Access Token disimpan aman di sisi server.`
     );
   } catch {}
+
+  recordChannelAuditLog({
+    action: 'CHANNEL_OAUTH_CONNECT',
+    platform: 'facebook',
+    target: String(metaAccountId),
+    userName,
+    userRole,
+    details: `Pertukaran token Facebook Page berhasil untuk halaman "${name}".`
+  });
 
   return {
     id: insertedId || 2,

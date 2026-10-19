@@ -113,10 +113,10 @@ export function HumasHeader({
               onChange={handleRoleChange}
               data-shell-role
             >
-              <option value="head">Kepala Humas</option>
-              <option value="admin">Admin Teknis</option>
-              <option value="staff">Staf Konten</option>
-              <option value="reviewer">Reviewer / Mitra</option>
+              <option value="head">Ketua Bidang (Iskandar)</option>
+              <option value="admin">Creative Director & IT (Anam)</option>
+              <option value="staff">Tim Pelaksana (Dimas/Hilmiya/Jundi/Rijal)</option>
+              <option value="reviewer">Reviewer / BPH Lembaga</option>
             </select>
           </span>
 

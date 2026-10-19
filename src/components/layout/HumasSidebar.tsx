@@ -35,6 +35,12 @@ const NAV_GROUPS: NavGroup[] = [
         roles: ['head', 'admin', 'staff', 'reviewer']
       },
       {
+        title: 'Dasbor Metrik Kanal',
+        href: '/dasbor-metrik-kanal',
+        icon: 'lucide:bar-chart-3',
+        roles: ['head', 'admin', 'staff', 'reviewer']
+      },
+      {
         title: 'Jadwal Tarik Metrik',
         href: '/penarikan-metrik-terjadwal',
         icon: 'lucide:calendar-clock',
@@ -178,11 +184,12 @@ export function HumasSidebar() {
       data-role-active={currentRole}
     >
       <div className="l-humas__brand">
-        <span className="l-humas__brand-mark" aria-hidden="true">
-          HM
+        <span className="l-humas__brand-mark" aria-hidden="true" style={{ background: '#059669', color: '#ffffff', fontWeight: 800 }}>
+          KP
         </span>
         <div className="l-humas__brand-text">
-          <p className="l-humas__brand-title">Humas-Media Dashboard</p>
+          <p className="l-humas__brand-title" style={{ fontWeight: 700, letterSpacing: '-0.01em', margin: 0 }}>Dasbor Humed</p>
+          <span style={{ fontSize: '11px', color: 'var(--color-muted, #94a3b8)', display: 'block' }}>Komnas Palestina</span>
         </div>
         <button
           type="button"

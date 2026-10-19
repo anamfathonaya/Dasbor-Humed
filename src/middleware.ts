@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // 1. Dapatkan role dari cookie sesi Supabase / user_role
-  let userRole: UserRole = 'head';
+  let userRole: UserRole = 'staff';
   const roleCookie = request.cookies.get('user_role')?.value;
   if (roleCookie === 'head' || roleCookie === 'admin' || roleCookie === 'staff' || roleCookie === 'reviewer') {
     userRole = roleCookie as UserRole;

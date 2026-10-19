@@ -1,4 +1,5 @@
 import { db } from './db';
+import { getServiceSupabase, isSupabaseConfigured } from './supabase';
 
 export interface AuditEntry {
   userId?: number | null;
@@ -20,23 +21,55 @@ export function recordAuditLog(entry: AuditEntry): number {
   const status = entry.status || 'success';
   const ip = entry.ipAddress || '127.0.0.1';
 
-  const insert = db.prepare(`
-    INSERT INTO audit_logs (user_id, user_name, user_role, action, target, ip_address, status, details)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  // 1. Tulis ke Supabase PostgreSQL jika terkonfigurasi
+  if (isSupabaseConfigured) {
+    try {
+      const client = getServiceSupabase();
+      Promise.resolve(
+        client.from('audit_logs').insert({
+          user_id: entry.userId || null,
+          user_name: entry.userName,
+          user_role: entry.userRole,
+          action: entry.action,
+          target: entry.target,
+          ip_address: ip,
+          status,
+          details: detailsStr
+        })
+      )
+        .then(({ error }: any) => {
+          if (error) {
+            console.warn('[recordAuditLog] Gagal menyimpan log audit ke Supabase Postgres:', error.message);
+          }
+        })
+        .catch(() => {});
+    } catch (err: any) {
+      console.warn('[recordAuditLog] Error client Supabase:', err?.message);
+    }
+  }
 
-  const result = insert.run(
-    entry.userId || null,
-    entry.userName,
-    entry.userRole,
-    entry.action,
-    entry.target,
-    ip,
-    status,
-    detailsStr
-  );
+  // 2. Tulis ke SQLite lokal (dual-write/fallback offline)
+  try {
+    const insert = db.prepare(`
+      INSERT INTO audit_logs (user_id, user_name, user_role, action, target, ip_address, status, details)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
 
-  return Number(result.lastInsertRowid);
+    const result = insert.run(
+      entry.userId || null,
+      entry.userName,
+      entry.userRole,
+      entry.action,
+      entry.target,
+      ip,
+      status,
+      detailsStr
+    );
+
+    return Number(result.lastInsertRowid);
+  } catch {
+    return 0;
+  }
 }
 
 /**
@@ -89,4 +122,33 @@ export function getAuditLogs(options?: {
   params.push(limit, offset);
 
   return db.prepare(query).all(...params);
+}
+
+/**
+ * Pencatat jejak audit aksi kanal (connect, disconnect, sinkronisasi, OAuth, refresh token).
+ * Tidak pernah melempar galat agar aksi utama tetap berjalan, dan tidak menyimpan token/kredensial.
+ */
+export function recordChannelAuditLog(params: {
+  action: string;
+  platform: string;
+  target?: string;
+  userName?: string;
+  userRole?: string;
+  status?: 'success' | 'warning' | 'failed';
+  details?: string | Record<string, any>;
+  ipAddress?: string;
+}): void {
+  try {
+    recordAuditLog({
+      userName: params.userName || 'Sistem',
+      userRole: params.userRole || 'system',
+      action: params.action,
+      target: params.target ? `${params.platform}:${params.target}` : params.platform,
+      ipAddress: params.ipAddress,
+      status: params.status || 'success',
+      details: params.details
+    });
+  } catch {
+    // Kegagalan pencatatan audit tidak boleh menggagalkan aksi kanal
+  }
 }

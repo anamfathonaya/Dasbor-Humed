@@ -1,5 +1,3 @@
-import type { Request } from 'node-fetch';
-
 export type UserRole = 'head' | 'admin' | 'staff' | 'reviewer';
 
 /**
@@ -13,21 +11,7 @@ export type UserRole = 'head' | 'admin' | 'staff' | 'reviewer';
 export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
   const validRoles: UserRole[] = ['head', 'admin', 'staff', 'reviewer'];
 
-  // 1. Cek query param jika url disediakan
-  if (url) {
-    const roleParam = url.searchParams.get('role');
-    if (roleParam && (validRoles as string[]).includes(roleParam)) {
-      return roleParam as UserRole;
-    }
-  }
-
-  // 2. Cek custom header
-  const headerRole = request.headers.get('x-user-role')?.toLowerCase();
-  if (headerRole && (validRoles as string[]).includes(headerRole)) {
-    return headerRole as UserRole;
-  }
-
-  // 3. Cek Authorization header
+  // 1. Cek Authorization header terverifikasi (Bearer token/role)
   const authHeader = request.headers.get('authorization');
   if (authHeader) {
     const token = authHeader.replace(/^Bearer\s+/i, '').trim().toLowerCase();
@@ -36,7 +20,7 @@ export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
     }
   }
 
-  // 4. Cek Cookie jika ada
+  // 2. Cek Cookie sesi aman (user_role atau supabase session)
   const cookieHeader = request.headers.get('cookie');
   if (cookieHeader) {
     const match = cookieHeader.match(/user_role=([a-zA-Z]+)/);
@@ -45,8 +29,8 @@ export function getUserRole(request: globalThis.Request, url?: URL): UserRole {
     }
   }
 
-  // Default fallback
-  return 'head';
+  // Default fallback ke least privilege ('staff'), bukan 'head'
+  return 'staff';
 }
 
 /**
