@@ -1,7 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { ChannelSummaryData, MetricDimension } from './ChannelMonitoringView';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 export interface ChannelDailyTrendChartProps {
   channels: ChannelSummaryData[];
@@ -13,27 +25,23 @@ export interface ChannelDailyTrendChartProps {
 
 const PLATFORM_THEME: Record<
   ChannelSummaryData['platform'],
-  { color: string; gradient: string; icon: string }
+  { color: string; label: string }
 > = {
   instagram: {
     color: '#e1306c',
-    gradient: 'linear-gradient(180deg, #f472b6 0%, #e1306c 100%)',
-    icon: 'lucide:instagram'
+    label: 'Instagram'
   },
   facebook: {
     color: '#1877f2',
-    gradient: 'linear-gradient(180deg, #60a5fa 0%, #1877f2 100%)',
-    icon: 'lucide:facebook'
+    label: 'Facebook'
   },
   tiktok: {
     color: '#10b981',
-    gradient: 'linear-gradient(180deg, #34d399 0%, #10b981 100%)',
-    icon: 'lucide:music-2'
+    label: 'TikTok'
   },
   youtube: {
     color: '#dc2626',
-    gradient: 'linear-gradient(180deg, #f87171 0%, #dc2626 100%)',
-    icon: 'lucide:youtube'
+    label: 'YouTube'
   }
 };
 
@@ -43,6 +51,11 @@ const METRIC_LABELS: Record<MetricDimension, string> = {
   followers: 'Pengikut (Followers / Subscribers)'
 };
 
+/**
+ * Komponen grafik deret waktu harian per kanal.
+ * Memenuhi Aturan Tampilan UI #2:
+ * "Deret waktu: Gunakan grafik garis (line chart)."
+ */
 export function ChannelDailyTrendChart({
   channels,
   activeMetric,
@@ -50,263 +63,185 @@ export function ChannelDailyTrendChart({
   startDate,
   endDate
 }: ChannelDailyTrendChartProps) {
-  const [hoveredPoint, setHoveredPoint] = useState<{
-    channelId: string;
-    date: string;
-  } | null>(null);
-
   return (
-    <section
-      className="dasbor__card"
+    <Card
+      className="border-border/80 bg-card shadow-xs"
       aria-label="Tren harian per kanal"
       data-testid="daily-trends-section"
     >
-      <div
-        className="dasbor__card-head"
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem'
-        }}
-      >
-        <div>
-          <h2>Tren Harian Terpisah per Kanal ({startDate} s/d {endDate})</h2>
-          <p>
-            Grafik tren harian masing-masing kanal untuk memantau naik-turun{' '}
-            <b>{METRIC_LABELS[activeMetric]}</b>
-          </p>
-        </div>
+      <CardHeader className="pb-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                Deret Waktu (Line Chart)
+              </span>
+              <Badge variant="outline" className="border-amber-500/30 text-amber-500 text-[10px]">
+                DEMO
+              </Badge>
+            </div>
+            <CardTitle className="text-base font-semibold">
+              Tren Harian Terpisah per Kanal ({startDate} s/d {endDate})
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">
+              Grafik garis deret waktu harian untuk memantau fluktuasi <strong>{METRIC_LABELS[activeMetric]}</strong> (Aturan #2)
+            </CardDescription>
+          </div>
 
-        <div
-          role="group"
-          aria-label="Pilih metrik grafik tren harian"
-          style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}
-        >
-          {(
-            [
-              { id: 'views', label: 'Tayangan (Views)' },
-              { id: 'interactions', label: 'Interaksi' },
-              { id: 'followers', label: 'Pengikut' }
-            ] as const
-          ).map((dim) => {
-            const active = activeMetric === dim.id;
+          <div
+            role="group"
+            aria-label="Pilih metrik grafik tren harian"
+            className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-lg border border-border/60 flex-wrap"
+          >
+            {(
+              [
+                { id: 'views', label: 'Tayangan (Views)' },
+                { id: 'interactions', label: 'Interaksi' },
+                { id: 'followers', label: 'Pengikut' }
+              ] as const
+            ).map((dim) => {
+              const active = activeMetric === dim.id;
+              return (
+                <Button
+                  key={dim.id}
+                  type="button"
+                  size="sm"
+                  variant={active ? 'default' : 'ghost'}
+                  data-testid={`trend-metric-tab-${dim.id}`}
+                  onClick={() => onChangeMetric(dim.id)}
+                  className={`h-7 text-xs px-2.5 ${active ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground'}`}
+                >
+                  {dim.label}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {/* Grid Grafik Garis Terpisah per Kanal */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {channels.map((channel) => {
+            const values = channel.dailyTrend.map((pt) => pt[activeMetric]);
+            const maxVal = Math.max(...values, 1);
+            const avgVal = Math.round(
+              values.reduce((sum, v) => sum + v, 0) / (values.length || 1)
+            );
+            const peakIdx = values.indexOf(maxVal);
+            const peakPoint = channel.dailyTrend[peakIdx];
+            const theme = PLATFORM_THEME[channel.platform];
+
+            const growthLabel =
+              activeMetric === 'views'
+                ? channel.viewsGrowth
+                : activeMetric === 'interactions'
+                ? channel.interactionsGrowth
+                : channel.followersGrowth;
+
+            // Siapkan data untuk Recharts LineChart
+            const chartData = channel.dailyTrend.map((pt) => ({
+              date: pt.date,
+              label: pt.label,
+              value: pt[activeMetric]
+            }));
+
             return (
-              <button
-                key={dim.id}
-                type="button"
-                data-testid={`trend-metric-tab-${dim.id}`}
-                onClick={() => onChangeMetric(dim.id)}
-                className={`dasbor__btn ${active ? 'dasbor__btn--primary' : ''}`}
-                style={{ minHeight: '32px', padding: '0 12px', fontSize: '12px' }}
-                aria-pressed={active}
+              <div
+                key={`trend-${channel.id}`}
+                data-testid={`channel-trend-chart-${channel.platform}`}
+                className="p-3.5 rounded-lg border border-border/80 bg-muted/20 flex flex-col justify-between gap-3"
               >
-                {dim.label}
-              </button>
+                {/* Header Kanal */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="size-2.5 rounded-full"
+                      style={{ backgroundColor: theme.color }}
+                    />
+                    <span className="text-xs font-semibold text-foreground">
+                      {channel.platformLabel}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">
+                      ({channel.handle})
+                    </span>
+                  </div>
+
+                  <Badge
+                    variant="outline"
+                    className="border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[10px] font-mono px-1.5 py-0"
+                  >
+                    {growthLabel}
+                  </Badge>
+                </div>
+
+                {/* Ringkasan Statistik Harian Kanal */}
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground bg-card p-2 rounded border border-border/60">
+                  <span>
+                    Rata-rata:{' '}
+                    <strong className="text-foreground font-mono">
+                      {avgVal.toLocaleString('id-ID')}
+                    </strong>
+                  </span>
+                  {peakPoint && (
+                    <span>
+                      Puncak ({peakPoint.label}):{' '}
+                      <strong className="text-foreground font-mono">
+                        {maxVal.toLocaleString('id-ID')}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+
+                {/* ATURAN #2: Line Chart Recharts */}
+                <div className="h-[140px] w-full pt-1">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData} margin={{ top: 8, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="oklch(0.3 0.02 160 / 0.3)" />
+                      <XAxis
+                        dataKey="label"
+                        stroke="oklch(0.6 0.02 160)"
+                        fontSize={10}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        stroke="oklch(0.6 0.02 160)"
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
+                      />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: 'oklch(0.2 0.02 160)',
+                          borderColor: 'oklch(0.35 0.04 160)',
+                          borderRadius: '6px',
+                          fontSize: '11px',
+                          padding: '6px 10px'
+                        }}
+                        formatter={(val: any) => [
+                          Number(val).toLocaleString('id-ID'),
+                          METRIC_LABELS[activeMetric].split(' ')[0]
+                        ]}
+                        labelFormatter={(lbl) => `Tanggal: ${lbl}`}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke={theme.color}
+                        strokeWidth={2}
+                        dot={{ r: 3, fill: theme.color }}
+                        activeDot={{ r: 5, fill: theme.color, stroke: '#ffffff', strokeWidth: 1.5 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             );
           })}
         </div>
-      </div>
-
-      {/* Grid Grafik Terpisah per Kanal */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(290px, 1fr))',
-          gap: '1rem',
-          marginTop: '1rem'
-        }}
-      >
-        {channels.map((channel) => {
-          const values = channel.dailyTrend.map((pt) => pt[activeMetric]);
-          const maxVal = Math.max(...values, 1);
-          const minVal = Math.min(...values);
-          const avgVal = Math.round(
-            values.reduce((sum, v) => sum + v, 0) / (values.length || 1)
-          );
-          const peakIdx = values.indexOf(maxVal);
-          const peakPoint = channel.dailyTrend[peakIdx];
-          const theme = PLATFORM_THEME[channel.platform];
-
-          const growthLabel =
-            activeMetric === 'views'
-              ? channel.viewsGrowth
-              : activeMetric === 'interactions'
-              ? channel.interactionsGrowth
-              : channel.followersGrowth;
-
-          return (
-            <article
-              key={`trend-${channel.id}`}
-              data-testid={`channel-trend-chart-${channel.platform}`}
-              style={{
-                padding: '1rem',
-                borderRadius: '8px',
-                border: '1px solid var(--color-border, #303236)',
-                background: 'var(--color-surface-sunken, #090a0c)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: '0.75rem'
-              }}
-            >
-              {/* Header Grafik Kanal */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span
-                    style={{
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '50%',
-                      background: theme.color,
-                      display: 'inline-block'
-                    }}
-                  />
-                  <strong style={{ fontSize: '0.92rem', color: 'var(--color-text, #ffffff)' }}>{channel.platformLabel}</strong>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted, #a1a1aa)' }}>
-                    ({channel.handle})
-                  </span>
-                </div>
-
-                <span className="dasbor__badge dasbor__badge--up" style={{ fontSize: '12px' }}>
-                  {growthLabel}
-                </span>
-              </div>
-
-              {/* Ringkasan Statistik Harian Kanal (Rata-rata & Puncak) */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.75rem',
-                  color: 'var(--color-text-muted, #a1a1aa)',
-                  background: 'var(--color-surface, #111315)',
-                  border: '1px solid var(--color-border, #303236)',
-                  padding: '6px 10px',
-                  borderRadius: '6px'
-                }}
-              >
-                <span>
-                  Rata-rata/hari:{' '}
-                  <b style={{ color: 'var(--color-text, #ffffff)' }}>
-                    {avgVal.toLocaleString('id-ID')}
-                  </b>
-                </span>
-                {peakPoint && (
-                  <span>
-                    Puncak ({peakPoint.label}):{' '}
-                    <b style={{ color: 'var(--color-text, #ffffff)' }}>
-                      {maxVal.toLocaleString('id-ID')}
-                    </b>
-                  </span>
-                )}
-              </div>
-
-              {/* Area Grafik Batang Harian Interaktif */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: `repeat(${channel.dailyTrend.length}, 1fr)`,
-                  alignItems: 'end',
-                  gap: '6px',
-                  height: '120px',
-                  paddingTop: '18px',
-                  borderBottom: '1px solid var(--color-border, #303236)'
-                }}
-              >
-                {channel.dailyTrend.map((point) => {
-                  const val = point[activeMetric];
-                  const heightPct =
-                    activeMetric === 'followers'
-                      ? Math.max(
-                          25,
-                          Math.round(
-                            ((val - minVal * 0.985) / (maxVal - minVal * 0.985 || 1)) * 100
-                          )
-                        )
-                      : Math.max(20, Math.round((val / maxVal) * 100));
-
-                  const isHovered =
-                    hoveredPoint?.channelId === channel.id &&
-                    hoveredPoint?.date === point.date;
-
-                  return (
-                    <div
-                      key={point.date}
-                      onMouseEnter={() =>
-                        setHoveredPoint({ channelId: channel.id, date: point.date })
-                      }
-                      onMouseLeave={() => setHoveredPoint(null)}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        height: '100%',
-                        cursor: 'pointer'
-                      }}
-                      title={`${channel.platformLabel} (${point.label}): ${val.toLocaleString('id-ID')}`}
-                    >
-                      <span
-                        style={{
-                          fontSize: '12px',
-                          fontWeight: isHovered ? 700 : 500,
-                          color: isHovered
-                            ? 'var(--color-text, #ffffff)'
-                            : 'var(--color-text-muted, #a1a1aa)',
-                          marginBottom: '4px'
-                        }}
-                      >
-                        {val >= 1000 ? `${(val / 1000).toFixed(1)}k` : val}
-                      </span>
-                      <div
-                        style={{
-                          width: '100%',
-                          maxWidth: '28px',
-                          height: `${Math.min(100, heightPct)}%`,
-                          background: theme.gradient,
-                          borderRadius: '4px 4px 0 0',
-                          opacity: isHovered ? 1 : 0.88,
-                          transform: isHovered ? 'scaleY(1.03)' : 'none',
-                          transition: 'opacity 0.15s ease, transform 0.15s ease'
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Sumbu Tanggal */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: `repeat(${channel.dailyTrend.length}, 1fr)`,
-                  gap: '6px',
-                  textAlign: 'center'
-                }}
-              >
-                {channel.dailyTrend.map((point) => (
-                  <span
-                    key={`lbl-${point.date}`}
-                    style={{ fontSize: '10px', color: 'var(--color-muted, #64748b)' }}
-                  >
-                    {point.label}
-                  </span>
-                ))}
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
+      </CardContent>
+    </Card>
   );
 }
 

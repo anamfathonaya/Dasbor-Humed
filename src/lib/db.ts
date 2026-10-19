@@ -2297,6 +2297,91 @@ export function initDatabase() {
         '2026-10-18 19:00:08'
       );
     }
+
+    // Seeding youtube_connected_channels jika kosong
+    const ytCount = (db.prepare('SELECT COUNT(*) as count FROM youtube_connected_channels').get() as { count: number }).count;
+    if (ytCount === 0) {
+      const insertYt = db.prepare(`
+        INSERT INTO youtube_connected_channels (
+          social_channel_id, youtube_channel_id, channel_title, custom_url,
+          avatar_url, subscriber_count, total_views_count, video_count,
+          analytics_views_30d, analytics_watch_time_minutes_30d, analytics_engagements_30d,
+          oauth_status, token_expires_at, last_health_check_at, last_synced_at, connected_by_email
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      insertYt.run(
+        4,
+        'UC_PeduliNegeriTV_01',
+        'Peduli Negeri TV',
+        '@PeduliNegeriTV',
+        'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+        185000,
+        14820400,
+        420,
+        521600,
+        148900,
+        48200,
+        'connected',
+        '2026-11-18 08:35:00',
+        '2026-10-19 08:35:00',
+        '2026-10-19 08:35:00',
+        'admin.humas@kemensos.go.id'
+      );
+    }
+
+    // Seeding google_analytics_properties & daily metrics jika kosong
+    const gaPropCount = (db.prepare('SELECT COUNT(*) as count FROM google_analytics_properties').get() as { count: number }).count;
+    if (gaPropCount === 0) {
+      const insertGaProp = db.prepare(`
+        INSERT INTO google_analytics_properties (
+          property_id, property_name, website_url, account_id, account_name,
+          connected_by, oauth_status, last_synced_at, sync_enabled
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const propRes = insertGaProp.run(
+        'properties/3982410',
+        'Portal Informasi Resmi Humas & Media Terpadu',
+        'https://humas.kemensos.go.id',
+        'accounts/9871234',
+        'Kementerian Sosial Republik Indonesia',
+        1,
+        'connected',
+        '2026-10-19 08:30:00',
+        1
+      );
+      const propDbId = Number(propRes.lastInsertRowid);
+
+      const insertGaMetric = db.prepare(`
+        INSERT INTO google_analytics_daily_metrics (
+          property_id, metric_date, users, sessions, pageviews,
+          avg_session_duration, bounce_rate, new_users, engaged_sessions, event_count
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      // Generate 30 days of metrics ending at 2026-10-19
+      const baseDate = new Date('2026-10-19T00:00:00Z');
+      for (let i = 29; i >= 0; i--) {
+        const d = new Date(baseDate.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = d.toISOString().split('T')[0];
+        const dayUsers = 850 + Math.round(Math.sin(i) * 120 + (29 - i) * 15);
+        const daySessions = Math.round(dayUsers * 1.45);
+        const dayPageviews = Math.round(daySessions * 3.7);
+        insertGaMetric.run(
+          propDbId,
+          dateStr,
+          dayUsers,
+          daySessions,
+          dayPageviews,
+          184.5,
+          0.423,
+          Math.round(dayUsers * 0.72),
+          Math.round(daySessions * 0.68),
+          dayPageviews * 4
+        );
+      }
+    }
   } catch {}
 }
 
