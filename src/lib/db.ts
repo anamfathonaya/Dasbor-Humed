@@ -838,6 +838,48 @@ export function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_tiktok_open_id ON tiktok_connected_accounts(open_id);
     CREATE INDEX IF NOT EXISTS idx_tiktok_status ON tiktok_connected_accounts(status);
     CREATE INDEX IF NOT EXISTS idx_tiktok_audit_open_id ON tiktok_integration_audit_logs(open_id);
+
+    -- 18. Notifications (in-app alert history) & user preferences
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL,                  -- 'infrastructure' | 'oauth_token' | 'news' | 'content' | 'project' | 'system'
+      severity TEXT NOT NULL,                  -- 'critical' | 'warning' | 'info'
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      source TEXT,                             -- mis. 'vps:server-01', 'meta:instagram:abc123'
+      metadata_json TEXT,                      -- JSON-encoded context
+      user_id INTEGER,                         -- null = broadcast/global
+      is_read INTEGER NOT NULL DEFAULT 0,
+      read_at DATETIME,
+      telegram_sent INTEGER NOT NULL DEFAULT 0,
+      telegram_sent_at DATETIME,
+      telegram_error TEXT,
+      email_sent INTEGER NOT NULL DEFAULT 0,
+      email_sent_at DATETIME,
+      email_error TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,                         -- null = global default
+      channel TEXT NOT NULL,                   -- 'in_app' | 'telegram' | 'email'
+      category TEXT NOT NULL DEFAULT 'all',    -- 'all' atau kategori spesifik
+      enabled INTEGER NOT NULL DEFAULT 1,
+      min_severity TEXT NOT NULL DEFAULT 'warning', -- 'info' | 'warning' | 'critical'
+      telegram_chat_id TEXT,
+      email_address TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE(user_id, channel, category)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_notif_user_unread ON notifications(user_id, is_read, created_at);
+    CREATE INDEX IF NOT EXISTS idx_notif_category ON notifications(category, created_at);
+    CREATE INDEX IF NOT EXISTS idx_notif_severity ON notifications(severity, created_at);
+    CREATE INDEX IF NOT EXISTS idx_notif_pref_user ON notification_preferences(user_id, channel);
   `);
 
   // Safe migrations for social_channels & channel_daily_metrics
@@ -1925,6 +1967,22 @@ export function initDatabase() {
     insertAudit.run(1, 'Rani Maulida', 'head', 'Pengesahan Revisi SOP Humas', 'SOP-HUM-01 (Kanal Krisis Bencana)', '180.252.16.89', 'success', 'Revisi disahkan per rapat pimpinan');
     insertAudit.run(null, 'Sistem Otomatis DAM', 'service_agent', 'Sinkronisasi Folder SMB', '48 Berkas Foto Dokumentasi Baru Dipindai', '192.168.1.200', 'success', 'Penambahan metadata EXIF');
     insertAudit.run(null, 'Percobaan Masuk Tamu', 'anonymous', 'Gagal Autentikasi Pengguna', 'admin.backup@pedulinegeri.org (Salah Sandi)', '114.124.201.33', 'failed', '3x percobaan salah sandi berurutan');
+  }
+
+  // Seeding default notification_preferences (global defaults) jika kosong
+  const notifPrefCount = (db.prepare('SELECT COUNT(*) as count FROM notification_preferences').get() as { count: number }).count;
+  if (notifPrefCount === 0) {
+    const insertNotifPref = db.prepare(`
+      INSERT INTO notification_preferences (user_id, channel, category, enabled, min_severity, telegram_chat_id, email_address)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    // Global defaults: kirim warning + critical via Telegram & in_app
+    insertNotifPref.run(null, 'in_app', 'all', 1, 'info', null, null);
+    insertNotifPref.run(null, 'telegram', 'infrastructure', 1, 'warning', null, null);
+    insertNotifPref.run(null, 'telegram', 'oauth_token', 1, 'warning', null, null);
+    insertNotifPref.run(null, 'telegram', 'system', 1, 'critical', null, null);
+    insertNotifPref.run(null, 'email', 'infrastructure', 0, 'critical', null, null);
   }
 
   // Seeding default social_channels & channel_daily_metrics jika kosong

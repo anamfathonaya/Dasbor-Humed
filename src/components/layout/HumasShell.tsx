@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { NotificationBell } from './NotificationBell';
 import { useLayout } from './LayoutContext';
 import { HumasSidebar } from './HumasSidebar';
 import { HumasHeader } from './HumasHeader';
@@ -124,7 +125,12 @@ function HumasShellInner({
             <HumasHeader
               pageTitle={pageTitle}
               pageSubtitle={pageSubtitle}
-              headerActions={headerActions}
+              headerActions={
+                <>
+                  <NotificationBell />
+                  {headerActions}
+                </>
+              }
               pageContentId={resolvedContentId}
             />
 
